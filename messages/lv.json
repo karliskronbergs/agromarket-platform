@@ -52,5 +52,13 @@
   "Dashboard": {
     "title": "Panelis",
     "welcome": "Sveiks, {email}"
+  },
+  "Map": {
+    "modeProfiles": "Profili",
+    "modeSell": "Pārdod",
+    "modeBuy": "Pērk",
+    "allCategories": "Visas kategorijas",
+    "empty": "Nekas nav atrasts.",
+    "view": "Skatīt"
   }
 }

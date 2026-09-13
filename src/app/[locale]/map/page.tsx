@@ -1,0 +1,99 @@
+import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
+import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
+
+export const dynamic = "force-dynamic";
+
+export default async function MapPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ mode?: string; category?: string }>;
+}) {
+  const { locale } = await params;
+  const { mode: rawMode, category } = await searchParams;
+  const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
+
+  const supabase = await createClient();
+
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, slug, name_lv, name_en")
+    .order("name_lv");
+
+  let points: MapPoint[] = [];
+
+  if (mode === "profiles") {
+    const { data } = category
+      ? await supabase
+          .from("profiles")
+          .select(
+            "id, business_name, slug, address, lat, lng, profile_categories!inner(category_id)",
+          )
+          .eq("status", "active")
+          .not("lat", "is", null)
+          .eq("profile_categories.category_id", category)
+      : await supabase
+          .from("profiles")
+          .select("id, business_name, slug, address, lat, lng")
+          .eq("status", "active")
+          .not("lat", "is", null);
+
+    points = (data ?? []).map((p) => ({
+      id: p.id,
+      title: p.business_name,
+      subtitle: p.address ?? "",
+      lat: p.lat as number,
+      lng: p.lng as number,
+      href: `/${locale}/profiles/${p.slug}`,
+    }));
+  } else {
+    let query = supabase
+      .from("listings")
+      .select("id, title, price, lat, lng, profiles(lat, lng)")
+      .eq("status", "active")
+      .eq("listing_type", mode)
+      .not("lat", "is", null);
+
+    if (category) query = query.eq("category_id", category);
+
+    const { data } = await query;
+
+    points = (data ?? [])
+      .map((l) => {
+        const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
+        const lat = (l.lat as number | null) ?? profile?.lat ?? null;
+        const lng = (l.lng as number | null) ?? profile?.lng ?? null;
+        return {
+          id: l.id as string,
+          title: l.title as string,
+          subtitle: l.price ? `€${l.price}` : "",
+          lat,
+          lng,
+          href: `/${locale}/listings/${l.id}`,
+        };
+      })
+      .filter((p): p is MapPoint => p.lat != null && p.lng != null);
+  }
+
+  const t = await getTranslations("Map");
+
+  return (
+    <MapView
+      mode={mode}
+      points={points}
+      categories={categories ?? []}
+      selectedCategory={category}
+      locale={locale}
+      labels={{
+        profiles: t("modeProfiles"),
+        sell: t("modeSell"),
+        buy: t("modeBuy"),
+        all: t("allCategories"),
+        empty: t("empty"),
+        view: t("view"),
+      }}
+    />
+  );
+}

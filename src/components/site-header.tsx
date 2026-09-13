@@ -20,6 +20,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
         Agromarket
       </Link>
       <nav className="flex items-center gap-5 text-sm font-medium text-[#55503f]">
+        <Link href="/map">{t("map")}</Link>
         {user ? (
           <>
             <Link href="/dashboard">{t("dashboard")}</Link>

@@ -52,5 +52,13 @@
   "Dashboard": {
     "title": "Dashboard",
     "welcome": "Hi, {email}"
+  },
+  "Map": {
+    "modeProfiles": "Profiles",
+    "modeSell": "Sell",
+    "modeBuy": "Buy",
+    "allCategories": "All categories",
+    "empty": "Nothing found.",
+    "view": "View"
   }
 }
