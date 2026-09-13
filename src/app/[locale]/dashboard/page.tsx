@@ -18,7 +18,7 @@ export default async function DashboardPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("business_name, slug, verified, verification_requested_at")
     .eq("user_id", user!.id)
@@ -31,9 +31,6 @@ export default async function DashboardPage({
       <div>
         <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("title")}</h1>
         <p className="text-sm text-[#7a7566]">{t("welcome", { email: user!.email ?? "" })}</p>
-        <p className="mt-1 text-xs text-[#7a7566]">
-          debug uid: {user!.id} {profileError ? `| query error: ${profileError.message}` : ""}
-        </p>
       </div>
 
       {profile ? (
