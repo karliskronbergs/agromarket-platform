@@ -10,7 +10,13 @@
   "Home": {
     "title": "Find farming businesses near you",
     "subtitle": "Profiles, listings, and direct messaging in one place — for Latvia's farming community.",
-    "cta": "View the map"
+    "cta": "View the map",
+    "feature1Title": "Create a profile",
+    "feature1Body": "Put your farm or business on the map with specialty categories.",
+    "feature2Title": "Sell and buy",
+    "feature2Body": "Post listings — free to start — and find exactly who's looking for what you offer.",
+    "feature3Title": "Message directly",
+    "feature3Body": "Message other profiles right on the platform, no middlemen."
   },
   "Language": {
     "lv": "Latviešu",

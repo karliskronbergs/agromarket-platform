@@ -10,7 +10,13 @@
   "Home": {
     "title": "Atrodi lauksaimniecības uzņēmumus tev tuvumā",
     "subtitle": "Profili, sludinājumi un tiešā saziņa vienuviet — Latvijas lauksaimniecības kopienai.",
-    "cta": "Skatīt karti"
+    "cta": "Skatīt karti",
+    "feature1Title": "Izveido profilu",
+    "feature1Body": "Parādi savu saimniecību vai uzņēmumu kartē ar specializācijas kategorijām.",
+    "feature2Title": "Pārdod un pērc",
+    "feature2Body": "Publicē sludinājumus — sākumā bez maksas — un atrodi tos, kas meklē tieši to, ko tu piedāvā.",
+    "feature3Title": "Sazinies tieši",
+    "feature3Body": "Raksti ziņas citiem profiliem platformā, bez starpniekiem."
   },
   "Language": {
     "lv": "Latviešu",

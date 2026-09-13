@@ -170,8 +170,8 @@ export function MapView({
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-80 min-w-80 overflow-y-auto border-r border-[#e7e2d8] bg-[#faf8f3] p-4">
+      <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
+        <div className="order-2 max-h-56 w-full overflow-y-auto border-t border-[#e7e2d8] bg-[#faf8f3] p-4 sm:order-1 sm:max-h-none sm:w-80 sm:min-w-80 sm:border-t-0 sm:border-r">
           {points.length === 0 && <p className="text-sm text-[#7a7566]">{labels.empty}</p>}
           {points.map((p) => (
             <button
@@ -185,7 +185,7 @@ export function MapView({
             </button>
           ))}
         </div>
-        <div ref={mapContainerRef} className="flex-1" />
+        <div ref={mapContainerRef} className="order-1 min-h-64 flex-1 sm:order-2" />
       </div>
     </div>
   );
