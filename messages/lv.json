@@ -3,7 +3,9 @@
     "map": "Karte",
     "messages": "Ziņas",
     "signIn": "Ieiet",
-    "createProfile": "Izveidot profilu"
+    "createProfile": "Izveidot profilu",
+    "dashboard": "Panelis",
+    "signOut": "Iziet"
   },
   "Home": {
     "title": "Atrodi lauksaimniecības uzņēmumus tev tuvumā",
@@ -13,5 +15,41 @@
   "Language": {
     "lv": "Latviešu",
     "en": "English"
+  },
+  "Auth": {
+    "signInTitle": "Ieiet",
+    "signUpTitle": "Izveidot kontu",
+    "email": "E-pasts",
+    "password": "Parole",
+    "signInSubmit": "Ieiet",
+    "signUpSubmit": "Reģistrēties",
+    "noAccount": "Nav konta?",
+    "haveAccount": "Jau ir konts?",
+    "signUpCta": "Reģistrēties",
+    "signInCta": "Ieiet",
+    "checkEmail": "Pārbaudi savu e-pastu, lai apstiprinātu kontu.",
+    "codeError": "Apstiprināšanas saite vairs nav derīga. Mēģini reģistrēties vēlreiz."
+  },
+  "Profile": {
+    "createTitle": "Izveido sava uzņēmuma profilu",
+    "editTitle": "Rediģē sava uzņēmuma profilu",
+    "businessName": "Uzņēmuma nosaukums",
+    "description": "Apraksts",
+    "phone": "Tālrunis",
+    "contactEmail": "Kontakta e-pasts",
+    "website": "Tīmekļa vietne",
+    "address": "Adrese",
+    "addressHint": "Izmanto, lai novietotu tavu profilu kartē.",
+    "categories": "Specializācijas",
+    "avatar": "Logo/profila attēls",
+    "cover": "Vāka attēls",
+    "save": "Saglabāt",
+    "viewPublic": "Skatīt publisko profilu",
+    "noProfileYet": "Tev vēl nav uzņēmuma profila.",
+    "createCta": "Izveidot profilu"
+  },
+  "Dashboard": {
+    "title": "Panelis",
+    "welcome": "Sveiks, {email}"
   }
 }

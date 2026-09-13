@@ -3,7 +3,9 @@
     "map": "Map",
     "messages": "Messages",
     "signIn": "Sign in",
-    "createProfile": "Create profile"
+    "createProfile": "Create profile",
+    "dashboard": "Dashboard",
+    "signOut": "Sign out"
   },
   "Home": {
     "title": "Find farming businesses near you",
@@ -13,5 +15,41 @@
   "Language": {
     "lv": "Latviešu",
     "en": "English"
+  },
+  "Auth": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create an account",
+    "email": "Email",
+    "password": "Password",
+    "signInSubmit": "Sign in",
+    "signUpSubmit": "Sign up",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "signUpCta": "Sign up",
+    "signInCta": "Sign in",
+    "checkEmail": "Check your email to confirm your account.",
+    "codeError": "That confirmation link is no longer valid. Try signing up again."
+  },
+  "Profile": {
+    "createTitle": "Create your business profile",
+    "editTitle": "Edit your business profile",
+    "businessName": "Business name",
+    "description": "Description",
+    "phone": "Phone",
+    "contactEmail": "Contact email",
+    "website": "Website",
+    "address": "Address",
+    "addressHint": "Used to place your profile on the map.",
+    "categories": "Specialties",
+    "avatar": "Logo / avatar",
+    "cover": "Cover image",
+    "save": "Save",
+    "viewPublic": "View public profile",
+    "noProfileYet": "You don't have a business profile yet.",
+    "createCta": "Create profile"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "welcome": "Hi, {email}"
   }
 }
