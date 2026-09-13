@@ -13,6 +13,7 @@ export default async function ListingDetailPage({
 }) {
   const { locale, id } = await params;
   const t = await getTranslations("Listing");
+  const tReport = await getTranslations("Report");
   const supabase = await createClient();
 
   const { data: listing } = await supabase
@@ -98,6 +99,15 @@ export default async function ListingDetailPage({
             listingId={listing.id}
           />
         </div>
+      )}
+
+      {viewer && (
+        <Link
+          href={`/report/listing/${listing.id}`}
+          className="w-fit text-xs text-[#7a7566] underline"
+        >
+          {tReport("reportLink")}
+        </Link>
       )}
     </div>
   );

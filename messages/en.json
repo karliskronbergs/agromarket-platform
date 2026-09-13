@@ -91,5 +91,34 @@
     "loginToMessage": "Sign in to message",
     "placeholder": "Write a message...",
     "send": "Send"
+  },
+  "Report": {
+    "title": "Report a problem",
+    "reasonLabel": "Describe the issue",
+    "submit": "Submit",
+    "thanks": "Thanks, your report has been sent to the admins.",
+    "reportLink": "Report"
+  },
+  "Admin": {
+    "title": "Admin",
+    "categories": "Categories",
+    "reports": "Reports",
+    "auditLog": "Audit log",
+    "addCategory": "Add",
+    "slug": "Slug",
+    "nameLv": "Name (LV)",
+    "nameEn": "Name (EN)",
+    "icon": "Icon",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this category?",
+    "noReports": "No open reports.",
+    "unknownTarget": "Unknown",
+    "profileLabel": "Profile",
+    "listingLabel": "Listing",
+    "resolve": "Resolve",
+    "dismiss": "Dismiss",
+    "removeContent": "Remove content",
+    "removeConfirm": "Really remove/suspend this content?",
+    "noLogs": "Log is empty."
   }
 }

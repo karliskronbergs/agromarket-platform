@@ -91,5 +91,34 @@
     "loginToMessage": "Ieej, lai rakstītu ziņu",
     "placeholder": "Raksti ziņu...",
     "send": "Sūtīt"
+  },
+  "Report": {
+    "title": "Ziņot par problēmu",
+    "reasonLabel": "Apraksti problēmu",
+    "submit": "Iesniegt",
+    "thanks": "Paldies, ziņojums nosūtīts administratoriem.",
+    "reportLink": "Ziņot"
+  },
+  "Admin": {
+    "title": "Administrēšana",
+    "categories": "Kategorijas",
+    "reports": "Sūdzības",
+    "auditLog": "Darbību žurnāls",
+    "addCategory": "Pievienot",
+    "slug": "Slug",
+    "nameLv": "Nosaukums (LV)",
+    "nameEn": "Nosaukums (EN)",
+    "icon": "Ikona",
+    "delete": "Dzēst",
+    "deleteConfirm": "Vai tiešām dzēst šo kategoriju?",
+    "noReports": "Nav aktīvu sūdzību.",
+    "unknownTarget": "Nezināms",
+    "profileLabel": "Profils",
+    "listingLabel": "Sludinājums",
+    "resolve": "Atrisināts",
+    "dismiss": "Noraidīt",
+    "removeContent": "Noņemt saturu",
+    "removeConfirm": "Vai tiešām noņemt/apturēt šo saturu?",
+    "noLogs": "Žurnāls ir tukšs."
   }
 }

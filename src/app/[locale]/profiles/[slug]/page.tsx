@@ -13,6 +13,7 @@ export default async function PublicProfilePage({
 }) {
   const { locale, slug } = await params;
   const t = await getTranslations("Listing");
+  const tReport = await getTranslations("Report");
   const supabase = await createClient();
 
   const { data: profile } = await supabase
@@ -95,6 +96,15 @@ export default async function PublicProfilePage({
         viewerUserId={viewer?.id ?? null}
         sellerUserId={profile.user_id}
       />
+
+      {viewer && (
+        <Link
+          href={`/report/profile/${profile.id}`}
+          className="w-fit text-xs text-[#7a7566] underline"
+        >
+          {tReport("reportLink")}
+        </Link>
+      )}
 
       {listings && listings.length > 0 && (
         <div className="flex flex-col gap-3">
