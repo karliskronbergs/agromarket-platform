@@ -4,11 +4,11 @@
     "messages": "Ziņas",
     "signIn": "Ieiet",
     "createProfile": "Izveidot profilu",
-    "dashboard": "Panelis",
+    "dashboard": "Profils",
     "signOut": "Iziet"
   },
   "Home": {
-    "title": "Atrodi lauksaimniecības uzņēmumus tev tuvumā",
+    "title": "Atrodi lauksaimniecības uzņēmumus sev tuvumā",
     "subtitle": "Profili, sludinājumi un tiešā saziņa vienuviet — Latvijas lauksaimniecības kopienai.",
     "cta": "Skatīt karti",
     "feature1Title": "Izveido profilu",
@@ -64,7 +64,7 @@
     "requestVerification": "Pieprasīt verifikāciju"
   },
   "Dashboard": {
-    "title": "Panelis",
+    "title": "Profils",
     "welcome": "Sveiks, {email}"
   },
   "Map": {
