@@ -84,30 +84,30 @@ export default async function PublicProfilePage({
 
         <div className="flex flex-col gap-4 px-2 pt-0 sm:flex-row sm:items-end sm:justify-between sm:px-4">
           <div className="-mt-10 flex items-end gap-4 sm:-mt-12">
-            <div
-              className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-4 border-[#faf8f3] sm:h-24 sm:w-24 ${
-                profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
-              }`}
-            >
-              {profile.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
-                  {profile.business_name.slice(0, 1).toUpperCase()}
-                </div>
+            <div className="relative h-20 w-20 flex-shrink-0 sm:h-24 sm:w-24">
+              <div
+                className={`h-full w-full overflow-hidden rounded-full border-4 border-[#faf8f3] ${
+                  profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
+                }`}
+              >
+                {profile.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
+                    {profile.business_name.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              {profile.verified && (
+                <IconCheck className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-[#3f6b3f] ring-2 ring-[#faf8f3]" />
               )}
             </div>
             <div className="pb-1">
-              <div className="flex items-center gap-2">
-                <h1 className="font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
-                  {profile.business_name}
-                </h1>
-                {profile.verified && (
-                  <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />
-                )}
-              </div>
-              <div className="mt-1 flex flex-wrap gap-1.5">
+              <h1 className="font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
+                {profile.business_name}
+              </h1>
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                 {(profileCategories ?? []).map((pc, i) => {
                   const cat = pc.categories as unknown as { name_lv: string; name_en: string } | null;
                   if (!cat) return null;
@@ -120,6 +120,12 @@ export default async function PublicProfilePage({
                     </span>
                   );
                 })}
+                {profile.verified && (
+                  <span className="flex items-center gap-1 rounded-full bg-[#e7efe1] px-2.5 py-0.5 text-xs font-semibold text-[#3f6b3f]">
+                    <IconCheck className="h-3.5 w-3.5 flex-shrink-0" />
+                    {tProfile("verifiedBadge")}
+                  </span>
+                )}
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-[#7a7566]">
                 {profile.address && (

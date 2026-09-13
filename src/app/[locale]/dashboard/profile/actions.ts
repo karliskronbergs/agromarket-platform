@@ -162,3 +162,18 @@ export async function saveProfile(
   revalidatePath(`/${locale}/dashboard`);
   redirect(`/${locale}/profiles/${profile.slug}`);
 }
+
+export async function requestVerification(locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  await supabase
+    .from("profiles")
+    .update({ verification_requested_at: new Date().toISOString() })
+    .eq("user_id", user.id);
+
+  revalidatePath(`/${locale}/dashboard`);
+}

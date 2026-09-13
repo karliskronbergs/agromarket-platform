@@ -36,6 +36,7 @@ export default async function AdminLayout({
       <nav className="flex gap-5 border-b border-[#e7e2d8] pb-3 text-sm font-medium text-[#55503f]">
         <Link href="/admin/categories">{t("categories")}</Link>
         <Link href="/admin/reports">{t("reports")}</Link>
+        <Link href="/admin/verifications">{t("verifications")}</Link>
         <Link href="/admin/audit-log">{t("auditLog")}</Link>
       </nav>
       {children}

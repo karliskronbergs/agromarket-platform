@@ -58,7 +58,10 @@
     "call": "Call",
     "about": "About",
     "businessInfo": "Business Info",
-    "viewOnMap": "View on map"
+    "viewOnMap": "View on map",
+    "verifiedBadge": "Verified profile",
+    "verificationPending": "Verification requested, waiting on admin approval.",
+    "requestVerification": "Request verification"
   },
   "Dashboard": {
     "title": "Dashboard",
@@ -136,6 +139,9 @@
     "dismiss": "Dismiss",
     "removeContent": "Remove content",
     "removeConfirm": "Really remove/suspend this content?",
-    "noLogs": "Log is empty."
+    "noLogs": "Log is empty.",
+    "verifications": "Verifications",
+    "noVerifications": "No pending verification requests.",
+    "approve": "Approve"
   }
 }

@@ -169,18 +169,23 @@ export default async function ListingDetailPage({
           {profile && (
             <div className="rounded-xl border border-[#e7e2d8] bg-white p-4">
               <div className="mb-2.5 flex items-center gap-3">
-                <div
-                  className={`h-11 w-11 flex-shrink-0 overflow-hidden rounded-full ${
-                    profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
-                  }`}
-                >
-                  {profile.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center font-sans text-sm font-bold text-white">
-                      {profile.business_name.slice(0, 1).toUpperCase()}
-                    </div>
+                <div className="relative h-11 w-11 flex-shrink-0">
+                  <div
+                    className={`h-full w-full overflow-hidden rounded-full ${
+                      profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
+                    }`}
+                  >
+                    {profile.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center font-sans text-sm font-bold text-white">
+                        {profile.business_name.slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  {profile.verified && (
+                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6b3f] ring-2 ring-white" />
                   )}
                 </div>
                 <div className="min-w-0">

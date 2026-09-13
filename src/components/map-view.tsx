@@ -94,10 +94,17 @@ export function MapView({
 
       points.forEach((point) => {
         const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
+        const verifiedBadgeHtml =
+          mode === "profiles" && point.verified
+            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#3f6b3f;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
+            : "";
         const imageHtml = point.imageUrl
-          ? `<img src="${escapeHtml(point.imageUrl)}" style="width:44px;height:44px;border-radius:${
-              mode === "profiles" ? "50%" : "8px"
-            };object-fit:cover;flex-shrink:0;" />`
+          ? `<div style="position:relative;flex-shrink:0;">
+              <img src="${escapeHtml(point.imageUrl)}" style="width:44px;height:44px;border-radius:${
+                mode === "profiles" ? "50%" : "8px"
+              };object-fit:cover;display:block;" />
+              ${verifiedBadgeHtml}
+            </div>`
           : "";
         const badgeHtml = point.badge
           ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
@@ -202,16 +209,21 @@ export function MapView({
               className="mb-3 flex w-full items-start gap-3 rounded-xl border border-[#e7e2d8] bg-white p-3 text-left text-sm shadow-sm transition hover:border-[#3f6b3f]"
             >
               {mode === "profiles" ? (
-                <div
-                  className={`h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
-                >
-                  {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
-                      {p.title.slice(0, 1).toUpperCase()}
-                    </div>
+                <div className="relative h-10 w-10 flex-shrink-0">
+                  <div
+                    className={`h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
+                  >
+                    {p.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                        {p.title.slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  {p.verified && (
+                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6b3f] ring-2 ring-white" />
                   )}
                 </div>
               ) : (

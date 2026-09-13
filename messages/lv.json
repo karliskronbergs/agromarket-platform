@@ -58,7 +58,10 @@
     "call": "Zvanīt",
     "about": "Par mums",
     "businessInfo": "Uzņēmuma informācija",
-    "viewOnMap": "Skatīt kartē"
+    "viewOnMap": "Skatīt kartē",
+    "verifiedBadge": "Verificēts profils",
+    "verificationPending": "Verifikācijas pieprasījums iesniegts, gaida administratora apstiprinājumu.",
+    "requestVerification": "Pieprasīt verifikāciju"
   },
   "Dashboard": {
     "title": "Panelis",
@@ -136,6 +139,9 @@
     "dismiss": "Noraidīt",
     "removeContent": "Noņemt saturu",
     "removeConfirm": "Vai tiešām noņemt/apturēt šo saturu?",
-    "noLogs": "Žurnāls ir tukšs."
+    "noLogs": "Žurnāls ir tukšs.",
+    "verifications": "Verifikācijas",
+    "noVerifications": "Nav gaidošu verifikācijas pieprasījumu.",
+    "approve": "Apstiprināt"
   }
 }

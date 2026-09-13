@@ -1,8 +1,15 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { IconCheck } from "@/components/icons";
+import { requestVerification } from "./profile/actions";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations("Dashboard");
   const tProfile = await getTranslations("Profile");
   const tListing = await getTranslations("Listing");
@@ -13,9 +20,11 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("business_name, slug")
+    .select("business_name, slug, verified, verification_requested_at")
     .eq("user_id", user!.id)
     .maybeSingle();
+
+  const boundRequestVerification = requestVerification.bind(null, locale);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
@@ -26,9 +35,11 @@ export default async function DashboardPage() {
 
       {profile ? (
         <div className="flex flex-col gap-4 rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
-          <div className="font-sans text-lg font-semibold text-[#2b2a24]">
+          <div className="flex items-center gap-2 font-sans text-lg font-semibold text-[#2b2a24]">
             {profile.business_name}
+            {profile.verified && <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />}
           </div>
+
           <div className="flex flex-wrap gap-2">
             <Link
               href="/dashboard/profile"
@@ -48,6 +59,26 @@ export default async function DashboardPage() {
             >
               {tProfile("viewPublic")}
             </Link>
+          </div>
+
+          <div className="border-t border-[#e7e2d8] pt-4">
+            {profile.verified ? (
+              <div className="flex w-fit items-center gap-1.5 rounded-full bg-[#e7efe1] px-3 py-1.5 text-sm font-semibold text-[#3f6b3f]">
+                <IconCheck className="h-4 w-4 flex-shrink-0" />
+                {tProfile("verifiedBadge")}
+              </div>
+            ) : profile.verification_requested_at ? (
+              <p className="text-sm text-[#7a7566]">{tProfile("verificationPending")}</p>
+            ) : (
+              <form action={boundRequestVerification}>
+                <button
+                  type="submit"
+                  className="rounded-full border border-[#3f6b3f] px-4 py-2 text-sm font-semibold text-[#3f6b3f] hover:bg-[#e7efe1]"
+                >
+                  {tProfile("requestVerification")}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       ) : (
