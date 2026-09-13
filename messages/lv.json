@@ -28,6 +28,7 @@
     "signUpCta": "Reģistrēties",
     "signInCta": "Ieiet",
     "checkEmail": "Pārbaudi savu e-pastu, lai apstiprinātu kontu.",
+    "emailConfirmed": "Tavs e-pasts ir apstiprināts. Tagad vari ieiet.",
     "codeError": "Apstiprināšanas saite vairs nav derīga. Mēģini reģistrēties vēlreiz."
   },
   "Profile": {

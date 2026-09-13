@@ -33,7 +33,7 @@ export async function signUp(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${origin}/api/auth/confirm?next=/${locale}/dashboard`,
+      emailRedirectTo: `${origin}/${locale}/auth/confirmed`,
     },
   });
 

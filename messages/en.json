@@ -28,6 +28,7 @@
     "signUpCta": "Sign up",
     "signInCta": "Sign in",
     "checkEmail": "Check your email to confirm your account.",
+    "emailConfirmed": "Your email is confirmed. You can sign in now.",
     "codeError": "That confirmation link is no longer valid. Try signing up again."
   },
   "Profile": {
