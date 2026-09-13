@@ -73,8 +73,8 @@ export function ThreadView({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-3">
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-xl border border-[#e7e2d8] bg-[#faf8f3] p-4">
+    <div className="flex flex-1 flex-col gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm">
+      <div className="flex h-[55vh] min-h-64 flex-col gap-2 overflow-y-auto rounded-xl bg-[#faf8f3] p-4">
         {messages.map((m) => {
           const mine = m.sender_id === currentUserId;
           return (
@@ -83,7 +83,7 @@ export function ThreadView({
               className={`max-w-[75%] rounded-xl px-3 py-2 text-sm ${
                 mine
                   ? "self-end bg-[#3f6b3f] text-white"
-                  : "self-start bg-white text-[#2b2a24] border border-[#e7e2d8]"
+                  : "self-start border border-[#e7e2d8] bg-white text-[#2b2a24]"
               }`}
             >
               {m.body}
@@ -98,12 +98,12 @@ export function ThreadView({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 rounded-full border border-[#e7e2d8] px-4 py-2.5 text-sm"
+          className="flex-1 rounded-full border border-[#e7e2d8] px-4 py-2.5 text-sm outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15"
         />
         <button
           type="submit"
           disabled={isSending || !draft.trim()}
-          className="rounded-full bg-[#3f6b3f] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-full bg-[#3f6b3f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
         >
           {send}
         </button>

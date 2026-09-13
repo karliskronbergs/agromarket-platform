@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ThreadView } from "./thread-view";
 
@@ -43,10 +44,15 @@ export default async function ConversationPage({
     .order("created_at", { ascending: true });
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-6 py-8">
-      <h1 className="font-sans text-xl font-semibold text-[#2b2a24]">
-        {otherProfile?.business_name ?? t("unknownUser")}
-      </h1>
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 sm:py-8">
+      <div>
+        <Link href="/dashboard/messages" className="text-sm text-[#7a7566] hover:text-[#3f6b3f]">
+          &larr; {t("inbox")}
+        </Link>
+        <h1 className="font-sans text-xl font-semibold text-[#2b2a24]">
+          {otherProfile?.business_name ?? t("unknownUser")}
+        </h1>
+      </div>
       <ThreadView
         conversationId={id}
         currentUserId={user!.id}

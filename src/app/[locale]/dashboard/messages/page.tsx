@@ -47,7 +47,7 @@ export default async function MessagesPage() {
   const profileByUserId = new Map((profiles ?? []).map((p) => [p.user_id, p]));
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("inbox")}</h1>
 
       {(!conversations || conversations.length === 0) && (
@@ -63,13 +63,13 @@ export default async function MessagesPage() {
             <Link
               key={c.id}
               href={`/dashboard/messages/${c.id}`}
-              className="flex items-center gap-3 rounded-xl border border-[#e7e2d8] bg-white p-4 hover:border-[#3f6b3f]"
+              className="flex items-center gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm transition hover:border-[#3f6b3f]"
             >
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#3f6b3f] text-sm font-semibold text-white">
                 {(other?.business_name ?? "?").slice(0, 1).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-semibold text-[#2b2a24]">
+                <div className="font-medium text-[#2b2a24]">
                   {other?.business_name ?? t("unknownUser")}
                 </div>
                 {last && (
