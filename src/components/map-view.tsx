@@ -94,8 +94,25 @@ export function MapView({
 
       points.forEach((point) => {
         const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
+        const imageHtml = point.imageUrl
+          ? `<img src="${escapeHtml(point.imageUrl)}" style="width:44px;height:44px;border-radius:${
+              mode === "profiles" ? "50%" : "8px"
+            };object-fit:cover;flex-shrink:0;" />`
+          : "";
+        const badgeHtml = point.badge
+          ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
+          : "";
         marker.bindPopup(
-          `<strong>${escapeHtml(point.title)}</strong><br/>${escapeHtml(point.subtitle)}<br/><a href="${point.href}">${labels.view}</a>`,
+          `<div style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;">
+            ${imageHtml}
+            <div style="min-width:0;">
+              <div style="font-weight:600;font-size:13px;color:#2b2a24;">${escapeHtml(point.title)}</div>
+              ${badgeHtml}
+              <div style="font-size:12px;color:#7a7566;margin-top:3px;">${escapeHtml(point.subtitle)}</div>
+              <a href="${point.href}" style="font-size:12px;font-weight:600;color:#3f6b3f;">${escapeHtml(labels.view)} &rarr;</a>
+            </div>
+          </div>`,
+          { minWidth: 200 },
         );
         markersRef.current[point.id] = marker;
       });
