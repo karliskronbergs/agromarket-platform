@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
+import { MiniMap } from "@/components/mini-map";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,7 @@ export default async function ListingDetailPage({
   const { data: listing } = await supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, status, profiles(user_id, business_name, slug), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, status, lat, lng, profiles(user_id, business_name, slug), categories(name_lv, name_en)",
     )
     .eq("id", id)
     .eq("status", "active")
@@ -128,6 +129,16 @@ export default async function ListingDetailPage({
               />
             </div>
           )}
+
+          {listing.lat != null && listing.lng != null && (
+            <MiniMap
+              lat={listing.lat}
+              lng={listing.lng}
+              color={listing.listing_type === "sell" ? "#d9713a" : "#2f6690"}
+            />
+          )}
+
+          <p className="rounded-xl bg-[#faf8f3] p-3 text-xs text-[#7a7566]">{t("safetyNote")}</p>
 
           {viewer && (
             <Link

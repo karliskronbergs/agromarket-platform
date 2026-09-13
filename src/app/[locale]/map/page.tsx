@@ -29,16 +29,31 @@ export default async function MapPage({
       ? await supabase
           .from("profiles")
           .select(
-            "id, business_name, slug, address, lat, lng, profile_categories!inner(category_id)",
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, profile_categories!inner(category_id)",
           )
           .eq("status", "active")
           .not("lat", "is", null)
           .eq("profile_categories.category_id", category)
       : await supabase
           .from("profiles")
-          .select("id, business_name, slug, address, lat, lng")
+          .select("id, business_name, slug, address, lat, lng, avatar_url, verified")
           .eq("status", "active")
           .not("lat", "is", null);
+
+    const profileIds = (data ?? []).map((p) => p.id);
+    const { data: profileCategories } = profileIds.length
+      ? await supabase
+          .from("profile_categories")
+          .select("profile_id, categories(name_lv, name_en)")
+          .in("profile_id", profileIds)
+      : { data: [] as { profile_id: string; categories: { name_lv: string; name_en: string } | null }[] };
+
+    const badgeByProfile = new Map<string, string>();
+    for (const pc of profileCategories ?? []) {
+      if (badgeByProfile.has(pc.profile_id)) continue;
+      const cat = pc.categories as unknown as { name_lv: string; name_en: string } | null;
+      if (cat) badgeByProfile.set(pc.profile_id, locale === "lv" ? cat.name_lv : cat.name_en);
+    }
 
     points = (data ?? []).map((p) => ({
       id: p.id,
@@ -47,11 +62,16 @@ export default async function MapPage({
       lat: p.lat as number,
       lng: p.lng as number,
       href: `/${locale}/profiles/${p.slug}`,
+      avatarUrl: p.avatar_url ?? undefined,
+      verified: p.verified ?? false,
+      badge: badgeByProfile.get(p.id),
     }));
   } else {
     let query = supabase
       .from("listings")
-      .select("id, title, price, lat, lng, profiles(lat, lng)")
+      .select(
+        "id, title, price, lat, lng, profiles(lat, lng), categories(name_lv, name_en)",
+      )
       .eq("status", "active")
       .eq("listing_type", mode)
       .not("lat", "is", null);
@@ -63,18 +83,20 @@ export default async function MapPage({
     points = (data ?? [])
       .map((l) => {
         const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
+        const cat = Array.isArray(l.categories) ? l.categories[0] : l.categories;
         const lat = (l.lat as number | null) ?? profile?.lat ?? null;
         const lng = (l.lng as number | null) ?? profile?.lng ?? null;
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: l.price ? `€${l.price}` : "",
+          subtitle: l.price != null ? `€${l.price}` : "",
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,
+          badge: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : undefined,
         };
       })
-      .filter((p): p is MapPoint => p.lat != null && p.lng != null);
+      .filter((p) => p.lat != null && p.lng != null) as MapPoint[];
   }
 
   const t = await getTranslations("Map");

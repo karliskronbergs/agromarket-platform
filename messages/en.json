@@ -87,7 +87,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "deleteConfirm": "Delete this listing?",
-    "seller": "Seller"
+    "seller": "Seller",
+    "safetyNote": "For your safety: meet in a public place and avoid paying upfront to sellers you don't know."
   },
   "Messages": {
     "inbox": "Messages",

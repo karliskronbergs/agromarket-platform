@@ -87,7 +87,8 @@
     "edit": "Rediģēt",
     "delete": "Dzēst",
     "deleteConfirm": "Vai tiešām dzēst šo sludinājumu?",
-    "seller": "Pārdevējs"
+    "seller": "Pārdevējs",
+    "safetyNote": "Drošībai: tiecies uz tikšanos publiskā vietā un nemaksā avansā, ja nepazīsti pārdevēju."
   },
   "Messages": {
     "inbox": "Ziņas",

@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
+import { IconPin, IconPhone, IconMail, IconGlobe, IconCheck } from "@/components/icons";
+import { MiniMap } from "@/components/mini-map";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +42,7 @@ export default async function PublicProfilePage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified",
+      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, lat, lng",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -88,11 +90,7 @@ export default async function PublicProfilePage({
             <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">
               {profile.business_name}
             </h1>
-            {profile.verified && (
-              <span className="rounded-full bg-[#3f6b3f] px-2 py-0.5 text-xs font-semibold text-white">
-                ✓
-              </span>
-            )}
+            {profile.verified && <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />}
           </div>
         </div>
       </div>
@@ -141,12 +139,36 @@ export default async function PublicProfilePage({
         </div>
 
         <div className="flex flex-col gap-3 rounded-xl border border-[#e7e2d8] bg-white p-4">
-          <div className="flex flex-col gap-1 text-sm text-[#55503f]">
-            {profile.address && <div>{profile.address}</div>}
-            {profile.phone && <div>{profile.phone}</div>}
-            {profile.contact_email && <div>{profile.contact_email}</div>}
-            {profile.website && <div>{profile.website}</div>}
+          <div className="flex flex-col gap-2 text-sm text-[#55503f]">
+            {profile.address && (
+              <div className="flex items-center gap-2">
+                <IconPin className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                {profile.address}
+              </div>
+            )}
+            {profile.phone && (
+              <div className="flex items-center gap-2">
+                <IconPhone className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                {profile.phone}
+              </div>
+            )}
+            {profile.contact_email && (
+              <div className="flex items-center gap-2">
+                <IconMail className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                {profile.contact_email}
+              </div>
+            )}
+            {profile.website && (
+              <div className="flex items-center gap-2">
+                <IconGlobe className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                {profile.website}
+              </div>
+            )}
           </div>
+
+          {profile.lat != null && profile.lng != null && (
+            <MiniMap lat={profile.lat} lng={profile.lng} />
+          )}
 
           <MessageSellerButton
             locale={locale}

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "@/i18n/navigation";
+import { IconPin, IconCheck } from "@/components/icons";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -14,6 +15,9 @@ export type MapPoint = {
   lat: number;
   lng: number;
   href: string;
+  avatarUrl?: string;
+  badge?: string;
+  verified?: boolean;
 };
 
 type Category = { id: string; slug: string; name_lv: string; name_en: string };
@@ -178,10 +182,37 @@ export function MapView({
               key={p.id}
               type="button"
               onClick={() => focus(p)}
-              className="mb-3 block w-full rounded-lg border border-[#e7e2d8] bg-white p-3 text-left text-sm hover:border-[#3f6b3f]"
+              className="mb-3 flex w-full items-start gap-3 rounded-xl border border-[#e7e2d8] bg-white p-3 text-left text-sm shadow-sm transition hover:border-[#3f6b3f]"
             >
-              <div className="font-semibold text-[#2b2a24]">{p.title}</div>
-              <div className="text-[#7a7566]">{p.subtitle}</div>
+              {mode === "profiles" && (
+                <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-[#3f6b3f]">
+                  {p.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.avatarUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                      {p.title.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate font-semibold text-[#2b2a24]">{p.title}</span>
+                  {p.verified && <IconCheck className="h-3.5 w-3.5 flex-shrink-0 text-[#3f6b3f]" />}
+                </div>
+                {p.badge && (
+                  <span className="mt-1 inline-block rounded-full bg-[#e7efe1] px-2 py-0.5 text-xs font-semibold text-[#3f6b3f]">
+                    {p.badge}
+                  </span>
+                )}
+                {p.subtitle && (
+                  <div className="mt-1 flex items-center gap-1 text-xs text-[#7a7566]">
+                    {mode === "profiles" && <IconPin className="h-3 w-3 flex-shrink-0" />}
+                    <span className="truncate">{p.subtitle}</span>
+                  </div>
+                )}
+              </div>
             </button>
           ))}
         </div>
