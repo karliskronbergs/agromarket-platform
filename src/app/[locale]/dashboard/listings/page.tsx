@@ -33,7 +33,7 @@ export default async function ListingsPage({
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex items-center justify-between">
         <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("myListings")}</h1>
         <Link
@@ -52,16 +52,27 @@ export default async function ListingsPage({
         {(listings ?? []).map((l) => (
           <div
             key={l.id}
-            className="flex items-center justify-between rounded-xl border border-[#e7e2d8] bg-white p-4"
+            className="flex items-center justify-between gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm"
           >
-            <div>
-              <div className="font-semibold text-[#2b2a24]">{l.title}</div>
-              <div className="text-xs text-[#7a7566]">
-                {l.listing_type === "sell" ? t("sell") : t("buy")}
-                {l.price ? ` · €${l.price}` : ""} · {l.status}
+            <div className="flex flex-col gap-1.5">
+              <div className="font-medium text-[#2b2a24]">{l.title}</div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    l.listing_type === "sell"
+                      ? "bg-[#fbe6da] text-[#d9713a]"
+                      : "bg-[#dde8ef] text-[#2f6690]"
+                  }`}
+                >
+                  {l.listing_type === "sell" ? t("sell") : t("buy")}
+                </span>
+                {l.price != null && (
+                  <span className="text-xs text-[#7a7566]">€{l.price}</span>
+                )}
+                <span className="text-xs text-[#7a7566]">· {l.status}</span>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-shrink-0 items-center gap-4">
               <Link
                 href={`/dashboard/listings/${l.id}`}
                 className="text-sm font-medium text-[#3f6b3f]"

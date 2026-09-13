@@ -33,27 +33,29 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">
         {profile ? t("editTitle") : t("createTitle")}
       </h1>
-      <ProfileForm
-        locale={locale}
-        categories={categories ?? []}
-        selectedCategoryIds={selectedCategoryIds}
-        initial={
-          profile
-            ? {
-                businessName: profile.business_name ?? "",
-                description: profile.description ?? "",
-                phone: profile.phone ?? "",
-                contactEmail: profile.contact_email ?? "",
-                website: profile.website ?? "",
-                address: profile.address ?? "",
-              }
-            : undefined
-        }
-      />
+      <div className="rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
+        <ProfileForm
+          locale={locale}
+          categories={categories ?? []}
+          selectedCategoryIds={selectedCategoryIds}
+          initial={
+            profile
+              ? {
+                  businessName: profile.business_name ?? "",
+                  description: profile.description ?? "",
+                  phone: profile.phone ?? "",
+                  contactEmail: profile.contact_email ?? "",
+                  website: profile.website ?? "",
+                  address: profile.address ?? "",
+                }
+              : undefined
+          }
+        />
+      </div>
     </div>
   );
 }

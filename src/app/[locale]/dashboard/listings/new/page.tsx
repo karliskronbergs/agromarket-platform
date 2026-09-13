@@ -31,14 +31,16 @@ export default async function NewListingPage({
     .order("name_lv");
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("createTitle")}</h1>
-      <ListingForm
-        locale={locale}
-        listingId={null}
-        categories={categories ?? []}
-        existingImages={[]}
-      />
+      <div className="rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
+        <ListingForm
+          locale={locale}
+          listingId={null}
+          categories={categories ?? []}
+          existingImages={[]}
+        />
+      </div>
     </div>
   );
 }
