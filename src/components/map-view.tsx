@@ -185,7 +185,9 @@ export function MapView({
               className="mb-3 flex w-full items-start gap-3 rounded-xl border border-[#e7e2d8] bg-white p-3 text-left text-sm shadow-sm transition hover:border-[#3f6b3f]"
             >
               {mode === "profiles" && (
-                <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-[#3f6b3f]">
+                <div
+                  className={`h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ${p.avatarUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
+                >
                   {p.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.avatarUrl} alt="" className="h-full w-full object-cover" />

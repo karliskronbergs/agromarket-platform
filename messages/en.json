@@ -53,7 +53,12 @@
     "save": "Save",
     "viewPublic": "View public profile",
     "noProfileYet": "You don't have a business profile yet.",
-    "createCta": "Create profile"
+    "createCta": "Create profile",
+    "memberSince": "Member since",
+    "call": "Call",
+    "about": "About",
+    "businessInfo": "Business Info",
+    "viewOnMap": "View on map"
   },
   "Dashboard": {
     "title": "Dashboard",
@@ -88,7 +93,12 @@
     "delete": "Delete",
     "deleteConfirm": "Delete this listing?",
     "seller": "Seller",
-    "safetyNote": "For your safety: meet in a public place and avoid paying upfront to sellers you don't know."
+    "safetyNote": "For your safety: meet in a public place and avoid paying upfront to sellers you don't know.",
+    "details": "Details",
+    "location": "Location",
+    "activeListings": "active listings",
+    "callSeller": "Call",
+    "getDirections": "Get directions"
   },
   "Messages": {
     "inbox": "Messages",

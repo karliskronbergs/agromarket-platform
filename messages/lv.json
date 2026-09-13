@@ -53,7 +53,12 @@
     "save": "Saglabāt",
     "viewPublic": "Skatīt publisko profilu",
     "noProfileYet": "Tev vēl nav uzņēmuma profila.",
-    "createCta": "Izveidot profilu"
+    "createCta": "Izveidot profilu",
+    "memberSince": "Biedrs kopš",
+    "call": "Zvanīt",
+    "about": "Par mums",
+    "businessInfo": "Uzņēmuma informācija",
+    "viewOnMap": "Skatīt kartē"
   },
   "Dashboard": {
     "title": "Panelis",
@@ -88,7 +93,12 @@
     "delete": "Dzēst",
     "deleteConfirm": "Vai tiešām dzēst šo sludinājumu?",
     "seller": "Pārdevējs",
-    "safetyNote": "Drošībai: tiecies uz tikšanos publiskā vietā un nemaksā avansā, ja nepazīsti pārdevēju."
+    "safetyNote": "Drošībai: tiecies uz tikšanos publiskā vietā un nemaksā avansā, ja nepazīsti pārdevēju.",
+    "details": "Detaļas",
+    "location": "Atrašanās vieta",
+    "activeListings": "aktīvi sludinājumi",
+    "callSeller": "Zvanīt",
+    "getDirections": "Rādīt maršrutu"
   },
   "Messages": {
     "inbox": "Ziņas",

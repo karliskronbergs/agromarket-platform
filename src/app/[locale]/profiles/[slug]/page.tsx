@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
-import { IconPin, IconPhone, IconMail, IconGlobe, IconCheck } from "@/components/icons";
+import { IconPin, IconPhone, IconMail, IconCheck } from "@/components/icons";
 import { MiniMap } from "@/components/mini-map";
 
 export const dynamic = "force-dynamic";
@@ -36,13 +36,14 @@ export default async function PublicProfilePage({
 }) {
   const { locale, slug } = await params;
   const t = await getTranslations("Listing");
+  const tProfile = await getTranslations("Profile");
   const tReport = await getTranslations("Report");
   const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, lat, lng",
+      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, lat, lng, created_at",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -60,121 +61,195 @@ export default async function PublicProfilePage({
       .eq("profile_id", profile.id),
     supabase
       .from("listings")
-      .select("id, title, listing_type, price")
+      .select("id, title, listing_type, price, listing_images(url)")
       .eq("profile_id", profile.id)
       .eq("status", "active")
       .order("created_at", { ascending: false }),
   ]);
 
+  const memberSince = new Date(profile.created_at).getFullYear();
+
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6">
-      <div>
-        <div className="h-40 w-full overflow-hidden rounded-xl bg-[#e7efe1] sm:h-56">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
+      <div className="relative">
+        <div
+          className="h-36 w-full overflow-hidden rounded-2xl sm:h-44"
+          style={{ background: "linear-gradient(120deg,#3f6b3f,#5c8a2e,#7a9c4a)" }}
+        >
           {profile.cover_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={profile.cover_url} alt="" className="h-full w-full object-cover" />
           )}
         </div>
-        <div className="flex items-end gap-4 px-4 -mt-10">
-          <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-4 border-[#faf8f3] bg-[#3f6b3f]">
-            {profile.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
-                {profile.business_name.slice(0, 1).toUpperCase()}
+
+        <div className="flex flex-col gap-4 px-2 pt-0 sm:flex-row sm:items-end sm:justify-between sm:px-4">
+          <div className="-mt-10 flex items-end gap-4 sm:-mt-12">
+            <div
+              className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-4 border-[#faf8f3] sm:h-24 sm:w-24 ${
+                profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
+              }`}
+            >
+              {profile.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
+                  {profile.business_name.slice(0, 1).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="pb-1">
+              <div className="flex items-center gap-2">
+                <h1 className="font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
+                  {profile.business_name}
+                </h1>
+                {profile.verified && (
+                  <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />
+                )}
               </div>
-            )}
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {(profileCategories ?? []).map((pc, i) => {
+                  const cat = pc.categories as unknown as { name_lv: string; name_en: string } | null;
+                  if (!cat) return null;
+                  return (
+                    <span
+                      key={i}
+                      className="rounded-full bg-[#e7efe1] px-2.5 py-0.5 text-xs font-semibold text-[#3f6b3f]"
+                    >
+                      {locale === "lv" ? cat.name_lv : cat.name_en}
+                    </span>
+                  );
+                })}
+              </div>
+              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-[#7a7566]">
+                {profile.address && (
+                  <span className="flex items-center gap-1">
+                    <IconPin className="h-3 w-3 flex-shrink-0" />
+                    {profile.address}
+                  </span>
+                )}
+                <span>
+                  {tProfile("memberSince")} {memberSince}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 pb-2">
-            <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">
-              {profile.business_name}
-            </h1>
-            {profile.verified && <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />}
+
+          <div className="flex flex-shrink-0 gap-2">
+            {profile.phone && (
+              <a
+                href={`tel:${profile.phone}`}
+                className="flex items-center gap-2 rounded-lg border-[1.5px] border-[#3f6b3f] bg-white px-4 py-2 text-sm font-semibold text-[#3f6b3f]"
+              >
+                <IconPhone className="h-4 w-4" />
+                {tProfile("call")}
+              </a>
+            )}
+            <MessageSellerButton
+              locale={locale}
+              viewerUserId={viewer?.id ?? null}
+              sellerUserId={profile.user_id}
+            />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-        <div className="flex flex-col gap-5 sm:col-span-2">
-          <div className="flex flex-wrap gap-2">
-            {(profileCategories ?? []).map((pc, i) => {
-              const cat = pc.categories as unknown as { name_lv: string; name_en: string } | null;
-              if (!cat) return null;
-              return (
-                <span
-                  key={i}
-                  className="rounded-full bg-[#e7efe1] px-3 py-1 text-xs font-semibold text-[#3f6b3f]"
-                >
-                  {locale === "lv" ? cat.name_lv : cat.name_en}
-                </span>
-              );
-            })}
-          </div>
+      <div className="mt-5 h-px bg-[#e7e2d8]" />
 
+      <div className="mt-6 flex flex-col gap-6 sm:flex-row">
+        <div className="min-w-0 flex-1">
           {profile.description && (
-            <p className="rounded-xl bg-white p-4 text-[#55503f]">{profile.description}</p>
+            <>
+              <h2 className="mb-2 font-sans text-base font-semibold text-[#2b2a24]">
+                {tProfile("about")}
+              </h2>
+              <p className="mb-7 max-w-xl text-sm leading-relaxed text-[#55503f]">
+                {profile.description}
+              </p>
+            </>
           )}
 
           {listings && listings.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <h2 className="font-sans text-lg font-semibold text-[#2b2a24]">{t("myListings")}</h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {listings.map((l) => (
-                  <Link
-                    key={l.id}
-                    href={`/listings/${l.id}`}
-                    className="flex flex-col gap-1 rounded-xl border border-[#e7e2d8] bg-white p-4 hover:border-[#3f6b3f]"
-                  >
-                    <span className="font-medium text-[#2b2a24]">{l.title}</span>
-                    <span className="text-xs text-[#7a7566]">
-                      {l.listing_type === "sell" ? t("sell") : t("buy")}
-                      {l.price ? ` · €${l.price}` : ""}
-                    </span>
-                  </Link>
-                ))}
+            <div>
+              <h2 className="mb-3 font-sans text-base font-semibold text-[#2b2a24]">
+                {t("myListings")}
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {listings.map((l) => {
+                  const thumb = Array.isArray(l.listing_images)
+                    ? l.listing_images[0]?.url
+                    : undefined;
+                  return (
+                    <Link
+                      key={l.id}
+                      href={`/listings/${l.id}`}
+                      className="overflow-hidden rounded-xl border border-[#e7e2d8] bg-white hover:border-[#3f6b3f]"
+                    >
+                      <div className="flex h-28 items-center justify-center bg-gradient-to-br from-[#3f6b3f] to-[#7a9c4a]">
+                        {thumb && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={thumb} alt="" className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <div className="mb-1 line-clamp-2 text-sm font-semibold text-[#2b2a24]">
+                          {l.title}
+                        </div>
+                        {l.price != null && (
+                          <div className="mb-1 text-sm font-bold text-[#d9713a]">€{l.price}</div>
+                        )}
+                        <div className="text-xs text-[#7a7566]">
+                          {l.listing_type === "sell" ? t("sell") : t("buy")}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-3 rounded-xl border border-[#e7e2d8] bg-white p-4">
-          <div className="flex flex-col gap-2 text-sm text-[#55503f]">
-            {profile.address && (
-              <div className="flex items-center gap-2">
-                <IconPin className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                {profile.address}
-              </div>
-            )}
-            {profile.phone && (
-              <div className="flex items-center gap-2">
-                <IconPhone className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                {profile.phone}
-              </div>
-            )}
-            {profile.contact_email && (
-              <div className="flex items-center gap-2">
-                <IconMail className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                {profile.contact_email}
-              </div>
-            )}
-            {profile.website && (
-              <div className="flex items-center gap-2">
-                <IconGlobe className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                {profile.website}
-              </div>
-            )}
+        <div className="flex w-full flex-col gap-4 sm:w-80 sm:flex-shrink-0">
+          <div className="rounded-xl border border-[#e7e2d8] bg-white p-4">
+            <div className="mb-3 font-sans text-sm font-semibold text-[#2b2a24]">
+              {tProfile("businessInfo")}
+            </div>
+            <div className="flex flex-col gap-2.5 text-sm text-[#55503f]">
+              {profile.address && (
+                <div className="flex items-start gap-2.5">
+                  <IconPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                  {profile.address}
+                </div>
+              )}
+              {profile.phone && (
+                <div className="flex items-center gap-2.5">
+                  <IconPhone className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                  {profile.phone}
+                </div>
+              )}
+              {profile.contact_email && (
+                <div className="flex items-center gap-2.5">
+                  <IconMail className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                  {profile.contact_email}
+                </div>
+              )}
+            </div>
           </div>
 
           {profile.lat != null && profile.lng != null && (
-            <MiniMap lat={profile.lat} lng={profile.lng} />
+            <div className="overflow-hidden rounded-xl border border-[#e7e2d8] bg-white">
+              <MiniMap lat={profile.lat} lng={profile.lng} />
+              <a
+                href={`https://www.google.com/maps?q=${profile.lat},${profile.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3.5 py-2.5 text-sm font-semibold text-[#3f6b3f]"
+              >
+                {tProfile("viewOnMap")} &rarr;
+              </a>
+            </div>
           )}
-
-          <MessageSellerButton
-            locale={locale}
-            viewerUserId={viewer?.id ?? null}
-            sellerUserId={profile.user_id}
-          />
 
           {viewer && (
             <Link
