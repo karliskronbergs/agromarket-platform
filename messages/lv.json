@@ -82,5 +82,14 @@
     "delete": "Dzēst",
     "deleteConfirm": "Vai tiešām dzēst šo sludinājumu?",
     "seller": "Pārdevējs"
+  },
+  "Messages": {
+    "inbox": "Ziņas",
+    "noConversations": "Tev vēl nav sarakstu.",
+    "unknownUser": "Lietotājs",
+    "messageSeller": "Rakstīt ziņu",
+    "loginToMessage": "Ieej, lai rakstītu ziņu",
+    "placeholder": "Raksti ziņu...",
+    "send": "Sūtīt"
   }
 }

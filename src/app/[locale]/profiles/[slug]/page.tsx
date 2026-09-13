@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { MessageSellerButton } from "@/components/message-seller-button";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,16 @@ export default async function PublicProfilePage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url",
+      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url",
     )
     .eq("slug", slug)
     .maybeSingle();
 
   if (!profile) notFound();
+
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
 
   const [{ data: profileCategories }, { data: listings }] = await Promise.all([
     supabase
@@ -84,6 +89,12 @@ export default async function PublicProfilePage({
         {profile.contact_email && <div>{profile.contact_email}</div>}
         {profile.website && <div>{profile.website}</div>}
       </div>
+
+      <MessageSellerButton
+        locale={locale}
+        viewerUserId={viewer?.id ?? null}
+        sellerUserId={profile.user_id}
+      />
 
       {listings && listings.length > 0 && (
         <div className="flex flex-col gap-3">

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { MessageSellerButton } from "@/components/message-seller-button";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +18,17 @@ export default async function ListingDetailPage({
   const { data: listing } = await supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, status, profiles(business_name, slug), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, status, profiles(user_id, business_name, slug), categories(name_lv, name_en)",
     )
     .eq("id", id)
     .eq("status", "active")
     .maybeSingle();
 
   if (!listing) notFound();
+
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
 
   const { data: images } = await supabase
     .from("listing_images")
@@ -76,14 +81,22 @@ export default async function ListingDetailPage({
       {listing.description && <p className="text-[#55503f]">{listing.description}</p>}
 
       {profile && (
-        <div className="rounded-xl border border-[#e7e2d8] bg-white p-4">
-          <div className="mb-1 text-xs text-[#7a7566]">{t("seller")}</div>
-          <Link
-            href={`/profiles/${profile.slug}`}
-            className="font-semibold text-[#3f6b3f]"
-          >
-            {profile.business_name}
-          </Link>
+        <div className="flex flex-col gap-3 rounded-xl border border-[#e7e2d8] bg-white p-4">
+          <div>
+            <div className="mb-1 text-xs text-[#7a7566]">{t("seller")}</div>
+            <Link
+              href={`/profiles/${profile.slug}`}
+              className="font-semibold text-[#3f6b3f]"
+            >
+              {profile.business_name}
+            </Link>
+          </div>
+          <MessageSellerButton
+            locale={locale}
+            viewerUserId={viewer?.id ?? null}
+            sellerUserId={profile.user_id}
+            listingId={listing.id}
+          />
         </div>
       )}
     </div>

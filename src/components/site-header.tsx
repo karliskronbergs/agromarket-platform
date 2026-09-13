@@ -24,6 +24,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
         {user ? (
           <>
             <Link href="/dashboard">{t("dashboard")}</Link>
+            <Link href="/dashboard/messages">{t("messages")}</Link>
             <form action={boundSignOut}>
               <button type="submit" className="cursor-pointer">
                 {t("signOut")}

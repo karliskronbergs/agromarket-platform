@@ -82,5 +82,14 @@
     "delete": "Delete",
     "deleteConfirm": "Delete this listing?",
     "seller": "Seller"
+  },
+  "Messages": {
+    "inbox": "Messages",
+    "noConversations": "You don't have any conversations yet.",
+    "unknownUser": "User",
+    "messageSeller": "Message seller",
+    "loginToMessage": "Sign in to message",
+    "placeholder": "Write a message...",
+    "send": "Send"
   }
 }
