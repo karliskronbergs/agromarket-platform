@@ -229,9 +229,6 @@ export default async function ListingDetailPage({
             </div>
           )}
 
-          <p className="rounded-xl bg-[#fbe9dd] p-3.5 text-xs leading-relaxed text-[#8a4a26]">
-            {t("safetyNote")}
-          </p>
 
           {listing.lat != null && listing.lng != null && (
             <div className="overflow-hidden rounded-xl border border-[#e7e2d8] bg-white">
