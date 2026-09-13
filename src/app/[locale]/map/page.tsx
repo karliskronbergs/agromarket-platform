@@ -62,7 +62,7 @@ export default async function MapPage({
       lat: p.lat as number,
       lng: p.lng as number,
       href: `/${locale}/profiles/${p.slug}`,
-      avatarUrl: p.avatar_url ?? undefined,
+      imageUrl: p.avatar_url ?? undefined,
       verified: p.verified ?? false,
       badge: badgeByProfile.get(p.id),
     }));
@@ -70,7 +70,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, lat, lng, profiles(lat, lng), categories(name_lv, name_en)",
+        "id, title, price, lat, lng, profiles(lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -84,6 +84,8 @@ export default async function MapPage({
       .map((l) => {
         const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
         const cat = Array.isArray(l.categories) ? l.categories[0] : l.categories;
+        const images = (l.listing_images ?? []) as { url: string; sort_order: number }[];
+        const firstImage = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
         const lat = (l.lat as number | null) ?? profile?.lat ?? null;
         const lng = (l.lng as number | null) ?? profile?.lng ?? null;
         return {
@@ -94,6 +96,7 @@ export default async function MapPage({
           lng,
           href: `/${locale}/listings/${l.id}`,
           badge: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : undefined,
+          imageUrl: firstImage?.url,
         };
       })
       .filter((p) => p.lat != null && p.lng != null) as MapPoint[];

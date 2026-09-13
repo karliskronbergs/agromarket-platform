@@ -15,7 +15,7 @@ export type MapPoint = {
   lat: number;
   lng: number;
   href: string;
-  avatarUrl?: string;
+  imageUrl?: string;
   badge?: string;
   verified?: boolean;
 };
@@ -184,17 +184,29 @@ export function MapView({
               onClick={() => focus(p)}
               className="mb-3 flex w-full items-start gap-3 rounded-xl border border-[#e7e2d8] bg-white p-3 text-left text-sm shadow-sm transition hover:border-[#3f6b3f]"
             >
-              {mode === "profiles" && (
+              {mode === "profiles" ? (
                 <div
-                  className={`h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ${p.avatarUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
+                  className={`h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
                 >
-                  {p.avatarUrl ? (
+                  {p.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.avatarUrl} alt="" className="h-full w-full object-cover" />
+                    <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                       {p.title.slice(0, 1).toUpperCase()}
                     </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg"
+                  style={{
+                    background: p.imageUrl ? undefined : `linear-gradient(135deg, ${MODE_COLORS[mode]}, #7b8496)`,
+                  }}
+                >
+                  {p.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
                   )}
                 </div>
               )}
