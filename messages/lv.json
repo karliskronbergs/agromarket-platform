@@ -1,0 +1,17 @@
+{
+  "Nav": {
+    "map": "Karte",
+    "messages": "Ziņas",
+    "signIn": "Ieiet",
+    "createProfile": "Izveidot profilu"
+  },
+  "Home": {
+    "title": "Atrodi lauksaimniecības uzņēmumus tev tuvumā",
+    "subtitle": "Profili, sludinājumi un tiešā saziņa vienuviet — Latvijas lauksaimniecības kopienai.",
+    "cta": "Skatīt karti"
+  },
+  "Language": {
+    "lv": "Latviešu",
+    "en": "English"
+  }
+}

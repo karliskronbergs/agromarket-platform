@@ -1,0 +1,17 @@
+{
+  "Nav": {
+    "map": "Map",
+    "messages": "Messages",
+    "signIn": "Sign in",
+    "createProfile": "Create profile"
+  },
+  "Home": {
+    "title": "Find farming businesses near you",
+    "subtitle": "Profiles, listings, and direct messaging in one place — for Latvia's farming community.",
+    "cta": "View the map"
+  },
+  "Language": {
+    "lv": "Latviešu",
+    "en": "English"
+  }
+}
