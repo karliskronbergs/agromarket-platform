@@ -96,7 +96,7 @@ export function MapView({
         const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
         const verifiedBadgeHtml =
           mode === "profiles" && point.verified
-            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#3f6b3f;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
+            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#2563eb;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
             : "";
         const imageHtml = point.imageUrl
           ? `<div style="position:relative;flex-shrink:0;">
@@ -223,7 +223,7 @@ export function MapView({
                     )}
                   </div>
                   {p.verified && (
-                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6b3f] ring-2 ring-white" />
+                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
                   )}
                 </div>
               ) : (
@@ -242,7 +242,6 @@ export function MapView({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <span className="truncate font-semibold text-[#2b2a24]">{p.title}</span>
-                  {p.verified && <IconCheck className="h-3.5 w-3.5 flex-shrink-0 text-[#3f6b3f]" />}
                 </div>
                 {p.badge && (
                   <span className="mt-1 inline-block rounded-full bg-[#e7efe1] px-2 py-0.5 text-xs font-semibold text-[#3f6b3f]">

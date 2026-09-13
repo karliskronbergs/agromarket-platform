@@ -185,7 +185,7 @@ export default async function ListingDetailPage({
                     )}
                   </div>
                   {profile.verified && (
-                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6b3f] ring-2 ring-white" />
+                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
                   )}
                 </div>
                 <div className="min-w-0">
@@ -193,9 +193,6 @@ export default async function ListingDetailPage({
                     <span className="truncate font-semibold text-[#2b2a24]">
                       {profile.business_name}
                     </span>
-                    {profile.verified && (
-                      <IconCheck className="h-3.5 w-3.5 flex-shrink-0 text-[#3f6b3f]" />
-                    )}
                   </div>
                   {categoryLabel && (
                     <div className="text-xs text-[#7a7566]">{categoryLabel}</div>

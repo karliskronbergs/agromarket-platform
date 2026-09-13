@@ -35,9 +35,8 @@ export default async function DashboardPage({
 
       {profile ? (
         <div className="flex flex-col gap-4 rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
-          <div className="flex items-center gap-2 font-sans text-lg font-semibold text-[#2b2a24]">
+          <div className="font-sans text-lg font-semibold text-[#2b2a24]">
             {profile.business_name}
-            {profile.verified && <IconCheck className="h-5 w-5 flex-shrink-0 text-[#3f6b3f]" />}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -63,7 +62,7 @@ export default async function DashboardPage({
 
           <div className="border-t border-[#e7e2d8] pt-4">
             {profile.verified ? (
-              <div className="flex w-fit items-center gap-1.5 rounded-full bg-[#e7efe1] px-3 py-1.5 text-sm font-semibold text-[#3f6b3f]">
+              <div className="flex w-fit items-center gap-1.5 rounded-full bg-[#dbeafe] px-3 py-1.5 text-sm font-semibold text-[#2563eb]">
                 <IconCheck className="h-4 w-4 flex-shrink-0" />
                 {tProfile("verifiedBadge")}
               </div>

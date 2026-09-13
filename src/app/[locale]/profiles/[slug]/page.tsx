@@ -100,7 +100,7 @@ export default async function PublicProfilePage({
                 )}
               </div>
               {profile.verified && (
-                <IconCheck className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-[#3f6b3f] ring-2 ring-[#faf8f3]" />
+                <IconCheck className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-[#2563eb] ring-2 ring-[#faf8f3]" />
               )}
             </div>
             <div className="pb-1">
@@ -121,7 +121,7 @@ export default async function PublicProfilePage({
                   );
                 })}
                 {profile.verified && (
-                  <span className="flex items-center gap-1 rounded-full bg-[#e7efe1] px-2.5 py-0.5 text-xs font-semibold text-[#3f6b3f]">
+                  <span className="flex items-center gap-1 rounded-full bg-[#dbeafe] px-2.5 py-0.5 text-xs font-semibold text-[#2563eb]">
                     <IconCheck className="h-3.5 w-3.5 flex-shrink-0" />
                     {tProfile("verifiedBadge")}
                   </span>
