@@ -60,5 +60,27 @@
     "allCategories": "All categories",
     "empty": "Nothing found.",
     "view": "View"
+  },
+  "Listing": {
+    "myListings": "Listings",
+    "addListing": "Add listing",
+    "createTitle": "Create a listing",
+    "editTitle": "Edit listing",
+    "noListings": "You don't have any listings yet.",
+    "type": "Type",
+    "sell": "Sell",
+    "buy": "Buy",
+    "title": "Title",
+    "description": "Description",
+    "category": "Category",
+    "price": "Price (€)",
+    "images": "Add images",
+    "existingImages": "Existing images",
+    "remove": "Remove",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this listing?",
+    "seller": "Seller"
   }
 }

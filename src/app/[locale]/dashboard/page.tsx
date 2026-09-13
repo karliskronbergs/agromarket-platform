@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const tProfile = await getTranslations("Profile");
+  const tListing = await getTranslations("Listing");
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,6 +28,9 @@ export default async function DashboardPage() {
           <div className="flex gap-4 text-sm">
             <Link href="/dashboard/profile" className="font-medium text-[#3f6b3f]">
               {tProfile("editTitle")}
+            </Link>
+            <Link href="/dashboard/listings" className="font-medium text-[#3f6b3f]">
+              {tListing("myListings")}
             </Link>
             <Link
               href={`/profiles/${profile.slug}`}

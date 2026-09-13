@@ -60,5 +60,27 @@
     "allCategories": "Visas kategorijas",
     "empty": "Nekas nav atrasts.",
     "view": "Skatīt"
+  },
+  "Listing": {
+    "myListings": "Sludinājumi",
+    "addListing": "Pievienot sludinājumu",
+    "createTitle": "Izveido sludinājumu",
+    "editTitle": "Rediģē sludinājumu",
+    "noListings": "Tev vēl nav sludinājumu.",
+    "type": "Veids",
+    "sell": "Pārdod",
+    "buy": "Pērk",
+    "title": "Nosaukums",
+    "description": "Apraksts",
+    "category": "Kategorija",
+    "price": "Cena (€)",
+    "images": "Pievienot attēlus",
+    "existingImages": "Esošie attēli",
+    "remove": "Dzēst",
+    "save": "Saglabāt",
+    "edit": "Rediģēt",
+    "delete": "Dzēst",
+    "deleteConfirm": "Vai tiešām dzēst šo sludinājumu?",
+    "seller": "Pārdevējs"
   }
 }
