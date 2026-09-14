@@ -44,6 +44,16 @@ export default async function MessagesPage() {
     }
   }
 
+  const { data: unreadRows } = conversationIds.length
+    ? await supabase
+        .from("messages")
+        .select("conversation_id")
+        .in("conversation_id", conversationIds)
+        .neq("sender_id", user!.id)
+        .is("read_at", null)
+    : { data: [] };
+  const unreadConversationIds = new Set((unreadRows ?? []).map((r) => r.conversation_id));
+
   const profileByUserId = new Map((profiles ?? []).map((p) => [p.user_id, p]));
 
   return (
@@ -59,23 +69,35 @@ export default async function MessagesPage() {
           const otherId = c.participant_one === user!.id ? c.participant_two : c.participant_one;
           const other = profileByUserId.get(otherId);
           const last = lastMessageByConversation.get(c.id);
+          const isUnread = unreadConversationIds.has(c.id);
           return (
             <Link
               key={c.id}
               href={`/dashboard/messages/${c.id}`}
-              className="flex items-center gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm transition hover:border-[#3f6b3f]"
+              className={`flex items-center gap-3 rounded-2xl border bg-white p-4 shadow-sm transition hover:border-[#3f6b3f] ${
+                isUnread ? "border-[#3f6b3f]" : "border-[#e7e2d8]"
+              }`}
             >
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#3f6b3f] text-sm font-semibold text-white">
                 {(other?.business_name ?? "?").slice(0, 1).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-medium text-[#2b2a24]">
+                <div
+                  className={`text-[#2b2a24] ${isUnread ? "font-semibold" : "font-medium"}`}
+                >
                   {other?.business_name ?? t("unknownUser")}
                 </div>
                 {last && (
-                  <div className="truncate text-sm text-[#7a7566]">{last.body}</div>
+                  <div
+                    className={`truncate text-sm ${isUnread ? "font-medium text-[#2b2a24]" : "text-[#7a7566]"}`}
+                  >
+                    {last.body}
+                  </div>
                 )}
               </div>
+              {isUnread && (
+                <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full bg-[#3f6b3f]" />
+              )}
             </Link>
           );
         })}

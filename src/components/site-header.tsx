@@ -15,13 +15,38 @@ export async function SiteHeader({ locale }: { locale: string }) {
 
   const boundSignOut = signOut.bind(null, locale);
 
+  let unreadCount = 0;
+  if (user) {
+    const { data: convos } = await supabase
+      .from("conversations")
+      .select("id")
+      .or(`participant_one.eq.${user.id},participant_two.eq.${user.id}`);
+    const conversationIds = (convos ?? []).map((c) => c.id);
+    if (conversationIds.length > 0) {
+      const { count } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .in("conversation_id", conversationIds)
+        .neq("sender_id", user.id)
+        .is("read_at", null);
+      unreadCount = count ?? 0;
+    }
+  }
+
   const navLinks = (
     <>
       <Link href="/map">{t("map")}</Link>
       {user ? (
         <>
           <Link href="/dashboard">{t("dashboard")}</Link>
-          <Link href="/dashboard/messages">{t("messages")}</Link>
+          <Link href="/dashboard/messages" className="relative inline-block">
+            {t("messages")}
+            {unreadCount > 0 && (
+              <span className="absolute -right-3 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
           <form action={boundSignOut}>
             <button type="submit" className="cursor-pointer">
               {t("signOut")}
