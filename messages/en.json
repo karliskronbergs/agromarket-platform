@@ -108,7 +108,8 @@
     "statusActive": "Active",
     "statusExpired": "Expired",
     "statusRemoved": "Removed",
-    "statusPending": "Awaiting approval"
+    "statusPending": "Awaiting approval",
+    "adminPreviewNote": "Admin preview — this listing is not publicly visible"
   },
   "Messages": {
     "inbox": "Messages",
@@ -153,6 +154,9 @@
     "pendingListings": "New listings",
     "noPendingListings": "No listings awaiting approval.",
     "reject": "Reject",
-    "rejectConfirm": "Really reject this listing?"
+    "viewListing": "View listing",
+    "rejectReasonPlaceholder": "Explain what needs to change...",
+    "sendAndReject": "Send and reject",
+    "cancel": "Cancel"
   }
 }

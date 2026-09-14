@@ -41,21 +41,27 @@ export default async function ListingDetailPage({
   const tReport = await getTranslations("Report");
   const supabase = await createClient();
 
-  const { data: listing } = await supabase
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
+
+  const { data: adminRow } = viewer
+    ? await supabase.from("admins").select("user_id").eq("user_id", viewer.id).maybeSingle()
+    : { data: null };
+  const isAdmin = !!adminRow;
+
+  const listingQuery = supabase
     .from("listings")
     .select(
       "id, listing_type, title, description, price, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, address, phone), categories(name_lv, name_en)",
     )
-    .eq("id", id)
-    .eq("status", "active")
-    .gt("expires_at", new Date().toISOString())
-    .maybeSingle();
+    .eq("id", id);
+
+  const { data: listing } = isAdmin
+    ? await listingQuery.maybeSingle()
+    : await listingQuery.eq("status", "active").gt("expires_at", new Date().toISOString()).maybeSingle();
 
   if (!listing) notFound();
-
-  const {
-    data: { user: viewer },
-  } = await supabase.auth.getUser();
 
   const { data: images } = await supabase
     .from("listing_images")
@@ -79,6 +85,11 @@ export default async function ListingDetailPage({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
+      {isAdmin && listing.status !== "active" && (
+        <div className="mb-4 rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
+          {t("adminPreviewNote")} ({listing.status})
+        </div>
+      )}
       <div className="mb-4 text-xs text-[#7a7566]">
         <Link href={{ pathname: "/map", query: { mode: listing.listing_type } }} className="hover:text-[#3f6b3f]">
           {t("myListings")}
