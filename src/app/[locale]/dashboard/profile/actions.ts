@@ -109,7 +109,8 @@ export async function saveProfile(
       .from("avatars")
       .upload(path, avatarFile, { upsert: true });
     if (!upErr) {
-      avatarUrl = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+      const { publicUrl } = supabase.storage.from("avatars").getPublicUrl(path).data;
+      avatarUrl = `${publicUrl}?v=${Date.now()}`;
     }
   }
 
@@ -120,7 +121,8 @@ export async function saveProfile(
       .from("covers")
       .upload(path, coverFile, { upsert: true });
     if (!upErr) {
-      coverUrl = supabase.storage.from("covers").getPublicUrl(path).data.publicUrl;
+      const { publicUrl } = supabase.storage.from("covers").getPublicUrl(path).data;
+      coverUrl = `${publicUrl}?v=${Date.now()}`;
     }
   }
 
