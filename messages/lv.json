@@ -107,7 +107,8 @@
     "reactivate": "Aktivizēt no jauna",
     "statusActive": "Aktīvs",
     "statusExpired": "Beidzies termiņš",
-    "statusRemoved": "Noņemts"
+    "statusRemoved": "Noņemts",
+    "statusPending": "Gaida apstiprinājumu"
   },
   "Messages": {
     "inbox": "Ziņas",
@@ -148,6 +149,10 @@
     "noLogs": "Žurnāls ir tukšs.",
     "verifications": "Verifikācijas",
     "noVerifications": "Nav gaidošu verifikācijas pieprasījumu.",
-    "approve": "Apstiprināt"
+    "approve": "Apstiprināt",
+    "pendingListings": "Jauni sludinājumi",
+    "noPendingListings": "Nav sludinājumu, kas gaida apstiprinājumu.",
+    "reject": "Noraidīt",
+    "rejectConfirm": "Vai tiešām noraidīt šo sludinājumu?"
   }
 }

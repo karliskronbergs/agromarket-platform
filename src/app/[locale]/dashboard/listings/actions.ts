@@ -78,7 +78,7 @@ export async function saveListing(
         .single()
     : await supabase
         .from("listings")
-        .insert({ ...payload, status: "active", is_paid: false })
+        .insert({ ...payload, status: "pending", is_paid: false })
         .select("id")
         .single();
 
@@ -120,6 +120,13 @@ export async function saveListing(
 
   revalidatePath(`/${locale}/dashboard/listings`);
   revalidatePath(`/${locale}/map`);
+
+  if (!listingId) {
+    // Brand-new listings start out pending admin approval, so the public
+    // page would 404 immediately -- send the seller to their listings
+    // list instead, where the pending status is visible.
+    redirect(`/${locale}/dashboard/listings`);
+  }
   redirect(`/${locale}/listings/${listing.id}`);
 }
 

@@ -34,6 +34,7 @@ export default async function AdminLayout({
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-12">
       <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("title")}</h1>
       <nav className="flex gap-5 border-b border-[#e7e2d8] pb-3 text-sm font-medium text-[#55503f]">
+        <Link href="/admin/listings">{t("pendingListings")}</Link>
         <Link href="/admin/categories">{t("categories")}</Link>
         <Link href="/admin/reports">{t("reports")}</Link>
         <Link href="/admin/verifications">{t("verifications")}</Link>

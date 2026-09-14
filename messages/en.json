@@ -107,7 +107,8 @@
     "reactivate": "Reactivate",
     "statusActive": "Active",
     "statusExpired": "Expired",
-    "statusRemoved": "Removed"
+    "statusRemoved": "Removed",
+    "statusPending": "Awaiting approval"
   },
   "Messages": {
     "inbox": "Messages",
@@ -148,6 +149,10 @@
     "noLogs": "Log is empty.",
     "verifications": "Verifications",
     "noVerifications": "No pending verification requests.",
-    "approve": "Approve"
+    "approve": "Approve",
+    "pendingListings": "New listings",
+    "noPendingListings": "No listings awaiting approval.",
+    "reject": "Reject",
+    "rejectConfirm": "Really reject this listing?"
   }
 }

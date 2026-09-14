@@ -55,7 +55,13 @@ export default async function ListingsPage({
         {(listings ?? []).map((l) => {
           const isExpired = l.status === "active" && new Date(l.expires_at).getTime() < now;
           const statusLabel =
-            l.status === "removed" ? t("statusRemoved") : isExpired ? t("statusExpired") : t("statusActive");
+            l.status === "removed"
+              ? t("statusRemoved")
+              : l.status === "pending"
+                ? t("statusPending")
+                : isExpired
+                  ? t("statusExpired")
+                  : t("statusActive");
 
           return (
             <div
@@ -84,9 +90,11 @@ export default async function ListingsPage({
                     className={`text-xs font-medium ${
                       l.status === "removed"
                         ? "text-red-600"
-                        : isExpired
-                          ? "text-[#d9713a]"
-                          : "text-[#3f6b3f]"
+                        : l.status === "pending"
+                          ? "text-[#7a7566]"
+                          : isExpired
+                            ? "text-[#d9713a]"
+                            : "text-[#3f6b3f]"
                     }`}
                   >
                     · {statusLabel}
