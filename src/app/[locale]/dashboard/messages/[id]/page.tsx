@@ -11,7 +11,7 @@ export default async function ConversationPage({
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { locale, id } = await params;
   const t = await getTranslations("Messages");
   const supabase = await createClient();
   const {
@@ -43,13 +43,6 @@ export default async function ConversationPage({
     .eq("conversation_id", id)
     .order("created_at", { ascending: true });
 
-  await supabase
-    .from("messages")
-    .update({ read_at: new Date().toISOString() })
-    .eq("conversation_id", id)
-    .neq("sender_id", user!.id)
-    .is("read_at", null);
-
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 sm:py-8">
       <div>
@@ -61,6 +54,7 @@ export default async function ConversationPage({
         </h1>
       </div>
       <ThreadView
+        locale={locale}
         conversationId={id}
         currentUserId={user!.id}
         initialMessages={messages ?? []}

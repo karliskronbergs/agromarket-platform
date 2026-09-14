@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export async function startConversation(
@@ -40,4 +41,24 @@ export async function startConversation(
 
   if (!conversationId) redirect(`/${locale}/dashboard/messages`);
   redirect(`/${locale}/dashboard/messages/${conversationId}`);
+}
+
+export async function markConversationRead(locale: string, conversationId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("messages")
+    .update({ read_at: new Date().toISOString() })
+    .eq("conversation_id", conversationId)
+    .neq("sender_id", user.id)
+    .is("read_at", null);
+
+  // The unread badge lives in the root layout's SiteHeader, shared across
+  // every route -- revalidating it here is what actually clears the stale
+  // client-side router cache for it on the next navigation.
+  revalidatePath(`/${locale}`, "layout");
 }

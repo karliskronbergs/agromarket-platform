@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { markConversationRead } from "../actions";
 
 type Message = {
   id: string;
@@ -11,12 +12,14 @@ type Message = {
 };
 
 export function ThreadView({
+  locale,
   conversationId,
   currentUserId,
   initialMessages,
   placeholder,
   send,
 }: {
+  locale: string;
   conversationId: string;
   currentUserId: string;
   initialMessages: Message[];
@@ -45,6 +48,9 @@ export function ThreadView({
           setMessages((prev) =>
             prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage],
           );
+          if (newMessage.sender_id !== currentUserId) {
+            markConversationRead(locale, conversationId);
+          }
         },
       )
       .subscribe();
@@ -58,6 +64,11 @@ export function ThreadView({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    markConversationRead(locale, conversationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
