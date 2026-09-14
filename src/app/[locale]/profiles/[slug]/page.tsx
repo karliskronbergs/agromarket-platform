@@ -38,6 +38,7 @@ export default async function PublicProfilePage({
   const t = await getTranslations("Listing");
   const tProfile = await getTranslations("Profile");
   const tReport = await getTranslations("Report");
+  const tAuth = await getTranslations("Auth");
   const supabase = await createClient();
 
   const { data: profile } = await supabase
@@ -221,23 +222,43 @@ export default async function PublicProfilePage({
             <div className="mb-3 font-sans text-sm font-semibold text-[#2b2a24]">
               {tProfile("businessInfo")}
             </div>
-            <div className="flex flex-col gap-2.5 text-sm text-[#55503f]">
-              {profile.address && (
-                <div className="flex items-start gap-2.5">
-                  <IconPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                  {profile.address}
-                </div>
-              )}
-              {profile.phone && (
-                <div className="flex items-center gap-2.5">
-                  <IconPhone className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                  {profile.phone}
-                </div>
-              )}
-              {profile.contact_email && (
-                <div className="flex items-center gap-2.5">
-                  <IconMail className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
-                  {profile.contact_email}
+            <div className="relative">
+              <div
+                className={`flex flex-col gap-2.5 text-sm text-[#55503f] ${
+                  viewer ? "" : "pointer-events-none select-none blur-sm"
+                }`}
+              >
+                {profile.address && (
+                  <div className="flex items-start gap-2.5">
+                    <IconPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                    {profile.address}
+                  </div>
+                )}
+                {profile.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <IconPhone className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                    {profile.phone}
+                  </div>
+                )}
+                {profile.contact_email && (
+                  <div className="flex items-center gap-2.5">
+                    <IconMail className="h-4 w-4 flex-shrink-0 text-[#7a7566]" />
+                    {profile.contact_email}
+                  </div>
+                )}
+              </div>
+
+              {!viewer && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-white/85 p-3 text-center">
+                  <p className="text-xs font-medium text-[#2b2a24]">
+                    {tProfile("loginToViewContact")}
+                  </p>
+                  <Link
+                    href="/auth/login"
+                    className="rounded-full bg-[#3f6b3f] px-4 py-2 text-xs font-semibold text-white hover:bg-[#2f5233]"
+                  >
+                    {tAuth("signInCta")}
+                  </Link>
                 </div>
               )}
             </div>

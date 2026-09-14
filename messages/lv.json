@@ -61,7 +61,8 @@
     "viewOnMap": "Skatīt kartē",
     "verifiedBadge": "Verificēts profils",
     "verificationPending": "Verifikācijas pieprasījums iesniegts, gaida administratora apstiprinājumu.",
-    "requestVerification": "Pieprasīt verifikāciju"
+    "requestVerification": "Pieprasīt verifikāciju",
+    "loginToViewContact": "Ieej, lai redzētu kontaktinformāciju"
   },
   "Dashboard": {
     "title": "Profils",
