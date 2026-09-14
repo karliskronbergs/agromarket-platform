@@ -65,6 +65,7 @@ export default async function PublicProfilePage({
       .select("id, title, listing_type, price, listing_images(url)")
       .eq("profile_id", profile.id)
       .eq("status", "active")
+      .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false }),
   ]);
 

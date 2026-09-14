@@ -9,7 +9,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const [{ data: profiles }, { data: listings }] = await Promise.all([
     supabase.from("profiles").select("slug").eq("status", "active").limit(500),
-    supabase.from("listings").select("id").eq("status", "active").limit(500),
+    supabase
+      .from("listings")
+      .select("id")
+      .eq("status", "active")
+      .gt("expires_at", new Date().toISOString())
+      .limit(500),
   ]);
 
   const entries: MetadataRoute.Sitemap = [];

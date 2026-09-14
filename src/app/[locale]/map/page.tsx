@@ -74,7 +74,8 @@ export default async function MapPage({
       )
       .eq("status", "active")
       .eq("listing_type", mode)
-      .not("lat", "is", null);
+      .not("lat", "is", null)
+      .gt("expires_at", new Date().toISOString());
 
     if (category) query = query.eq("category_id", category);
 

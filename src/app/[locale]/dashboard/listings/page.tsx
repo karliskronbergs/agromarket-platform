@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteButton } from "./delete-button";
+import { ReactivateButton } from "./reactivate-button";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +29,11 @@ export default async function ListingsPage({
 
   const { data: listings } = await supabase
     .from("listings")
-    .select("id, title, listing_type, price, status")
+    .select("id, title, listing_type, price, status, expires_at")
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
+
+  const now = Date.now();
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
@@ -49,40 +52,57 @@ export default async function ListingsPage({
       )}
 
       <div className="flex flex-col gap-3">
-        {(listings ?? []).map((l) => (
-          <div
-            key={l.id}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm"
-          >
-            <div className="flex flex-col gap-1.5">
-              <div className="font-medium text-[#2b2a24]">{l.title}</div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    l.listing_type === "sell"
-                      ? "bg-[#fbe6da] text-[#d9713a]"
-                      : "bg-[#dde8ef] text-[#2f6690]"
-                  }`}
+        {(listings ?? []).map((l) => {
+          const isExpired = l.status === "active" && new Date(l.expires_at).getTime() < now;
+          const statusLabel =
+            l.status === "removed" ? t("statusRemoved") : isExpired ? t("statusExpired") : t("statusActive");
+
+          return (
+            <div
+              key={l.id}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-[#e7e2d8] bg-white p-4 shadow-sm"
+            >
+              <div className="flex flex-col gap-1.5">
+                <div className="font-medium text-[#2b2a24]">{l.title}</div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      l.listing_type === "sell"
+                        ? "bg-[#fbe6da] text-[#d9713a]"
+                        : "bg-[#dde8ef] text-[#2f6690]"
+                    }`}
+                  >
+                    {l.listing_type === "sell" ? t("sell") : t("buy")}
+                  </span>
+                  {l.price != null && (
+                    <span className="text-xs text-[#7a7566]">€{l.price}</span>
+                  )}
+                  <span
+                    className={`text-xs font-medium ${
+                      l.status === "removed"
+                        ? "text-red-600"
+                        : isExpired
+                          ? "text-[#d9713a]"
+                          : "text-[#3f6b3f]"
+                    }`}
+                  >
+                    · {statusLabel}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-shrink-0 items-center gap-4">
+                {isExpired && <ReactivateButton locale={locale} listingId={l.id} />}
+                <Link
+                  href={`/dashboard/listings/${l.id}`}
+                  className="text-sm font-medium text-[#3f6b3f]"
                 >
-                  {l.listing_type === "sell" ? t("sell") : t("buy")}
-                </span>
-                {l.price != null && (
-                  <span className="text-xs text-[#7a7566]">€{l.price}</span>
-                )}
-                <span className="text-xs text-[#7a7566]">· {l.status}</span>
+                  {t("edit")}
+                </Link>
+                <DeleteButton locale={locale} listingId={l.id} />
               </div>
             </div>
-            <div className="flex flex-shrink-0 items-center gap-4">
-              <Link
-                href={`/dashboard/listings/${l.id}`}
-                className="text-sm font-medium text-[#3f6b3f]"
-              >
-                {t("edit")}
-              </Link>
-              <DeleteButton locale={locale} listingId={l.id} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

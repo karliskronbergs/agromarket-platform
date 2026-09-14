@@ -101,7 +101,11 @@
     "location": "Location",
     "activeListings": "active listings",
     "callSeller": "Call",
-    "getDirections": "Get directions"
+    "getDirections": "Get directions",
+    "reactivate": "Reactivate",
+    "statusActive": "Active",
+    "statusExpired": "Expired",
+    "statusRemoved": "Removed"
   },
   "Messages": {
     "inbox": "Messages",

@@ -48,6 +48,7 @@ export default async function ListingDetailPage({
     )
     .eq("id", id)
     .eq("status", "active")
+    .gt("expires_at", new Date().toISOString())
     .maybeSingle();
 
   if (!listing) notFound();

@@ -101,7 +101,11 @@
     "location": "Atrašanās vieta",
     "activeListings": "aktīvi sludinājumi",
     "callSeller": "Zvanīt",
-    "getDirections": "Rādīt maršrutu"
+    "getDirections": "Rādīt maršrutu",
+    "reactivate": "Aktivizēt no jauna",
+    "statusActive": "Aktīvs",
+    "statusExpired": "Beidzies termiņš",
+    "statusRemoved": "Noņemts"
   },
   "Messages": {
     "inbox": "Ziņas",

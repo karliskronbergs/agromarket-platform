@@ -134,3 +134,21 @@ export async function deleteListing(locale: string, listingId: string) {
   revalidatePath(`/${locale}/dashboard/listings`);
   redirect(`/${locale}/dashboard/listings`);
 }
+
+const LISTING_LIFETIME_DAYS = 21;
+
+export async function reactivateListing(locale: string, listingId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  const expiresAt = new Date(Date.now() + LISTING_LIFETIME_DAYS * 24 * 60 * 60 * 1000);
+  await supabase
+    .from("listings")
+    .update({ expires_at: expiresAt.toISOString() })
+    .eq("id", listingId);
+
+  revalidatePath(`/${locale}/dashboard/listings`);
+}
