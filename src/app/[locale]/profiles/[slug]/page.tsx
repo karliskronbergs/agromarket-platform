@@ -83,8 +83,8 @@ export default async function PublicProfilePage({
         </div>
 
         <div className="flex flex-col gap-4 px-2 pt-0 sm:flex-row sm:items-end sm:justify-between sm:px-4">
-          <div className="-mt-10 flex items-end gap-4 sm:-mt-12">
-            <div className="relative h-20 w-20 flex-shrink-0 sm:h-24 sm:w-24">
+          <div className="flex items-end gap-4">
+            <div className="relative -mt-10 h-20 w-20 flex-shrink-0 sm:-mt-12 sm:h-24 sm:w-24">
               <div
                 className={`h-full w-full overflow-hidden rounded-full border-4 border-[#faf8f3] ${
                   profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
