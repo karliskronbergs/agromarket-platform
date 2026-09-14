@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { saveListing, type ListingState } from "./actions";
+import { ImageUploader } from "./image-uploader";
 
 type Category = { id: string; name_lv: string; name_en: string };
 type ExistingImage = { id: string; url: string };
@@ -124,32 +125,7 @@ export function ListingForm({
       </Section>
 
       <Section title={t("images")}>
-        {existingImages.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            {existingImages.map((img) => (
-              <label key={img.id} className="flex flex-col items-center gap-1 text-xs">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={img.url}
-                  alt=""
-                  className="h-20 w-20 rounded-lg border border-[#e7e2d8] object-cover"
-                />
-                <span className="flex items-center gap-1 text-[#7a7566]">
-                  <input type="checkbox" name="removeImageIds" value={img.id} />
-                  {t("remove")}
-                </span>
-              </label>
-            ))}
-          </div>
-        )}
-
-        <input
-          name="images"
-          type="file"
-          accept="image/*"
-          multiple
-          className="rounded-lg border border-dashed border-[#e7e2d8] bg-[#faf8f3] px-3 py-2.5 text-sm"
-        />
+        <ImageUploader existingImages={existingImages} />
       </Section>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
