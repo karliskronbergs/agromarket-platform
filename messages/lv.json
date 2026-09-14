@@ -89,6 +89,7 @@
     "description": "Apraksts",
     "category": "Kategorija",
     "price": "Cena (€)",
+    "plusVat": "+PVN",
     "images": "Pievienot attēlus",
     "existingImages": "Esošie attēli",
     "remove": "Dzēst",

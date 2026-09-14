@@ -89,6 +89,7 @@
     "description": "Description",
     "category": "Category",
     "price": "Price (€)",
+    "plusVat": "+VAT",
     "images": "Add images",
     "existingImages": "Existing images",
     "remove": "Remove",

@@ -62,7 +62,7 @@ export default async function PublicProfilePage({
       .eq("profile_id", profile.id),
     supabase
       .from("listings")
-      .select("id, title, listing_type, price, listing_images(url)")
+      .select("id, title, listing_type, price, price_plus_vat, listing_images(url)")
       .eq("profile_id", profile.id)
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -204,7 +204,14 @@ export default async function PublicProfilePage({
                           {l.title}
                         </div>
                         {l.price != null && (
-                          <div className="mb-1 text-sm font-bold text-[#d9713a]">€{l.price}</div>
+                          <div className="mb-1 text-sm font-bold text-[#d9713a]">
+                            €{l.price}
+                            {l.price_plus_vat && (
+                              <span className="ml-1 text-xs font-semibold text-[#7a7566]">
+                                {t("plusVat")}
+                              </span>
+                            )}
+                          </div>
                         )}
                         <div className="text-xs text-[#7a7566]">
                           {l.listing_type === "sell" ? t("sell") : t("buy")}

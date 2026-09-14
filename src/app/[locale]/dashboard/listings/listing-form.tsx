@@ -27,6 +27,7 @@ export function ListingForm({
     description: string;
     categoryId: string;
     price: string;
+    plusVat: boolean;
   };
 }) {
   const t = useTranslations("Listing");
@@ -96,14 +97,28 @@ export function ListingForm({
             </select>
           </Field>
           <Field label={t("price")}>
-            <input
-              name="price"
-              type="number"
-              step="0.01"
-              min="0"
-              defaultValue={initial?.price}
-              className={inputClass}
-            />
+            <div className="flex items-center gap-3">
+              <input
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={initial?.price}
+                className={`flex-1 ${inputClass}`}
+              />
+              <label className="flex cursor-pointer items-center gap-2">
+                <span className="relative inline-block h-5 w-9 flex-shrink-0">
+                  <input
+                    type="checkbox"
+                    name="plusVat"
+                    defaultChecked={initial?.plusVat}
+                    className="peer sr-only"
+                  />
+                  <span className="absolute inset-0 rounded-full bg-[#e7e2d8] transition-colors peer-checked:bg-[#3f6b3f] after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-4" />
+                </span>
+                <span className="text-sm font-medium text-[#2b2a24]">{t("plusVat")}</span>
+              </label>
+            </div>
           </Field>
         </div>
       </Section>

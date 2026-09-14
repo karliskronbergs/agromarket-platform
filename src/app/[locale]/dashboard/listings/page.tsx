@@ -29,7 +29,7 @@ export default async function ListingsPage({
 
   const { data: listings } = await supabase
     .from("listings")
-    .select("id, title, listing_type, price, status, expires_at")
+    .select("id, title, listing_type, price, price_plus_vat, status, expires_at")
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
 
@@ -75,7 +75,10 @@ export default async function ListingsPage({
                     {l.listing_type === "sell" ? t("sell") : t("buy")}
                   </span>
                   {l.price != null && (
-                    <span className="text-xs text-[#7a7566]">€{l.price}</span>
+                    <span className="text-xs text-[#7a7566]">
+                      €{l.price}
+                      {l.price_plus_vat ? ` ${t("plusVat")}` : ""}
+                    </span>
                   )}
                   <span
                     className={`text-xs font-medium ${

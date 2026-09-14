@@ -15,6 +15,7 @@ export default async function MapPage({
   const { mode: rawMode, category } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
+  const tListing = await getTranslations("Listing");
   const supabase = await createClient();
 
   const { data: categories } = await supabase
@@ -70,7 +71,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, lat, lng, profiles(lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_plus_vat, lat, lng, profiles(lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -92,7 +93,7 @@ export default async function MapPage({
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: l.price != null ? `€${l.price}` : "",
+          subtitle: l.price != null ? `€${l.price}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}` : "",
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,

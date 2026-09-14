@@ -64,6 +64,7 @@ export async function saveListing(
     description: parsed.data.description ?? null,
     category_id: parsed.data.categoryId,
     price,
+    price_plus_vat: formData.get("plusVat") === "on",
     lat: profile.lat,
     lng: profile.lng,
   };

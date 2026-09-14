@@ -44,7 +44,7 @@ export default async function ListingDetailPage({
   const { data: listing } = await supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id)
     .eq("status", "active")
@@ -113,8 +113,11 @@ export default async function ListingDetailPage({
           </div>
 
           {listing.price != null && (
-            <div className="mt-3 font-sans text-2xl font-bold text-[#d9713a] sm:text-3xl">
+            <div className="mt-3 flex items-baseline gap-1.5 font-sans text-2xl font-bold text-[#d9713a] sm:text-3xl">
               €{listing.price}
+              {listing.price_plus_vat && (
+                <span className="text-sm font-semibold text-[#7a7566]">{t("plusVat")}</span>
+              )}
             </div>
           )}
 
