@@ -114,12 +114,8 @@ export function MapView({
         const badgeHtml = point.badge
           ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
           : "";
-        const isAdminCard = mode === "profiles" && point.adminBadge;
-        const popupCardStyle = isAdminCard
-          ? "background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px;margin:-4px;"
-          : "";
         marker.bindPopup(
-          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;${popupCardStyle}">
+          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;">
             ${imageHtml}
             <div style="min-width:0;">
               <div style="font-weight:600;font-size:13px;color:#2b2a24;">${escapeHtml(point.title)}</div>
