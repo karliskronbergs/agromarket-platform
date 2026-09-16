@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PasswordInput } from "@/components/password-input";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import { signUp, type AuthState } from "../actions";
 
 const inputClass =
@@ -59,6 +60,7 @@ export function SignUpForm({ locale }: { locale: string }) {
           className={inputClass}
         />
       </div>
+      <TurnstileWidget />
       {(mismatchError || state.error) && (
         <p className="text-sm text-red-600">{mismatchError ?? state.error}</p>
       )}

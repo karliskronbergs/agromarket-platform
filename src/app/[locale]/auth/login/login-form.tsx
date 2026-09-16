@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PasswordInput } from "@/components/password-input";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import { login, type AuthState } from "../actions";
 
 const inputClass =
@@ -30,6 +31,7 @@ export function LoginForm({ locale }: { locale: string }) {
         </label>
         <PasswordInput id="password" name="password" className={inputClass} />
       </div>
+      <TurnstileWidget />
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button
         type="submit"

@@ -42,6 +42,7 @@ export async function signUp(
 
   const headersList = await headers();
   const origin = headersList.get("origin") ?? `https://${headersList.get("host")}`;
+  const captchaToken = (formData.get("cf-turnstile-response") as string) || undefined;
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
@@ -49,6 +50,7 @@ export async function signUp(
     password: parsed.data.password,
     options: {
       emailRedirectTo: `${origin}/${locale}/auth/confirmed`,
+      captchaToken,
     },
   });
 
@@ -72,8 +74,13 @@ export async function login(
     return { error: "Please enter a valid email and password." };
   }
 
+  const captchaToken = (formData.get("cf-turnstile-response") as string) || undefined;
+
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { error } = await supabase.auth.signInWithPassword({
+    ...parsed.data,
+    options: { captchaToken },
+  });
 
   if (error) {
     return { error: error.message };
