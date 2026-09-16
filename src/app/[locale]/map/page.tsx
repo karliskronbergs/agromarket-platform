@@ -22,6 +22,7 @@ export default async function MapPage({
   const { data: categories } = await supabase
     .from("categories")
     .select("id, slug, name_lv, name_en, parent_id")
+    .order("sort_order")
     .order("name_lv");
 
   let points: MapPoint[] = [];

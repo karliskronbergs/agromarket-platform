@@ -2,16 +2,20 @@
 
 import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
 import { DeleteCategoryButton } from "./delete-button";
+import { MoveCategoryButtons } from "./move-buttons";
 
 type AdminCategory = CategoryRow & { slug: string };
 
 function Row({ node, locale }: { node: CategoryNode<AdminCategory>; locale: string }) {
   return (
     <div className="flex items-center justify-between rounded-lg border border-[#e7e2d8] bg-white p-3 text-sm">
-      <div>
-        <span className="font-medium text-[#2b2a24]">{node.name_lv}</span>
-        {" / "}
-        {node.name_en} <span className="text-[#7a7566]">({node.slug})</span>
+      <div className="flex items-center gap-2">
+        <MoveCategoryButtons locale={locale} categoryId={node.id} />
+        <div>
+          <span className="font-medium text-[#2b2a24]">{node.name_lv}</span>
+          {" / "}
+          {node.name_en} <span className="text-[#7a7566]">({node.slug})</span>
+        </div>
       </div>
       <span onClick={(e) => e.stopPropagation()}>
         <DeleteCategoryButton locale={locale} categoryId={node.id} />

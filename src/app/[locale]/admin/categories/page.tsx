@@ -14,6 +14,7 @@ export default async function AdminCategoriesPage({
   const { data: categories } = await supabase
     .from("categories")
     .select("id, slug, name_lv, name_en, icon, parent_id")
+    .order("sort_order")
     .order("name_lv");
 
   return (

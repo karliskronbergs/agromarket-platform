@@ -34,7 +34,11 @@ export default async function EditListingPage({
   if (!listing || listing.profile_id !== profile.id) notFound();
 
   const [{ data: categories }, { data: images }] = await Promise.all([
-    supabase.from("categories").select("id, name_lv, name_en, parent_id").order("name_lv"),
+    supabase
+      .from("categories")
+      .select("id, name_lv, name_en, parent_id")
+      .order("sort_order")
+      .order("name_lv"),
     supabase
       .from("listing_images")
       .select("id, url")

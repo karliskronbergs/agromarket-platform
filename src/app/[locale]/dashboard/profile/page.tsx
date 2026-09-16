@@ -15,7 +15,11 @@ export default async function ProfilePage({
   } = await supabase.auth.getUser();
 
   const [{ data: categories }, { data: profile }] = await Promise.all([
-    supabase.from("categories").select("id, name_lv, name_en, parent_id").order("name_lv"),
+    supabase
+      .from("categories")
+      .select("id, name_lv, name_en, parent_id")
+      .order("sort_order")
+      .order("name_lv"),
     supabase
       .from("profiles")
       .select(

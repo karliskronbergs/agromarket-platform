@@ -83,3 +83,35 @@ export async function deleteCategory(locale: string, categoryId: string) {
 
   revalidatePath(`/${locale}/admin/categories`);
 }
+
+export async function moveCategory(locale: string, categoryId: string, direction: "up" | "down") {
+  const supabase = await createClient();
+
+  const { data: current } = await supabase
+    .from("categories")
+    .select("id, parent_id, sort_order, name_lv")
+    .eq("id", categoryId)
+    .maybeSingle();
+  if (!current) return;
+
+  let siblingsQuery = supabase
+    .from("categories")
+    .select("id, sort_order")
+    .order("sort_order")
+    .order("name_lv");
+  siblingsQuery = current.parent_id
+    ? siblingsQuery.eq("parent_id", current.parent_id)
+    : siblingsQuery.is("parent_id", null);
+  const { data: siblings } = await siblingsQuery;
+  if (!siblings) return;
+
+  const index = siblings.findIndex((s) => s.id === categoryId);
+  const neighborIndex = direction === "up" ? index - 1 : index + 1;
+  const neighbor = siblings[neighborIndex];
+  if (!neighbor) return;
+
+  await supabase.from("categories").update({ sort_order: neighbor.sort_order }).eq("id", current.id);
+  await supabase.from("categories").update({ sort_order: current.sort_order }).eq("id", neighbor.id);
+
+  revalidatePath(`/${locale}/admin/categories`);
+}

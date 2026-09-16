@@ -14,6 +14,7 @@ export default async function Home({
     .from("categories")
     .select("id, slug, name_lv, name_en")
     .is("parent_id", null)
+    .order("sort_order")
     .order("name_lv")
     .limit(8);
 
