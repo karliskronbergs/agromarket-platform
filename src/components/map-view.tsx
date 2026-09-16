@@ -6,7 +6,8 @@ import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "@/i18n/navigation";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
-import { buildCategoryTree, flattenCategoryTree, type CategoryRow } from "@/lib/categories";
+import { CategoryFilterMenu } from "@/components/category-filter-menu";
+import type { CategoryRow } from "@/lib/categories";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -66,7 +67,6 @@ export function MapView({
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Record<string, Marker>>({});
   const router = useRouter();
-  const categoryRows = flattenCategoryTree(buildCategoryTree(categories));
 
   useEffect(() => {
     let cancelled = false;
@@ -179,23 +179,17 @@ export function MapView({
             </Link>
           ))}
         </div>
-        <select
-          value={selectedCategory ?? ""}
-          onChange={(e) => {
+        <CategoryFilterMenu
+          categories={categories}
+          selectedCategory={selectedCategory}
+          locale={locale}
+          allLabel={labels.all}
+          onSelect={(id) => {
             const query: Record<string, string> = { mode };
-            if (e.target.value) query.category = e.target.value;
+            if (id) query.category = id;
             router.push({ pathname: "/map", query });
           }}
-          className="rounded-full border border-[#e7e2d8] bg-white px-3 py-1.5 text-xs font-medium text-[#55503f]"
-        >
-          <option value="">{labels.all}</option>
-          {categoryRows.map(({ node: c, depth }) => (
-            <option key={c.id} value={c.id}>
-              {"  ".repeat(depth)}
-              {locale === "lv" ? c.name_lv : c.name_en}
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
