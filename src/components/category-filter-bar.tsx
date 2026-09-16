@@ -106,11 +106,11 @@ export function CategoryFilterBar({
   const tree = buildCategoryTree(categories);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="-mx-6 flex snap-x snap-mandatory gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
       <button
         type="button"
         onClick={() => onSelect(null)}
-        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
+        className={`flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium transition ${
           !selectedCategory
             ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
             : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
@@ -119,14 +119,15 @@ export function CategoryFilterBar({
         {allLabel}
       </button>
       {tree.map((root) => (
-        <RootFilter
-          key={root.id}
-          root={root}
-          selectedCategory={selectedCategory}
-          locale={locale}
-          allLabel={allLabel}
-          onSelect={onSelect}
-        />
+        <div key={root.id} className="flex flex-shrink-0 snap-start">
+          <RootFilter
+            root={root}
+            selectedCategory={selectedCategory}
+            locale={locale}
+            allLabel={allLabel}
+            onSelect={onSelect}
+          />
+        </div>
       ))}
     </div>
   );
