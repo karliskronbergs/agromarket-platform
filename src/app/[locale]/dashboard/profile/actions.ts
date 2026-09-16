@@ -79,7 +79,6 @@ export async function saveProfile(
     const base = slugify(parsed.data.businessName);
     slug = base;
     let n = 1;
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { data: clash } = await supabase
         .from("profiles")

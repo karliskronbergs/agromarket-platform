@@ -144,6 +144,8 @@
     "slug": "Slug",
     "nameLv": "Nosaukums (LV)",
     "nameEn": "Nosaukums (EN)",
+    "parentCategory": "Vecākkategorija",
+    "noParent": "Nav (galvenā kategorija)",
     "icon": "Ikona",
     "delete": "Dzēst",
     "deleteConfirm": "Vai tiešām dzēst šo kategoriju?",

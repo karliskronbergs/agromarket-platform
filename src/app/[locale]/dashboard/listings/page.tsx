@@ -7,6 +7,10 @@ import { ReactivateButton } from "./reactivate-button";
 
 export const dynamic = "force-dynamic";
 
+function isPast(dateString: string) {
+  return new Date(dateString).getTime() < Date.now();
+}
+
 export default async function ListingsPage({
   params,
 }: {
@@ -33,8 +37,6 @@ export default async function ListingsPage({
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
 
-  const now = Date.now();
-
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <div className="flex items-center justify-between">
@@ -53,7 +55,7 @@ export default async function ListingsPage({
 
       <div className="flex flex-col gap-3">
         {(listings ?? []).map((l) => {
-          const isExpired = l.status === "active" && new Date(l.expires_at).getTime() < now;
+          const isExpired = l.status === "active" && isPast(l.expires_at);
           const statusLabel =
             l.status === "removed"
               ? t("statusRemoved")

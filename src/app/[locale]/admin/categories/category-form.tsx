@@ -2,14 +2,22 @@
 
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
+import { buildCategoryTree, flattenCategoryTree, type CategoryRow } from "@/lib/categories";
 import { addCategory, type CategoryState } from "./actions";
 
-export function CategoryForm({ locale }: { locale: string }) {
+export function CategoryForm({
+  locale,
+  categories,
+}: {
+  locale: string;
+  categories: CategoryRow[];
+}) {
   const t = useTranslations("Admin");
   const boundAdd = addCategory.bind(null, locale);
   const [state, formAction, isPending] = useActionState<CategoryState, FormData>(boundAdd, {
     error: null,
   });
+  const rows = flattenCategoryTree(buildCategoryTree(categories));
 
   return (
     <form action={formAction} className="flex flex-wrap items-end gap-3 rounded-xl border border-[#e7e2d8] bg-white p-4">
@@ -21,6 +29,17 @@ export function CategoryForm({ locale }: { locale: string }) {
       </Field>
       <Field label={t("nameEn")}>
         <input name="nameEn" required className="w-40 rounded-lg border border-[#e7e2d8] px-2 py-1.5 text-sm" />
+      </Field>
+      <Field label={t("parentCategory")}>
+        <select name="parentId" defaultValue="" className="w-48 rounded-lg border border-[#e7e2d8] px-2 py-1.5 text-sm">
+          <option value="">{t("noParent")}</option>
+          {rows.map(({ node, depth }) => (
+            <option key={node.id} value={node.id}>
+              {"  ".repeat(depth)}
+              {locale === "lv" ? node.name_lv : node.name_en}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={t("icon")}>
         <input name="icon" className="w-24 rounded-lg border border-[#e7e2d8] px-2 py-1.5 text-sm" />

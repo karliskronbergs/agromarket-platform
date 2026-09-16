@@ -13,6 +13,7 @@ export default async function Home({
   const { data: categories } = await supabase
     .from("categories")
     .select("id, slug, name_lv, name_en")
+    .is("parent_id", null)
     .order("name_lv")
     .limit(8);
 

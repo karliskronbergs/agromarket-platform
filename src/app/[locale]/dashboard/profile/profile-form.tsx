@@ -2,11 +2,12 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
+import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
 import { saveProfile, type ProfileState } from "./actions";
 import { ProfileMediaEditor } from "./media-editor";
 import { AddressAutocomplete } from "./address-autocomplete";
 
-type Category = { id: string; name_lv: string; name_en: string };
+type Category = CategoryRow;
 
 const inputClass =
   "rounded-lg border border-[#e7e2d8] bg-white px-3 py-2.5 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
@@ -39,6 +40,7 @@ export function ProfileForm({
   const [businessName, setBusinessName] = useState(initial?.businessName ?? "");
 
   const categoryLabel = (c: Category) => (locale === "lv" ? c.name_lv : c.name_en);
+  const categoryTree = buildCategoryTree(categories);
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -102,21 +104,14 @@ export function ProfileForm({
       </Section>
 
       <Section title={t("categories")}>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((c) => (
-            <label
-              key={c.id}
-              className="flex cursor-pointer items-center gap-2 rounded-full border border-[#e7e2d8] px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
-            >
-              <input
-                type="checkbox"
-                name="categoryIds"
-                value={c.id}
-                defaultChecked={selectedCategoryIds.includes(c.id)}
-                className="sr-only"
-              />
-              {categoryLabel(c)}
-            </label>
+        <div className="flex flex-col gap-2">
+          {categoryTree.map((root) => (
+            <CategoryGroup
+              key={root.id}
+              node={root}
+              categoryLabel={categoryLabel}
+              selectedCategoryIds={selectedCategoryIds}
+            />
           ))}
         </div>
       </Section>
@@ -162,5 +157,71 @@ function Field({
       {children}
       {hint && <span className="text-xs text-[#7a7566]">{hint}</span>}
     </label>
+  );
+}
+
+function containsSelected(node: CategoryNode<Category>, selectedCategoryIds: string[]): boolean {
+  if (selectedCategoryIds.includes(node.id)) return true;
+  return node.children.some((child) => containsSelected(child, selectedCategoryIds));
+}
+
+function CategoryGroup({
+  node,
+  categoryLabel,
+  selectedCategoryIds,
+}: {
+  node: CategoryNode<Category>;
+  categoryLabel: (c: Category) => string;
+  selectedCategoryIds: string[];
+}) {
+  return (
+    <details
+      className="rounded-lg border border-[#e7e2d8]"
+      open={node.children.length > 0 && containsSelected(node, selectedCategoryIds)}
+    >
+      <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-[#2b2a24]">
+        <label
+          className="inline-flex cursor-pointer items-center gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            name="categoryIds"
+            value={node.id}
+            defaultChecked={selectedCategoryIds.includes(node.id)}
+          />
+          {categoryLabel(node)}
+        </label>
+      </summary>
+      {node.children.length > 0 && (
+        <div className="flex flex-wrap gap-2 border-t border-[#e7e2d8] p-3">
+          {node.children.map((child) =>
+            child.children.length > 0 ? (
+              <div key={child.id} className="w-full">
+                <CategoryGroup
+                  node={child}
+                  categoryLabel={categoryLabel}
+                  selectedCategoryIds={selectedCategoryIds}
+                />
+              </div>
+            ) : (
+              <label
+                key={child.id}
+                className="flex cursor-pointer items-center gap-2 rounded-full border border-[#e7e2d8] px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
+              >
+                <input
+                  type="checkbox"
+                  name="categoryIds"
+                  value={child.id}
+                  defaultChecked={selectedCategoryIds.includes(child.id)}
+                  className="sr-only"
+                />
+                {categoryLabel(child)}
+              </label>
+            ),
+          )}
+        </div>
+      )}
+    </details>
   );
 }

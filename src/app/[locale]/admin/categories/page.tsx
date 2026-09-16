@@ -1,5 +1,5 @@
-import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { buildCategoryTree, flattenCategoryTree } from "@/lib/categories";
 import { CategoryForm } from "./category-form";
 import { DeleteCategoryButton } from "./delete-button";
 
@@ -14,16 +14,19 @@ export default async function AdminCategoriesPage({
   const supabase = await createClient();
   const { data: categories } = await supabase
     .from("categories")
-    .select("id, slug, name_lv, name_en, icon")
+    .select("id, slug, name_lv, name_en, icon, parent_id")
     .order("name_lv");
+
+  const rows = flattenCategoryTree(buildCategoryTree(categories ?? []));
 
   return (
     <div className="flex flex-col gap-4">
-      <CategoryForm locale={locale} />
+      <CategoryForm locale={locale} categories={categories ?? []} />
       <div className="flex flex-col gap-2">
-        {(categories ?? []).map((c) => (
+        {rows.map(({ node: c, depth }) => (
           <div
             key={c.id}
+            style={{ marginLeft: depth * 24 }}
             className="flex items-center justify-between rounded-lg border border-[#e7e2d8] bg-white p-3 text-sm"
           >
             <div>

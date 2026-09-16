@@ -144,6 +144,8 @@
     "slug": "Slug",
     "nameLv": "Name (LV)",
     "nameEn": "Name (EN)",
+    "parentCategory": "Parent category",
+    "noParent": "None (top-level)",
     "icon": "Icon",
     "delete": "Delete",
     "deleteConfirm": "Delete this category?",

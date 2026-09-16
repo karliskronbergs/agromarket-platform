@@ -2,10 +2,11 @@
 
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
+import { buildCategoryTree, flattenCategoryTree, type CategoryRow } from "@/lib/categories";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
 
-type Category = { id: string; name_lv: string; name_en: string };
+type Category = CategoryRow;
 type ExistingImage = { id: string; url: string };
 
 const inputClass =
@@ -38,6 +39,7 @@ export function ListingForm({
   });
 
   const categoryLabel = (c: Category) => (locale === "lv" ? c.name_lv : c.name_en);
+  const categoryTree = buildCategoryTree(categories);
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -90,10 +92,16 @@ export function ListingForm({
               <option value="" disabled>
                 {t("category")}
               </option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {categoryLabel(c)}
-                </option>
+              {categoryTree.map((root) => (
+                <optgroup key={root.id} label={categoryLabel(root)}>
+                  <option value={root.id}>{categoryLabel(root)}</option>
+                  {flattenCategoryTree(root.children).map(({ node, depth }) => (
+                    <option key={node.id} value={node.id}>
+                      {"  ".repeat(depth + 1)}
+                      {categoryLabel(node)}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </Field>

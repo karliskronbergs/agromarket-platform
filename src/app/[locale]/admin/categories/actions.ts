@@ -15,6 +15,7 @@ const categorySchema = z.object({
   nameLv: z.string().min(2).max(80),
   nameEn: z.string().min(2).max(80),
   icon: z.string().max(60).optional(),
+  parentId: z.string().uuid().optional(),
 });
 
 export async function addCategory(
@@ -27,6 +28,7 @@ export async function addCategory(
     nameLv: formData.get("nameLv"),
     nameEn: formData.get("nameEn"),
     icon: formData.get("icon") || undefined,
+    parentId: formData.get("parentId") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -44,6 +46,7 @@ export async function addCategory(
       name_lv: parsed.data.nameLv,
       name_en: parsed.data.nameEn,
       icon: parsed.data.icon ?? null,
+      parent_id: parsed.data.parentId ?? null,
     })
     .select("id")
     .single();
