@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
 
 function Panel({
@@ -52,19 +53,36 @@ function RootMenu({
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
   const [open, setOpen] = useState(false);
   const [path, setPath] = useState<CategoryNode<CategoryRow>[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const isActiveRoot = findCategoryPath([root], selectedCategory).length > 0;
 
+  function close() {
+    setOpen(false);
+    setPath([]);
+  }
+
   useEffect(() => {
+    if (!open) return;
+
     function onClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setPath([]);
-      }
+      const target = e.target as Node;
+      if (buttonRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      close();
+    }
+    function onScroll() {
+      close();
     }
     document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [open]);
 
   if (root.children.length === 0) {
     return (
@@ -84,13 +102,20 @@ function RootMenu({
 
   function toggle() {
     if (open) {
-      setOpen(false);
-      setPath([]);
-    } else {
-      setOpen(true);
-      setPath([root]);
-      onSelect(root.id);
+      close();
+      return;
     }
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) {
+      const panelWidth = 240;
+      setPosition({
+        top: rect.bottom + 8,
+        left: Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8)),
+      });
+    }
+    setOpen(true);
+    setPath([root]);
+    onSelect(root.id);
   }
 
   function pick(depth: number, child: CategoryNode<CategoryRow>) {
@@ -98,17 +123,17 @@ function RootMenu({
     if (child.children.length > 0) {
       setPath((p) => [...p.slice(0, depth + 1), child]);
     } else {
-      setOpen(false);
-      setPath([]);
+      close();
     }
   }
 
   return (
-    <div ref={containerRef} className="relative flex-shrink-0">
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={toggle}
-        className={`rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
           isActiveRoot
             ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
             : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
@@ -116,20 +141,27 @@ function RootMenu({
       >
         {label(root)}
       </button>
-      {open && (
-        <div className="absolute left-0 top-full z-[1100] mt-2 flex flex-col gap-2">
-          {path.map((node, i) => (
-            <Panel
-              key={node.id}
-              node={node}
-              activePath={path}
-              locale={locale}
-              onPick={(child) => pick(i, child)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      {open &&
+        position &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{ position: "fixed", top: position.top, left: position.left, zIndex: 1100 }}
+            className="flex flex-col gap-2"
+          >
+            {path.map((node, i) => (
+              <Panel
+                key={node.id}
+                node={node}
+                activePath={path}
+                locale={locale}
+                onPick={(child) => pick(i, child)}
+              />
+            ))}
+          </div>,
+          document.body,
+        )}
+    </>
   );
 }
 
