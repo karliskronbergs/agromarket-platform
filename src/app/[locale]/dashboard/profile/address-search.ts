@@ -7,7 +7,15 @@
 const LATVIA_BBOX = "20.9,55.6,28.3,58.1";
 
 function formatAddress(p: Record<string, string | undefined>) {
-  const candidates = [p.name, p.street, p.city, p.state, p.postcode, p.country];
+  const streetLine = [p.street, p.housenumber].filter(Boolean).join(" ");
+  const candidates = [
+    streetLine || p.name,
+    streetLine && p.name && p.name !== streetLine ? p.name : undefined,
+    p.city,
+    p.state,
+    p.postcode,
+    p.country,
+  ];
   const seen = new Set<string>();
   const parts: string[] = [];
   for (const c of candidates) {
