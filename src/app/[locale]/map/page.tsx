@@ -71,6 +71,8 @@ export default async function MapPage({
       adminBadge: p.admin_badge ?? false,
       badge: badgeByProfile.get(p.id),
     }));
+
+    points.sort((a, b) => Number(b.adminBadge) - Number(a.adminBadge));
   } else {
     let query = supabase
       .from("listings")
