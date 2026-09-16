@@ -120,7 +120,6 @@ export default async function MapPage({
         buy: t("modeBuy"),
         all: t("allCategories"),
         empty: t("empty"),
-        view: t("view"),
       }}
     />
   );

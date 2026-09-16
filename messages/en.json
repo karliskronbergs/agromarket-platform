@@ -78,8 +78,7 @@
     "modeSell": "Sell",
     "modeBuy": "Buy",
     "allCategories": "All categories",
-    "empty": "Nothing found.",
-    "view": "View"
+    "empty": "Nothing found."
   },
   "Listing": {
     "myListings": "Listings",

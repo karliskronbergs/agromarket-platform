@@ -58,7 +58,6 @@ export function MapView({
     buy: string;
     all: string;
     empty: string;
-    view: string;
   };
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -116,15 +115,14 @@ export function MapView({
           ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
           : "";
         marker.bindPopup(
-          `<div style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;">
+          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;">
             ${imageHtml}
             <div style="min-width:0;">
               <div style="font-weight:600;font-size:13px;color:#2b2a24;">${escapeHtml(point.title)}</div>
               ${badgeHtml}
               <div style="font-size:12px;color:#7a7566;margin-top:3px;">${escapeHtml(point.subtitle)}</div>
-              <a href="${point.href}" style="font-size:12px;font-weight:600;color:#3f6b3f;">${escapeHtml(labels.view)} &rarr;</a>
             </div>
-          </div>`,
+          </a>`,
           { minWidth: 200 },
         );
         markersRef.current[point.id] = marker;
@@ -141,7 +139,7 @@ export function MapView({
     return () => {
       cancelled = true;
     };
-  }, [points, mode, labels.view]);
+  }, [points, mode]);
 
   useEffect(() => {
     return () => {
