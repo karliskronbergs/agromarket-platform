@@ -1,6 +1,7 @@
 "use client";
 
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
+import { IconChevronDown, IconChevronLeft } from "@/components/icons";
 
 function getParentNode(
   root: CategoryNode<CategoryRow>,
@@ -30,10 +31,10 @@ function RootFilter({
       <button
         type="button"
         onClick={() => onSelect(root.id)}
-        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
+        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
           selectedCategory === root.id
-            ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+            ? "border-[#3f6b3f] bg-[#3f6b3f] text-white"
+            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f] hover:text-[#3f6b3f]"
         }`}
       >
         {label(root)}
@@ -54,38 +55,49 @@ function RootFilter({
   const backTarget = showBack ? getParentNode(root, contextNode) : null;
 
   return (
-    <div className="flex flex-shrink-0 items-stretch overflow-hidden rounded-full border border-[#e7e2d8]">
+    <div
+      className={`flex flex-shrink-0 items-stretch overflow-hidden rounded-full border shadow-sm transition ${
+        isActive ? "border-[#3f6b3f]" : "border-[#e7e2d8]"
+      }`}
+    >
       {showBack && (
         <button
           type="button"
           onClick={() => onSelect(backTarget ? backTarget.id : root.id)}
           aria-label="Back"
-          className="flex items-center border-r border-[#e7e2d8] bg-white px-2.5 text-[#55503f] hover:bg-[#faf8f3]"
+          className="flex items-center border-r border-[#e7e2d8] bg-[#faf8f3] px-3 text-[#55503f] transition hover:bg-[#f1efe6] hover:text-[#3f6b3f]"
         >
-          ‹
+          <IconChevronLeft className="h-4 w-4" />
         </button>
       )}
-      <select
-        value={isActive ? selectedCategory : ""}
-        onChange={(e) => {
-          if (e.target.value) onSelect(e.target.value);
-        }}
-        className={`border-0 px-4 py-2.5 text-sm font-medium ${
-          isActive ? "bg-[#e7efe1] text-[#3f6b3f]" : "bg-white text-[#55503f]"
-        }`}
-      >
-        <option value="" disabled>
-          {label(root)}
-        </option>
-        <option value={contextNode.id}>
-          {allLabel} — {label(contextNode)}
-        </option>
-        {contextNode.children.map((child) => (
-          <option key={child.id} value={child.id}>
-            {label(child)}
+      <div className="relative flex items-stretch">
+        <select
+          value={isActive ? selectedCategory : ""}
+          onChange={(e) => {
+            if (e.target.value) onSelect(e.target.value);
+          }}
+          className={`appearance-none border-0 py-2.5 pl-4 pr-9 text-sm font-medium outline-none ${
+            isActive ? "bg-[#3f6b3f] text-white" : "bg-white text-[#55503f]"
+          }`}
+        >
+          <option value="" disabled>
+            {label(root)}
           </option>
-        ))}
-      </select>
+          <option value={contextNode.id}>
+            {allLabel} — {label(contextNode)}
+          </option>
+          {contextNode.children.map((child) => (
+            <option key={child.id} value={child.id}>
+              {label(child)}
+            </option>
+          ))}
+        </select>
+        <IconChevronDown
+          className={`pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${
+            isActive ? "text-white" : "text-[#7a7566]"
+          }`}
+        />
+      </div>
     </div>
   );
 }
@@ -106,14 +118,14 @@ export function CategoryFilterBar({
   const tree = buildCategoryTree(categories);
 
   return (
-    <div className="-mx-6 flex snap-x snap-mandatory gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
+    <div className="-mx-6 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
       <button
         type="button"
         onClick={() => onSelect(null)}
-        className={`flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium transition ${
+        className={`flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
           !selectedCategory
-            ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+            ? "border-[#3f6b3f] bg-[#3f6b3f] text-white"
+            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f] hover:text-[#3f6b3f]"
         }`}
       >
         {allLabel}
