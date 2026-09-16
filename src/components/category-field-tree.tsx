@@ -16,34 +16,40 @@ export function CategoryFieldTree({
   name,
   type,
   isSelected,
+  leafOnly,
 }: {
   categories: CategoryRow[];
   locale: string;
   name: string;
   type: "checkbox" | "radio";
   isSelected: (id: string) => boolean;
+  leafOnly?: boolean;
 }) {
   const tree = buildCategoryTree(categories);
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
 
   function renderNode(node: CategoryNode<CategoryRow>) {
-    const field = (
-      <label
-        className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#e7e2d8] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <input
-          type={type}
-          name={name}
-          value={node.id}
-          defaultChecked={isSelected(node.id)}
-          className="sr-only"
-        />
-        {label(node)}
-      </label>
-    );
+    const isLeaf = node.children.length === 0;
+    const field =
+      leafOnly && !isLeaf ? (
+        <span className="text-sm font-medium text-[#2b2a24]">{label(node)}</span>
+      ) : (
+        <label
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#e7e2d8] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type={type}
+            name={name}
+            value={node.id}
+            defaultChecked={isSelected(node.id)}
+            className="sr-only"
+          />
+          {label(node)}
+        </label>
+      );
 
-    if (node.children.length === 0) {
+    if (isLeaf) {
       return <div key={node.id}>{field}</div>;
     }
 

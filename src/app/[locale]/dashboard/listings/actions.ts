@@ -57,6 +57,14 @@ export async function saveListing(
     return { error: "Price must be a number." };
   }
 
+  const { count: childCount } = await supabase
+    .from("categories")
+    .select("id", { count: "exact", head: true })
+    .eq("parent_id", parsed.data.categoryId);
+  if (childCount && childCount > 0) {
+    return { error: "Pick a specific subcategory, not a main category." };
+  }
+
   const payload = {
     profile_id: profile.id,
     listing_type: parsed.data.listingType,

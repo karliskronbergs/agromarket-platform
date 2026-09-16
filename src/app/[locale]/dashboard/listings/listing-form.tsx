@@ -86,6 +86,7 @@ export function ListingForm({
             name="categoryId"
             type="radio"
             isSelected={(id) => id === initial?.categoryId}
+            leafOnly
           />
         </Field>
 
