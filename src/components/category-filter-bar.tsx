@@ -18,7 +18,7 @@ function Panel({
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
 
   return (
-    <div className="max-h-72 w-60 overflow-y-auto rounded-xl border border-[#e7e2d8] bg-white p-1.5 shadow-lg">
+    <div className="max-h-72 w-60 overflow-y-auto overscroll-contain rounded-xl border border-[#e7e2d8] bg-white p-1.5 shadow-lg">
       {node.children.map((child) => {
         const isActive = activePath.some((n) => n.id === child.id);
         return (
@@ -71,7 +71,8 @@ function RootMenu({
       if (buttonRef.current?.contains(target) || panelRef.current?.contains(target)) return;
       close();
     }
-    function onScroll() {
+    function onScroll(e: Event) {
+      if (panelRef.current?.contains(e.target as Node)) return;
       close();
     }
     document.addEventListener("mousedown", onClickOutside);
