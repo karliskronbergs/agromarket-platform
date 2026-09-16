@@ -122,7 +122,9 @@
     "messageSeller": "Rakstīt ziņu",
     "loginToMessage": "Ieej, lai rakstītu ziņu",
     "placeholder": "Raksti ziņu...",
-    "send": "Sūtīt"
+    "send": "Sūtīt",
+    "adminName": "Agromarket administrācija",
+    "adminPrompt": "Ir jautājumi? Raksti administratoram."
   },
   "Report": {
     "title": "Ziņot par problēmu",

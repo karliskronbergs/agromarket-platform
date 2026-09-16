@@ -122,7 +122,9 @@
     "messageSeller": "Message seller",
     "loginToMessage": "Sign in to message",
     "placeholder": "Write a message...",
-    "send": "Send"
+    "send": "Send",
+    "adminName": "Agromarket Admin",
+    "adminPrompt": "Questions? Message the admin."
   },
   "Report": {
     "title": "Report a problem",
