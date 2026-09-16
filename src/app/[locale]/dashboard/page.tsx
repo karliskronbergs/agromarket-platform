@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { IconCheck } from "@/components/icons";
 import { requestVerification } from "./profile/actions";
+import { DeleteProfileButton } from "./profile/delete-profile-button";
 
 export default async function DashboardPage({
   params,
@@ -78,6 +79,10 @@ export default async function DashboardPage({
                 </button>
               </form>
             )}
+          </div>
+
+          <div className="border-t border-[#e7e2d8] pt-4">
+            <DeleteProfileButton locale={locale} />
           </div>
         </div>
       ) : (

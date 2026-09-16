@@ -179,3 +179,16 @@ export async function requestVerification(locale: string) {
 
   revalidatePath(`/${locale}/dashboard`);
 }
+
+export async function deleteProfile(locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  await supabase.from("profiles").delete().eq("user_id", user.id);
+
+  revalidatePath(`/${locale}/dashboard`);
+  redirect(`/${locale}/dashboard`);
+}

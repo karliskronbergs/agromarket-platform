@@ -62,7 +62,11 @@
     "verifiedBadge": "Verificēts profils",
     "verificationPending": "Verifikācijas pieprasījums iesniegts, gaida administratora apstiprinājumu.",
     "requestVerification": "Pieprasīt verifikāciju",
-    "loginToViewContact": "Ieej, lai redzētu kontaktinformāciju"
+    "loginToViewContact": "Ieej, lai redzētu kontaktinformāciju",
+    "deleteProfile": "Dzēst profilu",
+    "deleteProfileWarning": "Šī darbība neatgriezeniski dzēsīs tavu uzņēmuma profilu un visus tā sludinājumus. To nevar atsaukt.",
+    "deleteProfileConfirm": "Jā, dzēst manu profilu",
+    "cancel": "Atcelt"
   },
   "Dashboard": {
     "title": "Profils",

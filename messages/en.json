@@ -62,7 +62,11 @@
     "verifiedBadge": "Verified profile",
     "verificationPending": "Verification requested, waiting on admin approval.",
     "requestVerification": "Request verification",
-    "loginToViewContact": "Sign in to view contact info"
+    "loginToViewContact": "Sign in to view contact info",
+    "deleteProfile": "Delete profile",
+    "deleteProfileWarning": "This will permanently delete your business profile and all of its listings. This cannot be undone.",
+    "deleteProfileConfirm": "Yes, delete my profile",
+    "cancel": "Cancel"
   },
   "Dashboard": {
     "title": "Dashboard",
