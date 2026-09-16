@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { IconShield } from "@/components/icons";
+import { IconShield, IconCheck } from "@/components/icons";
 import { startConversation } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +46,7 @@ export default async function MessagesPage({
   const { data: profiles } = otherUserIds.length
     ? await supabase
         .from("profiles")
-        .select("user_id, business_name, slug, avatar_url")
+        .select("user_id, business_name, slug, avatar_url, verified")
         .in("user_id", otherUserIds)
     : { data: [] };
 
@@ -124,8 +124,24 @@ export default async function MessagesPage({
                 isUnread ? "border-[#3f6b3f]" : "border-[#e7e2d8]"
               }`}
             >
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#3f6b3f] text-sm font-semibold text-white">
-                {(other?.business_name ?? "?").slice(0, 1).toUpperCase()}
+              <div className="relative h-10 w-10 flex-shrink-0">
+                <div
+                  className={`h-full w-full overflow-hidden rounded-full ${
+                    other?.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
+                  }`}
+                >
+                  {other?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={other.avatar_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white">
+                      {(other?.business_name ?? "?").slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                {other?.verified && (
+                  <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <div
