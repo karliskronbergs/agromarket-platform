@@ -2,14 +2,22 @@
 
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
 
-function LevelSelect({
-  node,
+function getParentNode(
+  root: CategoryNode<CategoryRow>,
+  node: CategoryNode<CategoryRow>,
+): CategoryNode<CategoryRow> | null {
+  const path = findCategoryPath([root], node.id);
+  return path.length >= 2 ? path[path.length - 2] : null;
+}
+
+function RootFilter({
+  root,
   selectedCategory,
   locale,
   allLabel,
   onSelect,
 }: {
-  node: CategoryNode<CategoryRow>;
+  root: CategoryNode<CategoryRow>;
   selectedCategory?: string;
   locale: string;
   allLabel: string;
@@ -17,47 +25,68 @@ function LevelSelect({
 }) {
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
 
-  if (node.children.length === 0) return null;
+  if (root.children.length === 0) {
+    return (
+      <button
+        type="button"
+        onClick={() => onSelect(root.id)}
+        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
+          selectedCategory === root.id
+            ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
+            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+        }`}
+      >
+        {label(root)}
+      </button>
+    );
+  }
 
-  const path = findCategoryPath([node], selectedCategory);
-  const chosenChild = path[1];
-  const value = selectedCategory === node.id ? node.id : (chosenChild ? chosenChild.id : "");
+  const path = findCategoryPath([root], selectedCategory);
+  const isActive = path.length > 0;
+  const deepest = path[path.length - 1];
+
+  let contextNode: CategoryNode<CategoryRow> = root;
+  if (deepest) {
+    contextNode = deepest.children.length > 0 ? deepest : (path[path.length - 2] ?? root);
+  }
+
+  const showBack = contextNode.id !== root.id;
+  const backTarget = showBack ? getParentNode(root, contextNode) : null;
 
   return (
-    <>
+    <div className="flex flex-shrink-0 items-stretch overflow-hidden rounded-full border border-[#e7e2d8]">
+      {showBack && (
+        <button
+          type="button"
+          onClick={() => onSelect(backTarget ? backTarget.id : root.id)}
+          aria-label="Back"
+          className="flex items-center border-r border-[#e7e2d8] bg-white px-2.5 text-[#55503f] hover:bg-[#faf8f3]"
+        >
+          ‹
+        </button>
+      )}
       <select
-        value={value}
+        value={isActive ? selectedCategory : ""}
         onChange={(e) => {
           if (e.target.value) onSelect(e.target.value);
         }}
-        className={`rounded-full border px-4 py-2.5 text-sm font-medium transition ${
-          value
-            ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
-            : "border-[#e7e2d8] bg-white text-[#55503f]"
+        className={`border-0 px-4 py-2.5 text-sm font-medium ${
+          isActive ? "bg-[#e7efe1] text-[#3f6b3f]" : "bg-white text-[#55503f]"
         }`}
       >
         <option value="" disabled>
-          {label(node)}
+          {label(root)}
         </option>
-        <option value={node.id}>
-          {allLabel} — {label(node)}
+        <option value={contextNode.id}>
+          {allLabel} — {label(contextNode)}
         </option>
-        {node.children.map((child) => (
+        {contextNode.children.map((child) => (
           <option key={child.id} value={child.id}>
             {label(child)}
           </option>
         ))}
       </select>
-      {chosenChild && (
-        <LevelSelect
-          node={chosenChild}
-          selectedCategory={selectedCategory}
-          locale={locale}
-          allLabel={allLabel}
-          onSelect={onSelect}
-        />
-      )}
-    </>
+    </div>
   );
 }
 
@@ -89,31 +118,16 @@ export function CategoryFilterBar({
       >
         {allLabel}
       </button>
-      {tree.map((root) =>
-        root.children.length === 0 ? (
-          <button
-            key={root.id}
-            type="button"
-            onClick={() => onSelect(root.id)}
-            className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
-              selectedCategory === root.id
-                ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
-                : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
-            }`}
-          >
-            {locale === "lv" ? root.name_lv : root.name_en}
-          </button>
-        ) : (
-          <LevelSelect
-            key={root.id}
-            node={root}
-            selectedCategory={selectedCategory}
-            locale={locale}
-            allLabel={allLabel}
-            onSelect={onSelect}
-          />
-        ),
-      )}
+      {tree.map((root) => (
+        <RootFilter
+          key={root.id}
+          root={root}
+          selectedCategory={selectedCategory}
+          locale={locale}
+          allLabel={allLabel}
+          onSelect={onSelect}
+        />
+      ))}
     </div>
   );
 }
