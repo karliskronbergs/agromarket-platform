@@ -25,7 +25,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
         {open ? <IconClose className="h-6 w-6" /> : <IconMenu className="h-6 w-6" />}
       </button>
       {open && (
-        <nav className="absolute inset-x-0 top-full z-10 flex flex-col gap-4 border-b border-[#e7e2d8] bg-white px-4 py-4 text-sm font-medium text-[#55503f] shadow-sm sm:hidden">
+        <nav className="absolute inset-x-0 top-full z-[1100] flex flex-col gap-4 border-b border-[#e7e2d8] bg-white px-4 py-4 text-sm font-medium text-[#55503f] shadow-sm sm:hidden">
           {children}
         </nav>
       )}
