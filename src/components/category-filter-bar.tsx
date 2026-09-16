@@ -1,24 +1,16 @@
 "use client";
 
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
-import { IconChevronDown, IconChevronLeft } from "@/components/icons";
+import { IconChevronDown } from "@/components/icons";
 
-function getParentNode(
-  root: CategoryNode<CategoryRow>,
-  node: CategoryNode<CategoryRow>,
-): CategoryNode<CategoryRow> | null {
-  const path = findCategoryPath([root], node.id);
-  return path.length >= 2 ? path[path.length - 2] : null;
-}
-
-function RootFilter({
-  root,
+function LevelSelect({
+  node,
   selectedCategory,
   locale,
   allLabel,
   onSelect,
 }: {
-  root: CategoryNode<CategoryRow>;
+  node: CategoryNode<CategoryRow>;
   selectedCategory?: string;
   locale: string;
   allLabel: string;
@@ -26,53 +18,22 @@ function RootFilter({
 }) {
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
 
-  if (root.children.length === 0) {
-    return (
-      <button
-        type="button"
-        onClick={() => onSelect(root.id)}
-        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
-          selectedCategory === root.id
-            ? "border-[#3f6b3f] bg-[#3f6b3f] text-white"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f] hover:text-[#3f6b3f]"
-        }`}
-      >
-        {label(root)}
-      </button>
-    );
-  }
+  if (node.children.length === 0) return null;
 
-  const path = findCategoryPath([root], selectedCategory);
-  const isActive = path.length > 0;
-  const deepest = path[path.length - 1];
-
-  let contextNode: CategoryNode<CategoryRow> = root;
-  if (deepest) {
-    contextNode = deepest.children.length > 0 ? deepest : (path[path.length - 2] ?? root);
-  }
-
-  const showBack = contextNode.id !== root.id;
-  const backTarget = showBack ? getParentNode(root, contextNode) : null;
+  const path = findCategoryPath([node], selectedCategory);
+  const chosenChild = path[1];
+  const isActive = selectedCategory === node.id || !!chosenChild;
+  const value = selectedCategory === node.id ? node.id : chosenChild ? chosenChild.id : "";
 
   return (
-    <div
-      className={`flex flex-shrink-0 items-stretch overflow-hidden rounded-full border shadow-sm transition ${
-        isActive ? "border-[#3f6b3f]" : "border-[#e7e2d8]"
-      }`}
-    >
-      {showBack && (
-        <button
-          type="button"
-          onClick={() => onSelect(backTarget ? backTarget.id : root.id)}
-          aria-label="Back"
-          className="flex items-center border-r border-[#e7e2d8] bg-[#faf8f3] px-3 text-[#55503f] transition hover:bg-[#f1efe6] hover:text-[#3f6b3f]"
-        >
-          <IconChevronLeft className="h-4 w-4" />
-        </button>
-      )}
-      <div className="relative flex items-stretch">
+    <>
+      <div
+        className={`relative flex flex-shrink-0 items-stretch overflow-hidden rounded-full border shadow-sm transition ${
+          isActive ? "border-[#3f6b3f]" : "border-[#e7e2d8]"
+        }`}
+      >
         <select
-          value={isActive ? selectedCategory : ""}
+          value={value}
           onChange={(e) => {
             if (e.target.value) onSelect(e.target.value);
           }}
@@ -81,12 +42,12 @@ function RootFilter({
           }`}
         >
           <option value="" disabled>
-            {label(root)}
+            {label(node)}
           </option>
-          <option value={contextNode.id}>
-            {allLabel} — {label(contextNode)}
+          <option value={node.id}>
+            {allLabel} — {label(node)}
           </option>
-          {contextNode.children.map((child) => (
+          {node.children.map((child) => (
             <option key={child.id} value={child.id}>
               {label(child)}
               {child.children.length > 0 ? " ›" : ""}
@@ -99,7 +60,16 @@ function RootFilter({
           }`}
         />
       </div>
-    </div>
+      {chosenChild && (
+        <LevelSelect
+          node={chosenChild}
+          selectedCategory={selectedCategory}
+          locale={locale}
+          allLabel={allLabel}
+          onSelect={onSelect}
+        />
+      )}
+    </>
   );
 }
 
@@ -131,17 +101,32 @@ export function CategoryFilterBar({
       >
         {allLabel}
       </button>
-      {tree.map((root) => (
-        <div key={root.id} className="flex flex-shrink-0 snap-start">
-          <RootFilter
-            root={root}
-            selectedCategory={selectedCategory}
-            locale={locale}
-            allLabel={allLabel}
-            onSelect={onSelect}
-          />
-        </div>
-      ))}
+      {tree.map((root) =>
+        root.children.length === 0 ? (
+          <button
+            key={root.id}
+            type="button"
+            onClick={() => onSelect(root.id)}
+            className={`flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+              selectedCategory === root.id
+                ? "border-[#3f6b3f] bg-[#3f6b3f] text-white"
+                : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f] hover:text-[#3f6b3f]"
+            }`}
+          >
+            {locale === "lv" ? root.name_lv : root.name_en}
+          </button>
+        ) : (
+          <div key={root.id} className="flex flex-shrink-0 snap-start items-center gap-2">
+            <LevelSelect
+              node={root}
+              selectedCategory={selectedCategory}
+              locale={locale}
+              allLabel={allLabel}
+              onSelect={onSelect}
+            />
+          </div>
+        ),
+      )}
     </div>
   );
 }
