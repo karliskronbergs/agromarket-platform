@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { PasswordInput } from "@/components/password-input";
 import { login, type AuthState } from "../actions";
 
 const inputClass =
@@ -27,13 +28,7 @@ export function LoginForm({ locale }: { locale: string }) {
         <label htmlFor="password" className="text-sm font-medium text-[#2b2a24]">
           {t("password")}
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          required
-          className={inputClass}
-        />
+        <PasswordInput id="password" name="password" className={inputClass} />
       </div>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button

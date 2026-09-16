@@ -10,6 +10,15 @@ const credentialsSchema = z.object({
   password: z.string().min(8),
 });
 
+const signUpSchema = credentialsSchema
+  .extend({
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ["confirmPassword"],
+  });
+
 export type AuthState = { error: string | null; success?: boolean };
 
 export async function signUp(
@@ -17,12 +26,18 @@ export async function signUp(
   _prevState: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
-  const parsed = credentialsSchema.safeParse({
+  const parsed = signUpSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   });
   if (!parsed.success) {
-    return { error: "Please enter a valid email and a password of at least 8 characters." };
+    const passwordsMismatch = parsed.error.issues.some((i) => i.path[0] === "confirmPassword");
+    return {
+      error: passwordsMismatch
+        ? "Passwords don't match."
+        : "Please enter a valid email and a password of at least 8 characters.",
+    };
   }
 
   const headersList = await headers();

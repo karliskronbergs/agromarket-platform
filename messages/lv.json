@@ -27,6 +27,8 @@
     "signUpTitle": "Izveidot kontu",
     "email": "E-pasts",
     "password": "Parole",
+    "confirmPassword": "Apstiprini paroli",
+    "passwordsDontMatch": "Paroles nesakrīt.",
     "signInSubmit": "Ieiet",
     "signUpSubmit": "Reģistrēties",
     "noAccount": "Nav konta?",

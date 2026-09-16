@@ -27,6 +27,8 @@
     "signUpTitle": "Create an account",
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm password",
+    "passwordsDontMatch": "Passwords don't match.",
     "signInSubmit": "Sign in",
     "signUpSubmit": "Sign up",
     "noAccount": "Don't have an account?",
