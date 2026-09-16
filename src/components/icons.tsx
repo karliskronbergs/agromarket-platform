@@ -79,6 +79,24 @@ export function IconSearch({ className }: IconProps) {
   );
 }
 
+export function IconShield({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"
+        fill="currentColor"
+      />
+      <path
+        d="M9 12l2 2 4-4"
+        stroke="white"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconCheck({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

@@ -60,6 +60,7 @@
     "businessInfo": "Business Info",
     "viewOnMap": "View on map",
     "verifiedBadge": "Verified profile",
+    "adminBadge": "Admin",
     "verificationPending": "Verification requested, waiting on admin approval.",
     "requestVerification": "Request verification",
     "loginToViewContact": "Sign in to view contact info",

@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
-import { IconPin, IconPhone, IconMail, IconCheck } from "@/components/icons";
+import { IconPin, IconPhone, IconMail, IconCheck, IconShield } from "@/components/icons";
 import { MiniMap } from "@/components/mini-map";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +44,7 @@ export default async function PublicProfilePage({
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, lat, lng, created_at",
+      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, admin_badge, lat, lng, created_at",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -104,6 +104,9 @@ export default async function PublicProfilePage({
               {profile.verified && (
                 <IconCheck className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-[#2563eb] ring-2 ring-[#faf8f3]" />
               )}
+              {profile.admin_badge && (
+                <IconShield className="absolute -right-0.5 -top-0.5 h-5 w-5 rounded-full text-red-600 ring-2 ring-[#faf8f3]" />
+              )}
             </div>
             <div className="pb-1">
               <h1 className="font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
@@ -126,6 +129,12 @@ export default async function PublicProfilePage({
                   <span className="flex items-center gap-1 rounded-full bg-[#dbeafe] px-2.5 py-0.5 text-xs font-semibold text-[#2563eb]">
                     <IconCheck className="h-3.5 w-3.5 flex-shrink-0" />
                     {tProfile("verifiedBadge")}
+                  </span>
+                )}
+                {profile.admin_badge && (
+                  <span className="flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-600">
+                    <IconShield className="h-3.5 w-3.5 flex-shrink-0" />
+                    {tProfile("adminBadge")}
                   </span>
                 )}
               </div>

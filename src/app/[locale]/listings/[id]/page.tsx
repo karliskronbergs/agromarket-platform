@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { MiniMap } from "@/components/mini-map";
-import { IconPin, IconPhone, IconCheck } from "@/components/icons";
+import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
 import { formatRelativeDays } from "@/lib/format";
 import { Gallery } from "./gallery";
 
@@ -53,7 +53,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -201,6 +201,9 @@ export default async function ListingDetailPage({
                   </div>
                   {profile.verified && (
                     <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
+                  )}
+                  {profile.admin_badge && (
+                    <IconShield className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full text-red-600 ring-2 ring-white" />
                   )}
                 </div>
                 <div className="min-w-0">

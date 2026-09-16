@@ -30,14 +30,14 @@ export default async function MapPage({
       ? await supabase
           .from("profiles")
           .select(
-            "id, business_name, slug, address, lat, lng, avatar_url, verified, profile_categories!inner(category_id)",
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, profile_categories!inner(category_id)",
           )
           .eq("status", "active")
           .not("lat", "is", null)
           .eq("profile_categories.category_id", category)
       : await supabase
           .from("profiles")
-          .select("id, business_name, slug, address, lat, lng, avatar_url, verified")
+          .select("id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge")
           .eq("status", "active")
           .not("lat", "is", null);
 
@@ -65,6 +65,7 @@ export default async function MapPage({
       href: `/${locale}/profiles/${p.slug}`,
       imageUrl: p.avatar_url ?? undefined,
       verified: p.verified ?? false,
+      adminBadge: p.admin_badge ?? false,
       badge: badgeByProfile.get(p.id),
     }));
   } else {

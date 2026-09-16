@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "@/i18n/navigation";
-import { IconPin, IconCheck } from "@/components/icons";
+import { IconPin, IconCheck, IconShield } from "@/components/icons";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -18,6 +18,7 @@ export type MapPoint = {
   imageUrl?: string;
   badge?: string;
   verified?: boolean;
+  adminBadge?: boolean;
 };
 
 type Category = { id: string; slug: string; name_lv: string; name_en: string };
@@ -98,12 +99,17 @@ export function MapView({
           mode === "profiles" && point.verified
             ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#2563eb;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
             : "";
+        const adminBadgeHtml =
+          mode === "profiles" && point.adminBadge
+            ? `<span style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#dc2626;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
+            : "";
         const imageHtml = point.imageUrl
           ? `<div style="position:relative;flex-shrink:0;">
               <img src="${escapeHtml(point.imageUrl)}" style="width:44px;height:44px;border-radius:${
                 mode === "profiles" ? "50%" : "8px"
               };object-fit:cover;display:block;" />
               ${verifiedBadgeHtml}
+              ${adminBadgeHtml}
             </div>`
           : "";
         const badgeHtml = point.badge
@@ -224,6 +230,9 @@ export function MapView({
                   </div>
                   {p.verified && (
                     <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
+                  )}
+                  {p.adminBadge && (
+                    <IconShield className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full text-red-600 ring-2 ring-white" />
                   )}
                 </div>
               ) : (
