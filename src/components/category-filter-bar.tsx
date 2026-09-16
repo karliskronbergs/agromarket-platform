@@ -2,28 +2,12 @@
 
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
 
-function Pill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition ${
-        active
-          ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
-          : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
-      }`}
-    >
-      {children}
-    </button>
-  );
+function getParentNode(
+  tree: CategoryNode<CategoryRow>[],
+  node: CategoryNode<CategoryRow>,
+): CategoryNode<CategoryRow> | null {
+  const path = findCategoryPath(tree, node.id);
+  return path.length >= 2 ? path[path.length - 2] : null;
 }
 
 export function CategoryFilterBar({
@@ -31,12 +15,14 @@ export function CategoryFilterBar({
   selectedCategory,
   locale,
   allLabel,
+  backLabel,
   onSelect,
 }: {
   categories: CategoryRow[];
   selectedCategory?: string;
   locale: string;
   allLabel: string;
+  backLabel: string;
   onSelect: (id: string | null) => void;
 }) {
   const tree = buildCategoryTree(categories);
@@ -44,49 +30,57 @@ export function CategoryFilterBar({
   const path = findCategoryPath(tree, selectedCategory);
   const deepest = path[path.length - 1];
 
-  let currentLevel: CategoryNode<CategoryRow>[];
-  if (!deepest) {
-    currentLevel = tree;
-  } else if (deepest.children.length > 0) {
-    currentLevel = deepest.children;
-  } else {
-    const parent = path[path.length - 2];
-    currentLevel = parent ? parent.children : tree;
+  let contextNode: CategoryNode<CategoryRow> | null = null;
+  if (deepest) {
+    contextNode = deepest.children.length > 0 ? deepest : (path[path.length - 2] ?? null);
   }
 
+  const options = contextNode ? contextNode.children : tree;
+  const backTarget = contextNode ? getParentNode(tree, contextNode) : null;
+
   return (
-    <div className="flex flex-col gap-1.5">
-      {path.length > 0 && (
-        <div className="flex flex-nowrap items-center gap-1 overflow-x-auto text-xs text-[#7a7566]">
-          <button type="button" onClick={() => onSelect(null)} className="flex-shrink-0 hover:text-[#3f6b3f]">
-            {allLabel}
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onSelect(null)}
+          className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
+            !selectedCategory
+              ? "border-[#3f6b3f] bg-[#e7efe1] text-[#3f6b3f]"
+              : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+          }`}
+        >
+          {allLabel}
+        </button>
+        {contextNode && (
+          <button
+            type="button"
+            onClick={() => onSelect(backTarget ? backTarget.id : null)}
+            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-[#e7e2d8] bg-white px-4 py-2.5 text-sm font-medium text-[#55503f] hover:border-[#3f6b3f]"
+          >
+            <span aria-hidden>←</span>
+            {backTarget ? label(backTarget) : backLabel}
           </button>
-          {path.map((node, i) => (
-            <span key={node.id} className="flex flex-shrink-0 items-center gap-1">
-              <span>›</span>
-              <button
-                type="button"
-                onClick={() => onSelect(node.id)}
-                className={`hover:text-[#3f6b3f] ${i === path.length - 1 ? "font-medium text-[#2b2a24]" : ""}`}
-              >
-                {label(node)}
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-      <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-0.5">
-        {path.length === 0 && (
-          <Pill active={!selectedCategory} onClick={() => onSelect(null)}>
-            {allLabel}
-          </Pill>
         )}
-        {currentLevel.map((node) => (
-          <Pill key={node.id} active={node.id === selectedCategory} onClick={() => onSelect(node.id)}>
-            {label(node)}
-          </Pill>
-        ))}
       </div>
+      <select
+        value={selectedCategory ?? ""}
+        onChange={(e) => onSelect(e.target.value || null)}
+        className="w-full rounded-full border border-[#e7e2d8] bg-white px-4 py-2.5 text-sm font-medium text-[#55503f]"
+      >
+        {contextNode ? (
+          <option value={contextNode.id}>
+            {allLabel} — {label(contextNode)}
+          </option>
+        ) : (
+          <option value="">{allLabel}</option>
+        )}
+        {options.map((node) => (
+          <option key={node.id} value={node.id}>
+            {label(node)}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

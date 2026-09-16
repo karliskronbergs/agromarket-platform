@@ -60,6 +60,7 @@ export function MapView({
     sell: string;
     buy: string;
     all: string;
+    back: string;
     empty: string;
   };
 }) {
@@ -184,6 +185,7 @@ export function MapView({
           selectedCategory={selectedCategory}
           locale={locale}
           allLabel={labels.all}
+          backLabel={labels.back}
           onSelect={(id) => {
             const query: Record<string, string> = { mode };
             if (id) query.category = id;
