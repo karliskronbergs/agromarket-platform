@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getSelfAndDescendantIds } from "@/lib/categories";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
 export const dynamic = "force-dynamic";
@@ -24,9 +25,10 @@ export default async function MapPage({
     .order("name_lv");
 
   let points: MapPoint[] = [];
+  const categoryIds = category ? getSelfAndDescendantIds(categories ?? [], category) : null;
 
   if (mode === "profiles") {
-    const { data } = category
+    const { data } = categoryIds
       ? await supabase
           .from("profiles")
           .select(
@@ -34,7 +36,7 @@ export default async function MapPage({
           )
           .eq("status", "active")
           .not("lat", "is", null)
-          .eq("profile_categories.category_id", category)
+          .in("profile_categories.category_id", categoryIds)
       : await supabase
           .from("profiles")
           .select("id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge")
@@ -79,7 +81,7 @@ export default async function MapPage({
       .not("lat", "is", null)
       .gt("expires_at", new Date().toISOString());
 
-    if (category) query = query.eq("category_id", category);
+    if (categoryIds) query = query.in("category_id", categoryIds);
 
     const { data } = await query;
 

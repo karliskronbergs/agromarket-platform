@@ -6,7 +6,7 @@ import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "@/i18n/navigation";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
-import { CategoryFilterMenu } from "@/components/category-filter-menu";
+import { CategoryFilterBar } from "@/components/category-filter-bar";
 import type { CategoryRow } from "@/lib/categories";
 
 export type MapMode = "profiles" | "sell" | "buy";
@@ -163,8 +163,8 @@ export function MapView({
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
-        <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1">
+      <div className="flex flex-col gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
+        <div className="flex gap-1 self-start rounded-full bg-[#f1efe6] p-1">
           {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
             <Link
               key={m}
@@ -179,7 +179,7 @@ export function MapView({
             </Link>
           ))}
         </div>
-        <CategoryFilterMenu
+        <CategoryFilterBar
           categories={categories}
           selectedCategory={selectedCategory}
           locale={locale}
