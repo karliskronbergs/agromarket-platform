@@ -18,7 +18,9 @@ export default async function ProfilePage({
     supabase.from("categories").select("id, name_lv, name_en").order("name_lv"),
     supabase
       .from("profiles")
-      .select("id, business_name, description, phone, contact_email, website, address")
+      .select(
+        "id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url",
+      )
       .eq("user_id", user!.id)
       .maybeSingle(),
   ]);
@@ -51,6 +53,8 @@ export default async function ProfilePage({
                   contactEmail: profile.contact_email ?? "",
                   website: profile.website ?? "",
                   address: profile.address ?? "",
+                  avatarUrl: profile.avatar_url ?? "",
+                  coverUrl: profile.cover_url ?? "",
                 }
               : undefined
           }

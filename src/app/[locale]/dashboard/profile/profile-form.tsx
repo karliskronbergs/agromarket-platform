@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { saveProfile, type ProfileState } from "./actions";
+import { ProfileMediaEditor } from "./media-editor";
 
 type Category = { id: string; name_lv: string; name_en: string };
 
@@ -25,6 +26,8 @@ export function ProfileForm({
     contactEmail: string;
     website: string;
     address: string;
+    avatarUrl: string;
+    coverUrl: string;
   };
 }) {
   const t = useTranslations("Profile");
@@ -32,16 +35,27 @@ export function ProfileForm({
   const [state, formAction, isPending] = useActionState<ProfileState, FormData>(boundSave, {
     error: null,
   });
+  const [businessName, setBusinessName] = useState(initial?.businessName ?? "");
 
   const categoryLabel = (c: Category) => (locale === "lv" ? c.name_lv : c.name_en);
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
+      <ProfileMediaEditor
+        businessName={businessName}
+        namePlaceholder={t("businessName")}
+        initialAvatarUrl={initial?.avatarUrl}
+        initialCoverUrl={initial?.coverUrl}
+        changeCoverLabel={t("changeCover")}
+        changeAvatarLabel={t("changeAvatar")}
+      />
+
       <Section>
         <Field label={t("businessName")}>
           <input
             name="businessName"
-            defaultValue={initial?.businessName}
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
             required
             className={inputClass}
           />
@@ -103,27 +117,6 @@ export function ProfileForm({
               {categoryLabel(c)}
             </label>
           ))}
-        </div>
-      </Section>
-
-      <Section>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label={t("avatar")}>
-            <input
-              name="avatar"
-              type="file"
-              accept="image/*"
-              className="rounded-lg border border-dashed border-[#e7e2d8] bg-[#faf8f3] px-3 py-2.5 text-sm"
-            />
-          </Field>
-          <Field label={t("cover")}>
-            <input
-              name="cover"
-              type="file"
-              accept="image/*"
-              className="rounded-lg border border-dashed border-[#e7e2d8] bg-[#faf8f3] px-3 py-2.5 text-sm"
-            />
-          </Field>
         </div>
       </Section>
 
