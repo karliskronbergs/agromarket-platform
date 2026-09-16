@@ -23,7 +23,10 @@ export async function searchAddresses(query: string): Promise<string[]> {
   if (query.trim().length < 3) return [];
 
   try {
-    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lang=lv&bbox=${LATVIA_BBOX}`;
+    // Note: Photon's public instance only supports a small fixed set of
+    // languages for `lang` (de/en/fr/it) -- "lv" is not one of them and
+    // makes the request fail with 400, so this is intentionally omitted.
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&bbox=${LATVIA_BBOX}`;
     const res = await fetch(url);
     if (!res.ok) return [];
 
