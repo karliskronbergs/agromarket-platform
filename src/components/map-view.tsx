@@ -114,8 +114,12 @@ export function MapView({
         const badgeHtml = point.badge
           ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
           : "";
+        const isAdminCard = mode === "profiles" && point.adminBadge;
+        const popupCardStyle = isAdminCard
+          ? "background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:8px;margin:-4px;"
+          : "";
         marker.bindPopup(
-          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;">
+          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;${popupCardStyle}">
             ${imageHtml}
             <div style="min-width:0;">
               <div style="font-weight:600;font-size:13px;color:#2b2a24;">${escapeHtml(point.title)}</div>
@@ -210,7 +214,11 @@ export function MapView({
               key={p.id}
               type="button"
               onClick={() => focus(p)}
-              className="mb-3 flex w-full items-start gap-3 rounded-xl border border-[#e7e2d8] bg-white p-3 text-left text-sm shadow-sm transition hover:border-[#3f6b3f]"
+              className={`mb-3 flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm shadow-sm transition ${
+                mode === "profiles" && p.adminBadge
+                  ? "border-red-200 bg-red-50 hover:border-red-400"
+                  : "border-[#e7e2d8] bg-white hover:border-[#3f6b3f]"
+              }`}
             >
               {mode === "profiles" ? (
                 <div className="relative h-10 w-10 flex-shrink-0">
