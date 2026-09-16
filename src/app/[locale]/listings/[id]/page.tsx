@@ -203,7 +203,7 @@ export default async function ListingDetailPage({
                     <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
                   )}
                   {profile.admin_badge && (
-                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600 ring-2 ring-white" />
+                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600" />
                   )}
                 </div>
                 <div className="min-w-0">

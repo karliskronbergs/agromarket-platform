@@ -101,7 +101,7 @@ export function MapView({
             : "";
         const adminBadgeHtml =
           mode === "profiles" && point.adminBadge
-            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#dc2626;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
+            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#dc2626;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
             : "";
         const imageHtml = point.imageUrl
           ? `<div style="position:relative;flex-shrink:0;">
@@ -232,7 +232,7 @@ export function MapView({
                     <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
                   )}
                   {p.adminBadge && (
-                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600 ring-2 ring-white" />
+                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600" />
                   )}
                 </div>
               ) : (

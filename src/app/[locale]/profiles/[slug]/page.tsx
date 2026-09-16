@@ -105,7 +105,7 @@ export default async function PublicProfilePage({
                 <IconCheck className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-[#2563eb] ring-2 ring-[#faf8f3]" />
               )}
               {profile.admin_badge && (
-                <IconShield className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-red-600 ring-2 ring-[#faf8f3]" />
+                <IconShield className="absolute bottom-0 right-0 h-6 w-6 rounded-full text-red-600" />
               )}
             </div>
             <div className="pb-1">
