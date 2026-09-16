@@ -89,6 +89,7 @@ function RootFilter({
           {contextNode.children.map((child) => (
             <option key={child.id} value={child.id}>
               {label(child)}
+              {child.children.length > 0 ? " ›" : ""}
             </option>
           ))}
         </select>
