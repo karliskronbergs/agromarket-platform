@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { saveProfile, type ProfileState } from "./actions";
 import { ProfileMediaEditor } from "./media-editor";
+import { AddressAutocomplete } from "./address-autocomplete";
 
 type Category = { id: string; name_lv: string; name_en: string };
 
@@ -73,10 +74,10 @@ export function ProfileForm({
 
       <Section title={t("address")}>
         <Field label={t("address")} hint={t("addressHint")}>
-          <input
+          <AddressAutocomplete
+            id="address"
             name="address"
             defaultValue={initial?.address}
-            required
             className={inputClass}
           />
         </Field>
