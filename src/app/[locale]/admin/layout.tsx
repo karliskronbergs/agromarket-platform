@@ -39,6 +39,7 @@ export default async function AdminLayout({
         <Link href="/admin/reports">{t("reports")}</Link>
         <Link href="/admin/verifications">{t("verifications")}</Link>
         <Link href="/admin/audit-log">{t("auditLog")}</Link>
+        <Link href="/admin/settings">{t("settings")}</Link>
       </nav>
       {children}
     </div>

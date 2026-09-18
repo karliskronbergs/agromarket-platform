@@ -13,6 +13,13 @@ export async function SiteHeader({ locale }: { locale: string }) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: logoSetting } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "logo_url")
+    .maybeSingle();
+  const logoUrl = logoSetting?.value ?? null;
+
   const boundSignOut = signOut.bind(null, locale);
 
   let unreadCount = 0;
@@ -81,8 +88,13 @@ export async function SiteHeader({ locale }: { locale: string }) {
   return (
     <header className="relative border-b border-[#e7e2d8] bg-white px-4 py-4 sm:px-6">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-sans text-lg font-bold text-[#2b2a24]">
-          Agromarket
+        <Link href="/" className="flex items-center font-sans text-lg font-bold text-[#2b2a24]">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt="Agromarket" className="h-9 w-auto" />
+          ) : (
+            "Agromarket"
+          )}
         </Link>
 
         <nav className="hidden items-center gap-5 text-sm font-medium text-[#55503f] sm:flex">

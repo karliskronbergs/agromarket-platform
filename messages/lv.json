@@ -168,6 +168,12 @@
     "viewListing": "Skatīt sludinājumu",
     "rejectReasonPlaceholder": "Paskaidro, kas jāmaina...",
     "sendAndReject": "Nosūtīt un noraidīt",
-    "cancel": "Atcelt"
+    "cancel": "Atcelt",
+    "settings": "Iestatījumi",
+    "noLogo": "Nav logo",
+    "logoHint": "Tiek rādīts galvenē vietā, kur pretējā gadījumā ir teksts \"Agromarket\". Vislabāk der PNG vai SVG ar caurspīdīgu fonu.",
+    "uploadLogo": "Augšupielādēt logo",
+    "removeLogo": "Noņemt logo",
+    "removeLogoConfirm": "Noņemt logo un atgriezties pie vietnes nosaukuma kā teksta?"
   }
 }

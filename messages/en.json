@@ -168,6 +168,12 @@
     "viewListing": "View listing",
     "rejectReasonPlaceholder": "Explain what needs to change...",
     "sendAndReject": "Send and reject",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "settings": "Settings",
+    "noLogo": "No logo",
+    "logoHint": "Shown in the header in place of the Agromarket text. PNG or SVG with a transparent background works best.",
+    "uploadLogo": "Upload logo",
+    "removeLogo": "Remove logo",
+    "removeLogoConfirm": "Remove the logo and go back to showing the site name as text?"
   }
 }
