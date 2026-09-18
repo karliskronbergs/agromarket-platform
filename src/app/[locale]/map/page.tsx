@@ -33,7 +33,7 @@ export default async function MapPage({
       ? await supabase
           .from("profiles")
           .select(
-            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, profile_categories!inner(category_id)",
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, listing_view_count, profile_categories!inner(category_id)",
           )
           .eq("status", "active")
           .not("lat", "is", null)
@@ -41,7 +41,7 @@ export default async function MapPage({
       : await supabase
           .from("profiles")
           .select(
-            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count",
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, listing_view_count",
           )
           .eq("status", "active")
           .not("lat", "is", null);
@@ -49,7 +49,9 @@ export default async function MapPage({
     (data ?? []).sort((a, b) => {
       const adminDiff = Number(b.admin_badge) - Number(a.admin_badge);
       if (adminDiff !== 0) return adminDiff;
-      return (b.view_count ?? 0) - (a.view_count ?? 0);
+      const aScore = (a.view_count ?? 0) + (a.listing_view_count ?? 0);
+      const bScore = (b.view_count ?? 0) + (b.listing_view_count ?? 0);
+      return bScore - aScore;
     });
 
     const profileIds = (data ?? []).map((p) => p.id);

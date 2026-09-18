@@ -8,6 +8,7 @@ import { MiniMap } from "@/components/mini-map";
 import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
 import { formatRelativeDays } from "@/lib/format";
 import { Gallery } from "./gallery";
+import { ViewTracker } from "./view-tracker";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,7 @@ export default async function ListingDetailPage({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
+      <ViewTracker listingId={listing.id} />
       {isAdmin && listing.status !== "active" && (
         <div className="mb-4 rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
           {t("adminPreviewNote")} ({listing.status})
