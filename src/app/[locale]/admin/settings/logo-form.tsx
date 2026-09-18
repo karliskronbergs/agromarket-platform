@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
+import { compressImage } from "@/lib/compress-image";
 import { updateSiteLogo, removeSiteLogo, type LogoState } from "./actions";
 
 export function LogoForm({ locale, currentLogoUrl }: { locale: string; currentLogoUrl: string | null }) {
@@ -33,9 +34,16 @@ export function LogoForm({ locale, currentLogoUrl }: { locale: string; currentLo
             type="file"
             name="logo"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPreview(URL.createObjectURL(file));
+            onChange={async (e) => {
+              const input = e.target;
+              const file = input.files?.[0];
+              if (!file) return;
+
+              const compressed = await compressImage(file);
+              const dt = new DataTransfer();
+              dt.items.add(compressed);
+              input.files = dt.files;
+              setPreview(URL.createObjectURL(compressed));
             }}
             className="text-sm"
           />

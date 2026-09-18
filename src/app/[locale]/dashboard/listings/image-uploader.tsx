@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { IconClose } from "@/components/icons";
+import { compressImage } from "@/lib/compress-image";
 
 const MAX_IMAGES = 8;
 
@@ -33,11 +34,13 @@ export function ImageUploader({ existingImages }: { existingImages: ExistingImag
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function addFiles(fileList: FileList | File[]) {
+  async function addFiles(fileList: FileList | File[]) {
     const incoming = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
     const room = MAX_IMAGES - existing.length - newImages.length;
     if (room <= 0 || incoming.length === 0) return;
-    const toAdd = incoming.slice(0, room).map((file) => ({
+    const selected = incoming.slice(0, room);
+    const compressed = await Promise.all(selected.map((file) => compressImage(file)));
+    const toAdd = compressed.map((file) => ({
       file,
       previewUrl: URL.createObjectURL(file),
     }));

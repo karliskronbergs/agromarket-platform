@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { compressImage } from "@/lib/compress-image";
 
 export function ProfileMediaEditor({
   businessName,
@@ -22,12 +23,19 @@ export function ProfileMediaEditor({
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  function onPick(
+  async function onPick(
     e: React.ChangeEvent<HTMLInputElement>,
     setPreview: (url: string) => void,
   ) {
-    const file = e.target.files?.[0];
-    if (file) setPreview(URL.createObjectURL(file));
+    const input = e.target;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const compressed = await compressImage(file);
+    const dt = new DataTransfer();
+    dt.items.add(compressed);
+    input.files = dt.files;
+    setPreview(URL.createObjectURL(compressed));
   }
 
   return (
