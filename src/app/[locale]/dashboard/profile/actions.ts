@@ -76,6 +76,16 @@ export async function saveProfile(
     .eq("user_id", user.id)
     .maybeSingle();
 
+  let nameClashQuery = supabase
+    .from("profiles")
+    .select("id")
+    .ilike("business_name", parsed.data.businessName.trim());
+  if (existing?.id) nameClashQuery = nameClashQuery.neq("id", existing.id);
+  const { data: nameClash } = await nameClashQuery.maybeSingle();
+  if (nameClash) {
+    return { error: "This business name is already taken. Please choose a different one." };
+  }
+
   let slug = existing?.slug;
   if (!slug) {
     const base = slugify(parsed.data.businessName);
@@ -151,6 +161,9 @@ export async function saveProfile(
     .single();
 
   if (error || !profile) {
+    if (error?.code === "23505" && error.message.includes("business_name")) {
+      return { error: "This business name is already taken. Please choose a different one." };
+    }
     return { error: error?.message ?? "Could not save profile." };
   }
 
