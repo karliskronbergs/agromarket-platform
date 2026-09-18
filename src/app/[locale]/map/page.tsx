@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
+import { getAttributesByProfileIds } from "@/lib/attributes";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,8 @@ export default async function MapPage({
       if (cat) badgeByProfile.set(pc.profile_id, locale === "lv" ? cat.name_lv : cat.name_en);
     }
 
+    const attributesByProfile = await getAttributesByProfileIds(supabase, profileIds);
+
     points = (data ?? []).map((p) => ({
       id: p.id,
       title: p.business_name,
@@ -80,12 +83,13 @@ export default async function MapPage({
       verified: p.verified ?? false,
       adminBadge: p.admin_badge ?? false,
       badge: badgeByProfile.get(p.id),
+      attributes: attributesByProfile.get(p.id) ?? [],
     }));
   } else {
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_plus_vat, lat, lng, profiles(lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_plus_vat, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -95,6 +99,15 @@ export default async function MapPage({
     if (categoryIds) query = query.in("category_id", categoryIds);
 
     const { data } = await query;
+
+    const listingProfileIds = Array.from(
+      new Set(
+        (data ?? [])
+          .map((l) => (Array.isArray(l.profiles) ? l.profiles[0] : l.profiles)?.id)
+          .filter((id): id is string => !!id),
+      ),
+    );
+    const attributesByProfile = await getAttributesByProfileIds(supabase, listingProfileIds);
 
     points = (data ?? [])
       .map((l) => {
@@ -113,6 +126,7 @@ export default async function MapPage({
           href: `/${locale}/listings/${l.id}`,
           badge: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : undefined,
           imageUrl: firstImage?.url,
+          attributes: profile?.id ? (attributesByProfile.get(profile.id) ?? []) : [],
         };
       })
       .filter((p) => p.lat != null && p.lng != null) as MapPoint[];

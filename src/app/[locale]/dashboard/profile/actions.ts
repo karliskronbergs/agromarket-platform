@@ -15,6 +15,7 @@ const profileSchema = z.object({
   website: z.string().max(200).optional(),
   address: z.string().min(3, "Address is required.").max(200),
   categoryIds: z.array(z.string().uuid()).min(1, "Pick at least one category."),
+  attributeIds: z.array(z.string().uuid()).optional(),
 });
 
 function slugify(input: string) {
@@ -62,6 +63,7 @@ export async function saveProfile(
     website: formData.get("website") || undefined,
     address: formData.get("address"),
     categoryIds: formData.getAll("categoryIds").map(String),
+    attributeIds: formData.getAll("attributeIds").map(String),
   });
 
   if (!parsed.success) {
@@ -159,6 +161,16 @@ export async function saveProfile(
       category_id: categoryId,
     })),
   );
+
+  await supabase.from("profile_attribute_links").delete().eq("profile_id", profile.id);
+  if (parsed.data.attributeIds && parsed.data.attributeIds.length > 0) {
+    await supabase.from("profile_attribute_links").insert(
+      parsed.data.attributeIds.map((attributeId) => ({
+        profile_id: profile.id,
+        attribute_id: attributeId,
+      })),
+    );
+  }
 
   revalidatePath(`/${locale}/dashboard`);
   redirect(`/${locale}/profiles/${profile.slug}`);

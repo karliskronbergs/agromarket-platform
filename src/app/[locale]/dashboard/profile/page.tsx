@@ -14,12 +14,13 @@ export default async function ProfilePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: categories }, { data: profile }] = await Promise.all([
+  const [{ data: categories }, { data: attributes }, { data: profile }] = await Promise.all([
     supabase
       .from("categories")
       .select("id, name_lv, name_en, parent_id")
       .order("sort_order")
       .order("name_lv"),
+    supabase.from("attributes").select("id, icon, name_lv, name_en").order("sort_order"),
     supabase
       .from("profiles")
       .select(
@@ -30,12 +31,14 @@ export default async function ProfilePage({
   ]);
 
   let selectedCategoryIds: string[] = [];
+  let selectedAttributeIds: string[] = [];
   if (profile) {
-    const { data: profileCategories } = await supabase
-      .from("profile_categories")
-      .select("category_id")
-      .eq("profile_id", profile.id);
+    const [{ data: profileCategories }, { data: profileAttributes }] = await Promise.all([
+      supabase.from("profile_categories").select("category_id").eq("profile_id", profile.id),
+      supabase.from("profile_attribute_links").select("attribute_id").eq("profile_id", profile.id),
+    ]);
     selectedCategoryIds = (profileCategories ?? []).map((pc) => pc.category_id);
+    selectedAttributeIds = (profileAttributes ?? []).map((pa) => pa.attribute_id);
   }
 
   return (
@@ -48,6 +51,8 @@ export default async function ProfilePage({
           locale={locale}
           categories={categories ?? []}
           selectedCategoryIds={selectedCategoryIds}
+          attributes={attributes ?? []}
+          selectedAttributeIds={selectedAttributeIds}
           initial={
             profile
               ? {

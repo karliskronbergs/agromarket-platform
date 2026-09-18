@@ -8,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 import { Link } from "@/i18n/navigation";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
+import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import type { CategoryRow } from "@/lib/categories";
 
 export type MapMode = "profiles" | "sell" | "buy";
@@ -23,6 +24,7 @@ export type MapPoint = {
   badge?: string;
   verified?: boolean;
   adminBadge?: boolean;
+  attributes?: AttributeInfo[];
 };
 
 type Category = CategoryRow & { slug?: string };
@@ -253,6 +255,11 @@ export function MapView({
                   <div className="mt-1 flex items-center gap-1 text-xs text-[#7a7566]">
                     {mode === "profiles" && <IconPin className="h-3 w-3 flex-shrink-0" />}
                     <span className="truncate">{p.subtitle}</span>
+                  </div>
+                )}
+                {p.attributes && p.attributes.length > 0 && (
+                  <div className="mt-1.5">
+                    <AttributeIconRow attributes={p.attributes} locale={locale} />
                   </div>
                 )}
               </div>

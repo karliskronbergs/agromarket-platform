@@ -50,6 +50,7 @@
     "address": "Address",
     "addressHint": "Used to place your profile on the map.",
     "categories": "Specialties",
+    "attributes": "Badges",
     "changeAvatar": "Change logo",
     "changeCover": "Change cover image",
     "save": "Save",

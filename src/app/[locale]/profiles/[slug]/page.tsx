@@ -8,6 +8,8 @@ import { IconPin, IconPhone, IconMail, IconCheck, IconShield } from "@/component
 import { MiniMap } from "@/components/mini-map";
 import { ViewTracker } from "./view-tracker";
 import Image from "next/image";
+import { AttributeBadges } from "@/components/attribute-badges";
+import { getAttributesByProfileIds } from "@/lib/attributes";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +72,9 @@ export default async function PublicProfilePage({
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false }),
   ]);
+
+  const attributesByProfile = await getAttributesByProfileIds(supabase, [profile.id]);
+  const attributes = attributesByProfile.get(profile.id) ?? [];
 
   const memberSince = new Date(profile.created_at).getFullYear();
 
@@ -146,6 +151,11 @@ export default async function PublicProfilePage({
                   </span>
                 )}
               </div>
+              {attributes.length > 0 && (
+                <div className="mt-2">
+                  <AttributeBadges attributes={attributes} locale={locale} />
+                </div>
+              )}
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-[#7a7566]">
                 {profile.address && (
                   <span className="flex items-center gap-1">

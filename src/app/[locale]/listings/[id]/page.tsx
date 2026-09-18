@@ -10,6 +10,8 @@ import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
 import { formatRelativeDays } from "@/lib/format";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
+import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
+import { getAttributesByProfileIds } from "@/lib/attributes";
 
 export const dynamic = "force-dynamic";
 
@@ -76,13 +78,18 @@ export default async function ListingDetailPage({
   const categoryLabel = category ? (locale === "lv" ? category.name_lv : category.name_en) : null;
 
   let activeListingsCount = 0;
+  let sellerAttributes: AttributeInfo[] = [];
   if (profile) {
-    const { count } = await supabase
-      .from("listings")
-      .select("id", { count: "exact", head: true })
-      .eq("profile_id", profile.id)
-      .eq("status", "active");
+    const [{ count }, attributesByProfile] = await Promise.all([
+      supabase
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("profile_id", profile.id)
+        .eq("status", "active"),
+      getAttributesByProfileIds(supabase, [profile.id]),
+    ]);
     activeListingsCount = count ?? 0;
+    sellerAttributes = attributesByProfile.get(profile.id) ?? [];
   }
 
   return (
@@ -219,6 +226,12 @@ export default async function ListingDetailPage({
                   )}
                 </div>
               </div>
+
+              {sellerAttributes.length > 0 && (
+                <div className="mb-3">
+                  <AttributeBadges attributes={sellerAttributes} locale={locale} />
+                </div>
+              )}
 
               <Link
                 href={`/profiles/${profile.slug}`}

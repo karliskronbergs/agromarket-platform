@@ -4,11 +4,14 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { CategoryRow } from "@/lib/categories";
 import { CategoryFieldTree } from "@/components/category-field-tree";
+import { ATTRIBUTE_ICONS, type AttributeInfo } from "@/components/attribute-badges";
+import { IconStar } from "@/components/icons";
 import { saveProfile, type ProfileState } from "./actions";
 import { ProfileMediaEditor } from "./media-editor";
 import { AddressAutocomplete } from "./address-autocomplete";
 
 type Category = CategoryRow;
+type Attribute = AttributeInfo & { id: string };
 
 const inputClass =
   "rounded-lg border border-[#e7e2d8] bg-white px-3 py-2.5 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
@@ -17,11 +20,15 @@ export function ProfileForm({
   locale,
   categories,
   selectedCategoryIds,
+  attributes,
+  selectedAttributeIds,
   initial,
 }: {
   locale: string;
   categories: Category[];
   selectedCategoryIds: string[];
+  attributes: Attribute[];
+  selectedAttributeIds: string[];
   initial?: {
     businessName: string;
     description: string;
@@ -109,6 +116,30 @@ export function ProfileForm({
           type="checkbox"
           isSelected={(id) => selectedCategoryIds.includes(id)}
         />
+      </Section>
+
+      <Section title={t("attributes")}>
+        <div className="flex flex-wrap gap-2">
+          {attributes.map((a) => {
+            const Icon = ATTRIBUTE_ICONS[a.icon] ?? IconStar;
+            return (
+              <label
+                key={a.id}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#e7e2d8] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
+              >
+                <input
+                  type="checkbox"
+                  name="attributeIds"
+                  value={a.id}
+                  defaultChecked={selectedAttributeIds.includes(a.id)}
+                  className="sr-only"
+                />
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                {locale === "lv" ? a.name_lv : a.name_en}
+              </label>
+            );
+          })}
+        </div>
       </Section>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
