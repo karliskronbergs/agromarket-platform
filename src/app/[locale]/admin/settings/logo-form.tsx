@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { compressImage } from "@/lib/compress-image";
+import { Spinner } from "@/components/spinner";
 import { updateSiteLogo, removeSiteLogo, type LogoState } from "./actions";
 
 export function LogoForm({ locale, currentLogoUrl }: { locale: string; currentLogoUrl: string | null }) {
@@ -50,8 +51,9 @@ export function LogoForm({ locale, currentLogoUrl }: { locale: string; currentLo
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-full bg-[#3f6b3f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            className="flex items-center gap-2 rounded-full bg-[#3f6b3f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
           >
+            {isPending && <Spinner className="h-4 w-4" />}
             {t("uploadLogo")}
           </button>
         </form>

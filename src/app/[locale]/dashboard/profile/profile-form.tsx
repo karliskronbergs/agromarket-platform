@@ -6,6 +6,7 @@ import type { CategoryRow } from "@/lib/categories";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { ATTRIBUTE_ICONS, type AttributeInfo } from "@/components/attribute-badges";
 import { IconStar } from "@/components/icons";
+import { Spinner } from "@/components/spinner";
 import { saveProfile, type ProfileState } from "./actions";
 import { ProfileMediaEditor } from "./media-editor";
 import { AddressAutocomplete } from "./address-autocomplete";
@@ -147,8 +148,9 @@ export function ProfileForm({
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
+        className="flex w-fit items-center justify-center gap-2 rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
       >
+        {isPending && <Spinner className="h-4 w-4" />}
         {t("save")}
       </button>
     </form>

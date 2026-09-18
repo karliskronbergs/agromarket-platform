@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { buildCategoryTree, flattenCategoryTree, type CategoryRow } from "@/lib/categories";
+import { Spinner } from "@/components/spinner";
 import { addCategory, type CategoryState } from "./actions";
 
 export function CategoryForm({
@@ -47,8 +48,9 @@ export function CategoryForm({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-full bg-[#3f6b3f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        className="flex items-center gap-2 rounded-full bg-[#3f6b3f] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
       >
+        {isPending && <Spinner className="h-4 w-4" />}
         {t("addCategory")}
       </button>
       {state.error && <p className="w-full text-sm text-red-600">{state.error}</p>}

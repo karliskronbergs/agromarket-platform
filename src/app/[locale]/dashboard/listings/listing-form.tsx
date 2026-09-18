@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { CategoryFieldTree } from "@/components/category-field-tree";
+import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
 
@@ -168,8 +169,9 @@ export function ListingForm({
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
+        className="flex w-fit items-center justify-center gap-2 rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
       >
+        {isPending && <Spinner className="h-4 w-4" />}
         {t("save")}
       </button>
     </form>

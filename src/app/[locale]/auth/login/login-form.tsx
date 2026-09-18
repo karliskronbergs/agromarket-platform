@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PasswordInput } from "@/components/password-input";
 import { TurnstileWidget } from "@/components/turnstile-widget";
+import { Spinner } from "@/components/spinner";
 import { login, type AuthState } from "../actions";
 
 const inputClass =
@@ -36,8 +37,9 @@ export function LoginForm({ locale }: { locale: string }) {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
+        className="flex items-center justify-center gap-2 rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
       >
+        {isPending && <Spinner className="h-4 w-4" />}
         {t("signInSubmit")}
       </button>
       <p className="text-center text-sm text-[#55503f]">
