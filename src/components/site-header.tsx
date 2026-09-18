@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
@@ -90,8 +91,14 @@ export async function SiteHeader({ locale }: { locale: string }) {
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center font-sans text-lg font-bold text-[#2b2a24]">
           {logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={logoUrl} alt="Agromarket" className="h-9 w-auto" />
+            <Image
+              src={logoUrl}
+              alt="Agromarket"
+              width={140}
+              height={36}
+              className="h-9 w-auto"
+              priority
+            />
           ) : (
             "Agromarket"
           )}

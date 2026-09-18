@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -213,8 +214,7 @@ export function MapView({
                     className={`h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
                   >
                     {p.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
+                      <Image src={p.imageUrl} alt="" fill sizes="40px" className="object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                         {p.title.slice(0, 1).toUpperCase()}
@@ -230,14 +230,13 @@ export function MapView({
                 </div>
               ) : (
                 <div
-                  className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg"
+                  className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg"
                   style={{
                     background: p.imageUrl ? undefined : `linear-gradient(135deg, ${MODE_COLORS[mode]}, #7b8496)`,
                   }}
                 >
                   {p.imageUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
+                    <Image src={p.imageUrl} alt="" fill sizes="44px" className="object-cover" />
                   )}
                 </div>
               )}

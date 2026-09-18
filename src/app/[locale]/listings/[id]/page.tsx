@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -193,8 +194,7 @@ export default async function ListingDetailPage({
                     }`}
                   >
                     {profile.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                      <Image src={profile.avatar_url} alt="" fill sizes="44px" className="object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center font-sans text-sm font-bold text-white">
                         {profile.business_name.slice(0, 1).toUpperCase()}

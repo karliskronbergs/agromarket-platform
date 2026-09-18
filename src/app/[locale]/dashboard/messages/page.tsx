@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { IconShield, IconCheck } from "@/components/icons";
@@ -131,8 +132,7 @@ export default async function MessagesPage({
                   }`}
                 >
                   {other?.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={other.avatar_url} alt="" className="h-full w-full object-cover" />
+                    <Image src={other.avatar_url} alt="" fill sizes="40px" className="object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white">
                       {(other?.business_name ?? "?").slice(0, 1).toUpperCase()}

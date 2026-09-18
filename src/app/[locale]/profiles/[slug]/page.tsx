@@ -7,6 +7,7 @@ import { MessageSellerButton } from "@/components/message-seller-button";
 import { IconPin, IconPhone, IconMail, IconCheck, IconShield } from "@/components/icons";
 import { MiniMap } from "@/components/mini-map";
 import { ViewTracker } from "./view-tracker";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -77,12 +78,18 @@ export default async function PublicProfilePage({
       <ViewTracker profileId={profile.id} />
       <div className="relative">
         <div
-          className="h-36 w-full overflow-hidden rounded-2xl sm:h-44"
+          className="relative h-36 w-full overflow-hidden rounded-2xl sm:h-44"
           style={{ background: "linear-gradient(120deg,#3f6b3f,#5c8a2e,#7a9c4a)" }}
         >
           {profile.cover_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.cover_url} alt="" className="h-full w-full object-cover" />
+            <Image
+              src={profile.cover_url}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, 896px"
+              className="object-cover"
+              priority
+            />
           )}
         </div>
 
@@ -95,8 +102,7 @@ export default async function PublicProfilePage({
                 }`}
               >
                 {profile.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                  <Image src={profile.avatar_url} alt="" fill sizes="96px" className="object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
                     {profile.business_name.slice(0, 1).toUpperCase()}
