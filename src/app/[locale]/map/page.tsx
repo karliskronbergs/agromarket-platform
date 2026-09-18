@@ -33,16 +33,24 @@ export default async function MapPage({
       ? await supabase
           .from("profiles")
           .select(
-            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, profile_categories!inner(category_id)",
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, profile_categories!inner(category_id)",
           )
           .eq("status", "active")
           .not("lat", "is", null)
           .in("profile_categories.category_id", categoryIds)
       : await supabase
           .from("profiles")
-          .select("id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge")
+          .select(
+            "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count",
+          )
           .eq("status", "active")
           .not("lat", "is", null);
+
+    (data ?? []).sort((a, b) => {
+      const adminDiff = Number(b.admin_badge) - Number(a.admin_badge);
+      if (adminDiff !== 0) return adminDiff;
+      return (b.view_count ?? 0) - (a.view_count ?? 0);
+    });
 
     const profileIds = (data ?? []).map((p) => p.id);
     const { data: profileCategories } = profileIds.length
@@ -71,8 +79,6 @@ export default async function MapPage({
       adminBadge: p.admin_badge ?? false,
       badge: badgeByProfile.get(p.id),
     }));
-
-    points.sort((a, b) => Number(b.adminBadge) - Number(a.adminBadge));
   } else {
     let query = supabase
       .from("listings")

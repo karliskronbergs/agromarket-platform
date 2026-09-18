@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { IconPin, IconPhone, IconMail, IconCheck, IconShield } from "@/components/icons";
 import { MiniMap } from "@/components/mini-map";
+import { ViewTracker } from "./view-tracker";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +74,7 @@ export default async function PublicProfilePage({
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
+      <ViewTracker profileId={profile.id} />
       <div className="relative">
         <div
           className="h-36 w-full overflow-hidden rounded-2xl sm:h-44"
