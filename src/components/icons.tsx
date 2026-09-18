@@ -163,14 +163,8 @@ export function IconChevronLeft({ className }: IconProps) {
 
 export function IconLeaf({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path
-        d="M4 20c0-9 5-15 16-16-1 10-7 16-16 16Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="M6 18c3-4 7-9 12-12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M4 21C3 11 9 3 21 3C22 13 16 21 4 21Z" />
     </svg>
   );
 }
@@ -197,25 +191,19 @@ export function IconMedal({ className }: IconProps) {
 export function IconGrain({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <ellipse
-        cx="9"
-        cy="11"
-        rx="2.3"
-        ry="5"
-        transform="rotate(-18 9 11)"
+      <path
+        d="M9.5 4C6 7 6 16.5 9.5 20C13 16.5 13 7 9.5 4Z"
         stroke="currentColor"
         strokeWidth="1.5"
+        strokeLinejoin="round"
       />
-      <ellipse
-        cx="15.5"
-        cy="11.5"
-        rx="2.3"
-        ry="5"
-        transform="rotate(18 15.5 11.5)"
+      <path d="M8 7.5C7.2 11 7.2 13 8 16.5M11 7.5C11.8 11 11.8 13 11 16.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+      <path
+        d="M15.5 8.5C13.3 10.6 13.3 15.4 15.5 17.5C17.7 15.4 17.7 10.6 15.5 8.5Z"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
       />
-      <path d="M9 16v4M15.5 16.5v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
