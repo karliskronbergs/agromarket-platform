@@ -98,6 +98,8 @@
     "category": "Category",
     "price": "Price (€)",
     "plusVat": "+VAT",
+    "priceUnit": "Price unit",
+    "priceUnitTotal": "Total price",
     "images": "Add images",
     "addPhotos": "Add",
     "existingImages": "Existing images",

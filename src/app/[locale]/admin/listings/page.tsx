@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ListingReviewActions } from "./listing-review-actions";
+import { priceUnitSuffix } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function AdminListingsPage({
   const { data: listings } = await supabase
     .from("listings")
     .select(
-      "id, title, listing_type, price, created_at, profiles(business_name), categories(name_lv, name_en)",
+      "id, title, listing_type, price, price_unit, created_at, profiles(business_name), categories(name_lv, name_en)",
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
@@ -41,7 +42,7 @@ export default async function AdminListingsPage({
                   {" · "}
                   {l.listing_type === "sell" ? tListing("sell") : tListing("buy")}
                   {category ? ` · ${locale === "lv" ? category.name_lv : category.name_en}` : ""}
-                  {l.price != null ? ` · €${l.price}` : ""}
+                  {l.price != null ? ` · €${l.price}${priceUnitSuffix(l.price_unit)}` : ""}
                 </div>
               </div>
               <Link

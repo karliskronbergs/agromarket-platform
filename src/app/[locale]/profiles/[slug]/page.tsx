@@ -10,6 +10,7 @@ import { ViewTracker } from "./view-tracker";
 import Image from "next/image";
 import { AttributeBadges } from "@/components/attribute-badges";
 import { getAttributesByProfileIds } from "@/lib/attributes";
+import { priceUnitSuffix } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -66,7 +67,7 @@ export default async function PublicProfilePage({
       .eq("profile_id", profile.id),
     supabase
       .from("listings")
-      .select("id, title, listing_type, price, price_plus_vat, listing_images(url)")
+      .select("id, title, listing_type, price, price_unit, price_plus_vat, listing_images(url)")
       .eq("profile_id", profile.id)
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -233,6 +234,7 @@ export default async function PublicProfilePage({
                         {l.price != null && (
                           <div className="mb-1 text-sm font-bold text-[#d9713a]">
                             €{l.price}
+                            {priceUnitSuffix(l.price_unit)}
                             {l.price_plus_vat && (
                               <span className="ml-1 text-xs font-semibold text-[#7a7566]">
                                 {t("plusVat")}

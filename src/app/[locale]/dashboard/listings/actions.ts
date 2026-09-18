@@ -13,6 +13,7 @@ const listingSchema = z.object({
   description: z.string().max(4000).optional(),
   categoryId: z.string().uuid("Pick a category."),
   price: z.string().optional(),
+  priceUnit: z.enum(["kg", "t"]).optional(),
 });
 
 async function getOwnProfile(userId: string) {
@@ -46,6 +47,7 @@ export async function saveListing(
     description: formData.get("description") || undefined,
     categoryId: formData.get("categoryId"),
     price: formData.get("price") || undefined,
+    priceUnit: formData.get("priceUnit") || undefined,
   });
 
   if (!parsed.success) {
@@ -72,6 +74,7 @@ export async function saveListing(
     description: parsed.data.description ?? null,
     category_id: parsed.data.categoryId,
     price,
+    price_unit: parsed.data.priceUnit ?? null,
     price_plus_vat: formData.get("plusVat") === "on",
     lat: profile.lat,
     lng: profile.lng,

@@ -98,6 +98,8 @@
     "category": "Kategorija",
     "price": "Cena (€)",
     "plusVat": "+PVN",
+    "priceUnit": "Cenas mērvienība",
+    "priceUnitTotal": "Kopējā cena",
     "images": "Pievienot attēlus",
     "addPhotos": "Pievienot",
     "existingImages": "Esošie attēli",

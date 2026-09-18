@@ -27,7 +27,9 @@ export default async function EditListingPage({
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("id, listing_type, title, description, category_id, price, price_plus_vat, profile_id")
+    .select(
+      "id, listing_type, title, description, category_id, price, price_unit, price_plus_vat, profile_id",
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -36,7 +38,7 @@ export default async function EditListingPage({
   const [{ data: categories }, { data: images }] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, name_lv, name_en, parent_id")
+      .select("id, slug, name_lv, name_en, parent_id")
       .order("sort_order")
       .order("name_lv"),
     supabase
@@ -61,6 +63,7 @@ export default async function EditListingPage({
             description: listing.description ?? "",
             categoryId: listing.category_id ?? "",
             price: listing.price != null ? String(listing.price) : "",
+            priceUnit: listing.price_unit,
             plusVat: listing.price_plus_vat,
           }}
         />

@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { CategoryRow } from "@/lib/categories";
+import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
 
 type Category = CategoryRow;
 type ExistingImage = { id: string; url: string };
+
+const WEIGHT_UNIT_CATEGORY_SLUG = "seklas-un-graudi";
 
 const inputClass =
   "rounded-lg border border-[#e7e2d8] bg-white px-3 py-2.5 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
@@ -30,6 +32,7 @@ export function ListingForm({
     description: string;
     categoryId: string;
     price: string;
+    priceUnit: "kg" | "t" | null;
     plusVat: boolean;
   };
 }) {
@@ -38,6 +41,13 @@ export function ListingForm({
   const [state, formAction, isPending] = useActionState<ListingState, FormData>(boundSave, {
     error: null,
   });
+  const [selectedCategoryId, setSelectedCategoryId] = useState(initial?.categoryId ?? "");
+
+  const weightUnitCategoryIds = useMemo(() => {
+    const root = categories.find((c) => c.slug === WEIGHT_UNIT_CATEGORY_SLUG);
+    return root ? new Set(getSelfAndDescendantIds(categories, root.id)) : new Set<string>();
+  }, [categories]);
+  const showPriceUnit = weightUnitCategoryIds.has(selectedCategoryId);
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -80,18 +90,25 @@ export function ListingForm({
         </Field>
 
         <Field label={t("category")}>
-          <CategoryFieldTree
-            categories={categories}
-            locale={locale}
-            name="categoryId"
-            type="radio"
-            isSelected={(id) => id === initial?.categoryId}
-            leafOnly
-          />
+          <div
+            onChange={(e) => {
+              const target = e.target as HTMLInputElement;
+              if (target.name === "categoryId") setSelectedCategoryId(target.value);
+            }}
+          >
+            <CategoryFieldTree
+              categories={categories}
+              locale={locale}
+              name="categoryId"
+              type="radio"
+              isSelected={(id) => id === initial?.categoryId}
+              leafOnly
+            />
+          </div>
         </Field>
 
         <Field label={t("price")}>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <input
               name="price"
               type="number"
@@ -113,6 +130,32 @@ export function ListingForm({
               <span className="text-sm font-medium text-[#2b2a24]">{t("plusVat")}</span>
             </label>
           </div>
+          {showPriceUnit && (
+            <fieldset className="mt-1 flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
+              <legend className="sr-only">{t("priceUnit")}</legend>
+              {(
+                [
+                  { value: "", label: t("priceUnitTotal") },
+                  { value: "kg", label: "€/kg" },
+                  { value: "t", label: "€/t" },
+                ] as const
+              ).map((opt) => (
+                <label
+                  key={opt.value}
+                  className="cursor-pointer rounded-full px-3 py-1 text-xs font-semibold text-[#55503f] transition has-checked:bg-[#3f6b3f] has-checked:text-white"
+                >
+                  <input
+                    type="radio"
+                    name="priceUnit"
+                    value={opt.value}
+                    defaultChecked={(initial?.priceUnit ?? "") === opt.value}
+                    className="sr-only"
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
         </Field>
       </Section>
 

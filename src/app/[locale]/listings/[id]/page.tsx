@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { MiniMap } from "@/components/mini-map";
 import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
-import { formatRelativeDays } from "@/lib/format";
+import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
@@ -57,7 +57,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -136,6 +136,7 @@ export default async function ListingDetailPage({
           {listing.price != null && (
             <div className="mt-3 flex items-baseline gap-1.5 font-sans text-2xl font-bold text-[#d9713a] sm:text-3xl">
               €{listing.price}
+              {priceUnitSuffix(listing.price_unit)}
               {listing.price_plus_vat && (
                 <span className="text-sm font-semibold text-[#7a7566]">{t("plusVat")}</span>
               )}

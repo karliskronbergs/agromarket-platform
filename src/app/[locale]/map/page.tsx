@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
 import { getAttributesByProfileIds } from "@/lib/attributes";
+import { priceUnitSuffix } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
 export const dynamic = "force-dynamic";
@@ -89,7 +90,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_plus_vat, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -120,7 +121,10 @@ export default async function MapPage({
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: l.price != null ? `€${l.price}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}` : "",
+          subtitle:
+            l.price != null
+              ? `€${l.price}${priceUnitSuffix(l.price_unit)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
+              : "",
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,

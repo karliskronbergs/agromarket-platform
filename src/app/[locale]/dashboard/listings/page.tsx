@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DeleteButton } from "./delete-button";
 import { ReactivateButton } from "./reactivate-button";
+import { priceUnitSuffix } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export default async function ListingsPage({
 
   const { data: listings } = await supabase
     .from("listings")
-    .select("id, title, listing_type, price, price_plus_vat, status, expires_at")
+    .select("id, title, listing_type, price, price_unit, price_plus_vat, status, expires_at")
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
 
@@ -85,6 +86,7 @@ export default async function ListingsPage({
                   {l.price != null && (
                     <span className="text-xs text-[#7a7566]">
                       €{l.price}
+                      {priceUnitSuffix(l.price_unit)}
                       {l.price_plus_vat ? ` ${t("plusVat")}` : ""}
                     </span>
                   )}
