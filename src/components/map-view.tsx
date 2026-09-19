@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Link } from "@/i18n/navigation";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
+import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
 
 export type MapMode = "profiles" | "sell" | "buy";
@@ -71,6 +71,13 @@ export function MapView({
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Record<string, Marker>>({});
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  function navigate(query: Record<string, string>) {
+    startTransition(() => {
+      router.push({ pathname: "/map", query });
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -168,20 +175,27 @@ export function MapView({
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-col gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
-        <div className="flex gap-1 self-start rounded-full bg-[#f1efe6] p-1">
-          {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
-            <Link
-              key={m}
-              href={{
-                pathname: "/map",
-                query: selectedCategory ? { mode: m, category: selectedCategory } : { mode: m },
-              }}
-              className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f]"
-              style={mode === m ? { background: MODE_COLORS[m], color: "white" } : undefined}
-            >
-              {labels[m]}
-            </Link>
-          ))}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1">
+            {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  const query: Record<string, string> = { mode: m };
+                  if (selectedCategory) query.category = selectedCategory;
+                  navigate(query);
+                }}
+                className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition"
+                style={mode === m ? { background: MODE_COLORS[m], color: "white" } : undefined}
+              >
+                {labels[m]}
+              </button>
+            ))}
+          </div>
+          <Spinner
+            className={`h-4 w-4 text-[#3f6b3f] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
+          />
         </div>
         <CategoryFilterBar
           categories={categories}
@@ -191,13 +205,17 @@ export function MapView({
           onSelect={(id) => {
             const query: Record<string, string> = { mode };
             if (id) query.category = id;
-            router.push({ pathname: "/map", query });
+            navigate(query);
           }}
         />
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
-        <div className="order-2 max-h-56 w-full overflow-y-auto border-t border-[#e7e2d8] bg-[#faf8f3] p-4 sm:order-1 sm:max-h-none sm:w-80 sm:min-w-80 sm:border-t-0 sm:border-r">
+        <div
+          className={`order-2 max-h-56 w-full overflow-y-auto border-t border-[#e7e2d8] bg-[#faf8f3] p-4 transition-opacity sm:order-1 sm:max-h-none sm:w-80 sm:min-w-80 sm:border-t-0 sm:border-r ${
+            isPending ? "opacity-50" : "opacity-100"
+          }`}
+        >
           {points.length === 0 && <p className="text-sm text-[#7a7566]">{labels.empty}</p>}
           {points.map((p) => (
             <button
