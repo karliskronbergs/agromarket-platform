@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
 import { getAttributesByProfileIds } from "@/lib/attributes";
+import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
 import { priceUnitSuffix } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
@@ -12,10 +13,20 @@ export default async function MapPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ mode?: string; category?: string }>;
+  searchParams: Promise<{
+    mode?: string;
+    category?: string;
+    breed?: string;
+    ageMin?: string;
+    ageMax?: string;
+    quantityMin?: string;
+    priceMin?: string;
+    priceMax?: string;
+  }>;
 }) {
   const { locale } = await params;
-  const { mode: rawMode, category } = await searchParams;
+  const { mode: rawMode, category, breed, ageMin, ageMax, quantityMin, priceMin, priceMax } =
+    await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
   const tListing = await getTranslations("Listing");
@@ -90,7 +101,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -98,6 +109,12 @@ export default async function MapPage({
       .gt("expires_at", new Date().toISOString());
 
     if (categoryIds) query = query.in("category_id", categoryIds);
+    if (breed) query = query.eq("breed", breed);
+    if (ageMin) query = query.gte("age_months", Number(ageMin));
+    if (ageMax) query = query.lte("age_months", Number(ageMax));
+    if (quantityMin) query = query.gte("quantity", Number(quantityMin));
+    if (priceMin) query = query.gte("price", Number(priceMin));
+    if (priceMax) query = query.lte("price", Number(priceMax));
 
     const { data } = await query;
 
@@ -118,13 +135,17 @@ export default async function MapPage({
         const firstImage = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
         const lat = (l.lat as number | null) ?? profile?.lat ?? null;
         const lng = (l.lng as number | null) ?? profile?.lng ?? null;
+        const animalGroup = getAnimalGroupForCategory(categories ?? [], l.category_id as string | null);
+        const priceText =
+          l.price != null
+            ? `€${l.price}${priceUnitSuffix(l.price_unit)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
+            : "";
+        const breedText =
+          animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle:
-            l.price != null
-              ? `€${l.price}${priceUnitSuffix(l.price_unit)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
-              : "",
+          subtitle: [breedText, priceText].filter(Boolean).join(" · "),
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,
@@ -145,12 +166,28 @@ export default async function MapPage({
       categories={categories ?? []}
       selectedCategory={category}
       locale={locale}
+      livestockFilters={{
+        breed,
+        ageMin,
+        ageMax,
+        quantityMin,
+        priceMin,
+        priceMax,
+      }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),
         buy: t("modeBuy"),
         all: t("allCategories"),
         back: t("back"),
+        anyBreed: t("anyBreed"),
+        ageMinPlaceholder: t("ageMinPlaceholder"),
+        ageMaxPlaceholder: t("ageMaxPlaceholder"),
+        quantityMinPlaceholder: t("quantityMinPlaceholder"),
+        priceMinPlaceholder: t("priceMinPlaceholder"),
+        priceMaxPlaceholder: t("priceMaxPlaceholder"),
+        applyFilters: t("applyFilters"),
+        clearFilters: t("clearFilters"),
         empty: t("empty"),
       }}
     />

@@ -7,9 +7,11 @@ import type { Map as LeafletMap, Marker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
+import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
+import { getAnimalGroupForCategory } from "@/lib/livestock";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -52,6 +54,7 @@ export function MapView({
   selectedCategory,
   locale,
   labels,
+  livestockFilters,
 }: {
   mode: MapMode;
   points: MapPoint[];
@@ -65,7 +68,16 @@ export function MapView({
     all: string;
     back: string;
     empty: string;
+    anyBreed: string;
+    ageMinPlaceholder: string;
+    ageMaxPlaceholder: string;
+    quantityMinPlaceholder: string;
+    priceMinPlaceholder: string;
+    priceMaxPlaceholder: string;
+    applyFilters: string;
+    clearFilters: string;
   };
+  livestockFilters: LivestockFilters;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
@@ -78,6 +90,8 @@ export function MapView({
       router.push({ pathname: "/map", query });
     });
   }
+
+  const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, selectedCategory) : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -208,6 +222,30 @@ export function MapView({
             navigate(query);
           }}
         />
+        {animalGroup && (
+          <LivestockFilterPanel
+            animalGroup={animalGroup}
+            locale={locale}
+            filters={livestockFilters}
+            labels={labels}
+            onApply={(filters) => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              if (filters.breed) query.breed = filters.breed;
+              if (filters.ageMin) query.ageMin = filters.ageMin;
+              if (filters.ageMax) query.ageMax = filters.ageMax;
+              if (filters.quantityMin) query.quantityMin = filters.quantityMin;
+              if (filters.priceMin) query.priceMin = filters.priceMin;
+              if (filters.priceMax) query.priceMax = filters.priceMax;
+              navigate(query);
+            }}
+            onClear={() => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              navigate(query);
+            }}
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">

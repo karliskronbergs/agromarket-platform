@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
+import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } from "@/lib/livestock";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
@@ -35,6 +36,9 @@ export function ListingForm({
     price: string;
     priceUnit: "kg" | "t" | null;
     plusVat: boolean;
+    breed: string | null;
+    ageMonths: string | null;
+    quantity: string | null;
   };
 }) {
   const t = useTranslations("Listing");
@@ -49,6 +53,14 @@ export function ListingForm({
     return root ? new Set(getSelfAndDescendantIds(categories, root.id)) : new Set<string>();
   }, [categories]);
   const showPriceUnit = weightUnitCategoryIds.has(selectedCategoryId);
+
+  const livestockCategoryIds = useMemo(() => getLivestockCategoryIds(categories), [categories]);
+  const showLivestockFields = livestockCategoryIds.has(selectedCategoryId);
+  const animalGroup = useMemo(
+    () => getAnimalGroupForCategory(categories, selectedCategoryId),
+    [categories, selectedCategoryId],
+  );
+  const breedOptions = animalGroup ? BREED_OPTIONS[animalGroup] : [];
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -107,6 +119,45 @@ export function ListingForm({
             />
           </div>
         </Field>
+
+        {showLivestockFields && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Field label={t("breed")}>
+              <select
+                name="breed"
+                defaultValue={initial?.breed ?? ""}
+                className={inputClass}
+              >
+                <option value="">{t("breedSelect")}</option>
+                {breedOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {locale === "lv" ? opt.name_lv : opt.name_en}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label={t("ageMonths")}>
+              <input
+                name="ageMonths"
+                type="number"
+                min="0"
+                step="1"
+                defaultValue={initial?.ageMonths ?? undefined}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={t("quantity")}>
+              <input
+                name="quantity"
+                type="number"
+                min="0"
+                step="1"
+                defaultValue={initial?.quantity ?? undefined}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+        )}
 
         <Field label={t("price")}>
           <div className="flex flex-wrap items-center gap-3">

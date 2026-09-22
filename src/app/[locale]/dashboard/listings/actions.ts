@@ -14,6 +14,9 @@ const listingSchema = z.object({
   categoryId: z.string().uuid("Pick a category."),
   price: z.string().optional(),
   priceUnit: z.enum(["kg", "t"]).optional(),
+  breed: z.string().optional(),
+  ageMonths: z.string().optional(),
+  quantity: z.string().optional(),
 });
 
 async function getOwnProfile(userId: string) {
@@ -48,6 +51,9 @@ export async function saveListing(
     categoryId: formData.get("categoryId"),
     price: formData.get("price") || undefined,
     priceUnit: formData.get("priceUnit") || undefined,
+    breed: formData.get("breed") || undefined,
+    ageMonths: formData.get("ageMonths") || undefined,
+    quantity: formData.get("quantity") || undefined,
   });
 
   if (!parsed.success) {
@@ -57,6 +63,16 @@ export async function saveListing(
   const price = parsed.data.price ? Number(parsed.data.price) : null;
   if (parsed.data.price && Number.isNaN(price)) {
     return { error: "Price must be a number." };
+  }
+
+  const ageMonths = parsed.data.ageMonths ? Number(parsed.data.ageMonths) : null;
+  if (parsed.data.ageMonths && Number.isNaN(ageMonths)) {
+    return { error: "Age must be a number." };
+  }
+
+  const quantity = parsed.data.quantity ? Number(parsed.data.quantity) : null;
+  if (parsed.data.quantity && Number.isNaN(quantity)) {
+    return { error: "Quantity must be a number." };
   }
 
   const { count: childCount } = await supabase
@@ -76,6 +92,9 @@ export async function saveListing(
     price,
     price_unit: parsed.data.priceUnit ?? null,
     price_plus_vat: formData.get("plusVat") === "on",
+    breed: parsed.data.breed ?? null,
+    age_months: ageMonths,
+    quantity,
     lat: profile.lat,
     lng: profile.lng,
   };

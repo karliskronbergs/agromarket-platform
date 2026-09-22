@@ -8,6 +8,7 @@ import { MessageSellerButton } from "@/components/message-seller-button";
 import { MiniMap } from "@/components/mini-map";
 import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
 import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
+import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
@@ -57,7 +58,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -67,15 +68,16 @@ export default async function ListingDetailPage({
 
   if (!listing) notFound();
 
-  const { data: images } = await supabase
-    .from("listing_images")
-    .select("url")
-    .eq("listing_id", id)
-    .order("sort_order");
+  const [{ data: images }, { data: allCategories }] = await Promise.all([
+    supabase.from("listing_images").select("url").eq("listing_id", id).order("sort_order"),
+    supabase.from("categories").select("id, slug, name_lv, name_en, parent_id"),
+  ]);
 
   const profile = Array.isArray(listing.profiles) ? listing.profiles[0] : listing.profiles;
   const category = Array.isArray(listing.categories) ? listing.categories[0] : listing.categories;
   const categoryLabel = category ? (locale === "lv" ? category.name_lv : category.name_en) : null;
+  const animalGroup = getAnimalGroupForCategory(allCategories ?? [], listing.category_id);
+  const breedText = animalGroup && listing.breed ? breedLabel(animalGroup, listing.breed, locale) : null;
 
   let activeListingsCount = 0;
   let sellerAttributes: AttributeInfo[] = [];
@@ -179,6 +181,28 @@ export default async function ListingDetailPage({
                 <tr className="border-b border-[#f0ede4]">
                   <td className="py-2.5 pr-4 text-[#7a7566]">{t("category")}</td>
                   <td className="py-2.5 font-medium text-[#2b2a24]">{categoryLabel}</td>
+                </tr>
+              )}
+              {breedText && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("breed")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">{breedText}</td>
+                </tr>
+              )}
+              {listing.age_months != null && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("ageMonths")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">
+                    {listing.age_months} {t("ageMonthsShort")}
+                  </td>
+                </tr>
+              )}
+              {listing.quantity != null && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("quantity")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">
+                    {listing.quantity} {t("quantityAvailable")}
+                  </td>
                 </tr>
               )}
               {profile?.address && (
