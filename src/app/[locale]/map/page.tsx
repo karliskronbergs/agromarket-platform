@@ -28,6 +28,7 @@ export default async function MapPage({
     model?: string;
     title?: string;
     organic?: string;
+    sort?: string;
   }>;
 }) {
   const { locale } = await params;
@@ -45,6 +46,7 @@ export default async function MapPage({
     model,
     title: titleSearch,
     organic,
+    sort,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
@@ -141,6 +143,11 @@ export default async function MapPage({
     if (titleSearch) query = query.ilike("title", `%${titleSearch}%`);
     if (organic) query = query.eq("organic_certified", true);
 
+    if (sort === "price-asc") query = query.order("price", { ascending: true, nullsFirst: false });
+    else if (sort === "price-desc") query = query.order("price", { ascending: false, nullsFirst: false });
+    else if (sort === "age-asc") query = query.order("age_months", { ascending: true, nullsFirst: false });
+    else if (sort === "age-desc") query = query.order("age_months", { ascending: false, nullsFirst: false });
+
     const { data } = await query;
 
     const listingProfileIds = Array.from(
@@ -194,6 +201,7 @@ export default async function MapPage({
       categories={categories ?? []}
       selectedCategory={category}
       locale={locale}
+      sort={sort}
       livestockFilters={{
         breed,
         ageMin,
@@ -234,6 +242,12 @@ export default async function MapPage({
         filterTitle: tListing("title"),
         titlePlaceholder: t("titlePlaceholder"),
         organicCertified: t("organicCertified"),
+        sortLabel: t("sortLabel"),
+        sortDefault: t("sortDefault"),
+        sortPriceAsc: t("sortPriceAsc"),
+        sortPriceDesc: t("sortPriceDesc"),
+        sortAgeAsc: t("sortAgeAsc"),
+        sortAgeDesc: t("sortAgeDesc"),
         empty: t("empty"),
       }}
     />

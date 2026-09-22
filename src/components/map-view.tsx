@@ -11,6 +11,7 @@ import { LivestockFilterPanel, type LivestockFilters } from "@/components/livest
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
 import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
 import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-panel";
+import { SortMenu } from "@/components/sort-menu";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
@@ -64,12 +65,14 @@ export function MapView({
   equipmentFilters,
   machineryFilters,
   seedsFilters,
+  sort,
 }: {
   mode: MapMode;
   points: MapPoint[];
   categories: Category[];
   selectedCategory?: string;
   locale: string;
+  sort?: string;
   labels: {
     profiles: string;
     sell: string;
@@ -99,6 +102,12 @@ export function MapView({
     filterTitle: string;
     titlePlaceholder: string;
     organicCertified: string;
+    sortLabel: string;
+    sortDefault: string;
+    sortPriceAsc: string;
+    sortPriceDesc: string;
+    sortAgeAsc: string;
+    sortAgeDesc: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -271,11 +280,13 @@ export function MapView({
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
               if (filters.organic) query.organic = filters.organic;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
             onClear={() => {
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
           />
@@ -292,11 +303,13 @@ export function MapView({
               if (filters.condition) query.condition = filters.condition;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
             onClear={() => {
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
           />
@@ -315,11 +328,13 @@ export function MapView({
               if (filters.condition) query.condition = filters.condition;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
             onClear={() => {
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
           />
@@ -336,14 +351,55 @@ export function MapView({
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
               if (filters.organic) query.organic = filters.organic;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
             onClear={() => {
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
+              if (sort) query.sort = sort;
               navigate(query);
             }}
           />
+        )}
+        {mode !== "profiles" && (
+          <div className="flex">
+            <SortMenu
+              value={sort}
+              showAgeSort={!!animalGroup}
+              labels={labels}
+              onChange={(newSort) => {
+                const query: Record<string, string> = { mode };
+                if (selectedCategory) query.category = selectedCategory;
+                if (animalGroup) {
+                  if (livestockFilters.breed) query.breed = livestockFilters.breed;
+                  if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
+                  if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
+                  if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
+                  if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
+                  if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
+                  if (livestockFilters.organic) query.organic = livestockFilters.organic;
+                } else if (isEquipment) {
+                  if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
+                  if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
+                  if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
+                } else if (isMachinery) {
+                  if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
+                  if (machineryFilters.model) query.model = machineryFilters.model;
+                  if (machineryFilters.condition) query.condition = machineryFilters.condition;
+                  if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
+                  if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
+                } else if (isSeeds) {
+                  if (seedsFilters.title) query.title = seedsFilters.title;
+                  if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
+                  if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
+                  if (seedsFilters.organic) query.organic = seedsFilters.organic;
+                }
+                if (newSort) query.sort = newSort;
+                navigate(query);
+              }}
+            />
+          </div>
         )}
       </div>
 

@@ -102,7 +102,13 @@
     "filterModel": "Modelis",
     "modelPlaceholder": "Modelis",
     "titlePlaceholder": "Atslēgvārds nosaukumā",
-    "organicCertified": "Bioloģiskais sertifikāts"
+    "organicCertified": "Bioloģiskais sertifikāts",
+    "sortLabel": "Kārtot",
+    "sortDefault": "Noklusējuma secība",
+    "sortPriceAsc": "Cena: lētākais vispirms",
+    "sortPriceDesc": "Cena: dārgākais vispirms",
+    "sortAgeAsc": "Vecums: jaunākie vispirms",
+    "sortAgeDesc": "Vecums: vecākie vispirms"
   },
   "Listing": {
     "myListings": "Sludinājumi",

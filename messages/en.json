@@ -102,7 +102,13 @@
     "filterModel": "Model",
     "modelPlaceholder": "Model",
     "titlePlaceholder": "Keyword in title",
-    "organicCertified": "Organic certificate"
+    "organicCertified": "Organic certificate",
+    "sortLabel": "Sort",
+    "sortDefault": "Default order",
+    "sortPriceAsc": "Price: cheapest first",
+    "sortPriceDesc": "Price: most expensive first",
+    "sortAgeAsc": "Age: youngest first",
+    "sortAgeDesc": "Age: oldest first"
   },
   "Listing": {
     "myListings": "Listings",
