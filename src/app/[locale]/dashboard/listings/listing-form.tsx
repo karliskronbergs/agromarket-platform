@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } from "@/lib/livestock";
 import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
+import { getMachineryCategoryIds } from "@/lib/machinery";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
@@ -41,6 +42,8 @@ export function ListingForm({
     ageMonths: string | null;
     quantity: string | null;
     condition: string | null;
+    manufacturer: string | null;
+    model: string | null;
   };
 }) {
   const t = useTranslations("Listing");
@@ -65,7 +68,9 @@ export function ListingForm({
   const breedOptions = animalGroup ? BREED_OPTIONS[animalGroup] : [];
 
   const equipmentCategoryIds = useMemo(() => getEquipmentCategoryIds(categories), [categories]);
-  const showCondition = equipmentCategoryIds.has(selectedCategoryId);
+  const machineryCategoryIds = useMemo(() => getMachineryCategoryIds(categories), [categories]);
+  const showMachineryFields = machineryCategoryIds.has(selectedCategoryId);
+  const showCondition = equipmentCategoryIds.has(selectedCategoryId) || showMachineryFields;
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -158,6 +163,27 @@ export function ListingForm({
                 min="0"
                 step="1"
                 defaultValue={initial?.quantity ?? undefined}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+        )}
+
+        {showMachineryFields && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label={t("manufacturer")}>
+              <input
+                name="manufacturer"
+                type="text"
+                defaultValue={initial?.manufacturer ?? undefined}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={t("model")}>
+              <input
+                name="model"
+                type="text"
+                defaultValue={initial?.model ?? undefined}
                 className={inputClass}
               />
             </Field>

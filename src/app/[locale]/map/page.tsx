@@ -24,11 +24,24 @@ export default async function MapPage({
     priceMin?: string;
     priceMax?: string;
     condition?: string;
+    manufacturer?: string;
+    model?: string;
   }>;
 }) {
   const { locale } = await params;
-  const { mode: rawMode, category, breed, ageMin, ageMax, quantityMin, priceMin, priceMax, condition } =
-    await searchParams;
+  const {
+    mode: rawMode,
+    category,
+    breed,
+    ageMin,
+    ageMax,
+    quantityMin,
+    priceMin,
+    priceMax,
+    condition,
+    manufacturer,
+    model,
+  } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
   const tListing = await getTranslations("Listing");
@@ -103,7 +116,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -118,6 +131,8 @@ export default async function MapPage({
     if (priceMin) query = query.gte("price", Number(priceMin));
     if (priceMax) query = query.lte("price", Number(priceMax));
     if (condition) query = query.eq("condition", condition);
+    if (manufacturer) query = query.ilike("manufacturer", `%${manufacturer}%`);
+    if (model) query = query.ilike("model", `%${model}%`);
 
     const { data } = await query;
 
@@ -146,10 +161,13 @@ export default async function MapPage({
         const breedText =
           animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";
         const conditionText = l.condition ? conditionLabel(l.condition as string, locale) : "";
+        const manufacturerModelText = [l.manufacturer, l.model].filter(Boolean).join(" ");
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: [breedText || conditionText, priceText].filter(Boolean).join(" · "),
+          subtitle: [manufacturerModelText || breedText || conditionText, priceText]
+            .filter(Boolean)
+            .join(" · "),
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,
@@ -179,6 +197,7 @@ export default async function MapPage({
         priceMax,
       }}
       equipmentFilters={{ condition, priceMin, priceMax }}
+      machineryFilters={{ manufacturer, model, condition, priceMin, priceMax }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),
@@ -200,6 +219,10 @@ export default async function MapPage({
         ageMonthsShort: tListing("ageMonthsShort"),
         filterCondition: t("filterCondition"),
         anyCondition: t("anyCondition"),
+        filterManufacturer: t("filterManufacturer"),
+        manufacturerPlaceholder: t("manufacturerPlaceholder"),
+        filterModel: t("filterModel"),
+        modelPlaceholder: t("modelPlaceholder"),
         empty: t("empty"),
       }}
     />

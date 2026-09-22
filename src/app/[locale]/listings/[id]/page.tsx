@@ -59,7 +59,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -189,6 +189,18 @@ export default async function ListingDetailPage({
                 <tr className="border-b border-[#f0ede4]">
                   <td className="py-2.5 pr-4 text-[#7a7566]">{t("breed")}</td>
                   <td className="py-2.5 font-medium text-[#2b2a24]">{breedText}</td>
+                </tr>
+              )}
+              {listing.manufacturer && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("manufacturer")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">{listing.manufacturer}</td>
+                </tr>
+              )}
+              {listing.model && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("model")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">{listing.model}</td>
                 </tr>
               )}
               {listing.age_months != null && (

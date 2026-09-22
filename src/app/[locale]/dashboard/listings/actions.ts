@@ -18,6 +18,8 @@ const listingSchema = z.object({
   ageMonths: z.string().optional(),
   quantity: z.string().optional(),
   condition: z.enum(["new", "used"]).optional(),
+  manufacturer: z.string().max(120).optional(),
+  model: z.string().max(120).optional(),
 });
 
 async function getOwnProfile(userId: string) {
@@ -56,6 +58,8 @@ export async function saveListing(
     ageMonths: formData.get("ageMonths") || undefined,
     quantity: formData.get("quantity") || undefined,
     condition: formData.get("condition") || undefined,
+    manufacturer: formData.get("manufacturer") || undefined,
+    model: formData.get("model") || undefined,
   });
 
   if (!parsed.success) {
@@ -98,6 +102,8 @@ export async function saveListing(
     age_months: ageMonths,
     quantity,
     condition: parsed.data.condition ?? null,
+    manufacturer: parsed.data.manufacturer ?? null,
+    model: parsed.data.model ?? null,
     lat: profile.lat,
     lng: profile.lng,
   };

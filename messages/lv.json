@@ -96,7 +96,11 @@
     "apply": "Lietot",
     "clearFilters": "Notīrīt filtrus",
     "filterCondition": "Stāvoklis",
-    "anyCondition": "Jebkurš stāvoklis"
+    "anyCondition": "Jebkurš stāvoklis",
+    "filterManufacturer": "Ražotājs",
+    "manufacturerPlaceholder": "Ražotājs",
+    "filterModel": "Modelis",
+    "modelPlaceholder": "Modelis"
   },
   "Listing": {
     "myListings": "Sludinājumi",
@@ -121,6 +125,8 @@
     "ageMonthsShort": "mēn.",
     "quantityAvailable": "pieejami",
     "condition": "Stāvoklis",
+    "manufacturer": "Ražotājs",
+    "model": "Modelis",
     "images": "Pievienot attēlus",
     "addPhotos": "Pievienot",
     "existingImages": "Esošie attēli",

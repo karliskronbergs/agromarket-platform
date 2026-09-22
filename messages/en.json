@@ -96,7 +96,11 @@
     "apply": "Apply",
     "clearFilters": "Clear filters",
     "filterCondition": "Condition",
-    "anyCondition": "Any condition"
+    "anyCondition": "Any condition",
+    "filterManufacturer": "Manufacturer",
+    "manufacturerPlaceholder": "Manufacturer",
+    "filterModel": "Model",
+    "modelPlaceholder": "Model"
   },
   "Listing": {
     "myListings": "Listings",
@@ -121,6 +125,8 @@
     "ageMonthsShort": "mo",
     "quantityAvailable": "available",
     "condition": "Condition",
+    "manufacturer": "Manufacturer",
+    "model": "Model",
     "images": "Add images",
     "addPhotos": "Add",
     "existingImages": "Existing images",

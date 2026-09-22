@@ -9,11 +9,13 @@ import { IconPin, IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
+import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
 import { getAnimalGroupForCategory } from "@/lib/livestock";
 import { getEquipmentCategoryIds } from "@/lib/equipment";
+import { getMachineryCategoryIds } from "@/lib/machinery";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -58,6 +60,7 @@ export function MapView({
   labels,
   livestockFilters,
   equipmentFilters,
+  machineryFilters,
 }: {
   mode: MapMode;
   points: MapPoint[];
@@ -86,9 +89,14 @@ export function MapView({
     ageMonthsShort: string;
     filterCondition: string;
     anyCondition: string;
+    filterManufacturer: string;
+    manufacturerPlaceholder: string;
+    filterModel: string;
+    modelPlaceholder: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
+  machineryFilters: MachineryFilters;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
@@ -105,6 +113,8 @@ export function MapView({
   const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, selectedCategory) : null;
   const isEquipment =
     mode !== "profiles" && !!selectedCategory && getEquipmentCategoryIds(categories).has(selectedCategory);
+  const isMachinery =
+    mode !== "profiles" && !!selectedCategory && getMachineryCategoryIds(categories).has(selectedCategory);
 
   useEffect(() => {
     let cancelled = false;
@@ -269,6 +279,29 @@ export function MapView({
             onApply={(filters) => {
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
+              if (filters.condition) query.condition = filters.condition;
+              if (filters.priceMin) query.priceMin = filters.priceMin;
+              if (filters.priceMax) query.priceMax = filters.priceMax;
+              navigate(query);
+            }}
+            onClear={() => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              navigate(query);
+            }}
+          />
+        )}
+        {isMachinery && (
+          <MachineryFilterPanel
+            key={selectedCategory}
+            locale={locale}
+            filters={machineryFilters}
+            labels={labels}
+            onApply={(filters) => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              if (filters.manufacturer) query.manufacturer = filters.manufacturer;
+              if (filters.model) query.model = filters.model;
               if (filters.condition) query.condition = filters.condition;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
