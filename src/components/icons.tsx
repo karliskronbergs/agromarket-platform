@@ -163,6 +163,20 @@ export function IconCheckmark({ className }: IconProps) {
   );
 }
 
+export function IconSort({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7 4v15M7 4L3.5 7.5M7 4l3.5 3.5M17 20V5M17 20l3.5-3.5M17 20l-3.5-3.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconChevronDown({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

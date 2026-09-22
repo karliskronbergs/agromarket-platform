@@ -1,6 +1,7 @@
 "use client";
 
 import { FilterPill, optionClass } from "@/components/filter-pill";
+import { IconSort } from "@/components/icons";
 
 export type SortValue = "" | "price-asc" | "price-desc" | "age-asc" | "age-desc";
 
@@ -35,10 +36,13 @@ export function SortMenu({
       : []),
   ];
 
-  const activeLabel = options.find((o) => o.value === value)?.label;
-
   return (
-    <FilterPill label={activeLabel ?? labels.sortLabel} active={!!value} panelWidth={220}>
+    <FilterPill
+      label={labels.sortLabel}
+      active={!!value}
+      panelWidth={220}
+      icon={<IconSort className="h-[18px] w-[18px]" />}
+    >
       {(close) => (
         <div className="flex flex-col gap-0.5">
           <button

@@ -230,27 +230,66 @@ export function MapView({
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-col gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1">
-            {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => {
-                  const query: Record<string, string> = { mode: m };
-                  if (selectedCategory) query.category = selectedCategory;
-                  navigate(query);
-                }}
-                className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition"
-                style={mode === m ? { background: MODE_COLORS[m], color: "white" } : undefined}
-              >
-                {labels[m]}
-              </button>
-            ))}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1">
+              {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => {
+                    const query: Record<string, string> = { mode: m };
+                    if (selectedCategory) query.category = selectedCategory;
+                    navigate(query);
+                  }}
+                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition"
+                  style={mode === m ? { background: MODE_COLORS[m], color: "white" } : undefined}
+                >
+                  {labels[m]}
+                </button>
+              ))}
+            </div>
+            <Spinner
+              className={`h-4 w-4 text-[#3f6b3f] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
+            />
           </div>
-          <Spinner
-            className={`h-4 w-4 text-[#3f6b3f] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
-          />
+          {mode !== "profiles" && (
+            <SortMenu
+              value={sort}
+              showAgeSort={!!animalGroup}
+              labels={labels}
+              onChange={(newSort) => {
+                const query: Record<string, string> = { mode };
+                if (selectedCategory) query.category = selectedCategory;
+                if (animalGroup) {
+                  if (livestockFilters.breed) query.breed = livestockFilters.breed;
+                  if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
+                  if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
+                  if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
+                  if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
+                  if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
+                  if (livestockFilters.organic) query.organic = livestockFilters.organic;
+                } else if (isEquipment) {
+                  if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
+                  if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
+                  if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
+                } else if (isMachinery) {
+                  if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
+                  if (machineryFilters.model) query.model = machineryFilters.model;
+                  if (machineryFilters.condition) query.condition = machineryFilters.condition;
+                  if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
+                  if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
+                } else if (isSeeds) {
+                  if (seedsFilters.title) query.title = seedsFilters.title;
+                  if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
+                  if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
+                  if (seedsFilters.organic) query.organic = seedsFilters.organic;
+                }
+                if (newSort) query.sort = newSort;
+                navigate(query);
+              }}
+            />
+          )}
         </div>
         <CategoryFilterBar
           categories={categories}
@@ -361,45 +400,6 @@ export function MapView({
               navigate(query);
             }}
           />
-        )}
-        {mode !== "profiles" && (
-          <div className="flex">
-            <SortMenu
-              value={sort}
-              showAgeSort={!!animalGroup}
-              labels={labels}
-              onChange={(newSort) => {
-                const query: Record<string, string> = { mode };
-                if (selectedCategory) query.category = selectedCategory;
-                if (animalGroup) {
-                  if (livestockFilters.breed) query.breed = livestockFilters.breed;
-                  if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
-                  if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
-                  if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
-                  if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
-                  if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
-                  if (livestockFilters.organic) query.organic = livestockFilters.organic;
-                } else if (isEquipment) {
-                  if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
-                  if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
-                  if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
-                } else if (isMachinery) {
-                  if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
-                  if (machineryFilters.model) query.model = machineryFilters.model;
-                  if (machineryFilters.condition) query.condition = machineryFilters.condition;
-                  if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
-                  if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
-                } else if (isSeeds) {
-                  if (seedsFilters.title) query.title = seedsFilters.title;
-                  if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
-                  if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
-                  if (seedsFilters.organic) query.organic = seedsFilters.organic;
-                }
-                if (newSort) query.sort = newSort;
-                navigate(query);
-              }}
-            />
-          </div>
         )}
       </div>
 

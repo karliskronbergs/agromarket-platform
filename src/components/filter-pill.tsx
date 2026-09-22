@@ -55,11 +55,13 @@ export function FilterPill({
   label,
   active,
   panelWidth = 240,
+  icon,
   children,
 }: {
   label: string;
   active: boolean;
   panelWidth?: number;
+  icon?: React.ReactNode;
   children: (close: () => void) => React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -118,14 +120,35 @@ export function FilterPill({
         ref={buttonRef}
         type="button"
         onClick={toggle}
-        className={`flex flex-shrink-0 snap-start items-center gap-1 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition ${
-          active
-            ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
-        }`}
+        aria-label={icon ? label : undefined}
+        title={icon ? label : undefined}
+        className={
+          icon
+            ? `relative flex h-9 w-9 flex-shrink-0 snap-start items-center justify-center rounded-full border transition ${
+                active
+                  ? "border-[#3f6b3f] bg-[#f1efe6] text-[#3f6b3f]"
+                  : "border-[#e7e2d8] bg-white text-[#7a7566] hover:border-[#3f6b3f]/50 hover:text-[#3f6b3f]"
+              }`
+            : `flex flex-shrink-0 snap-start items-center gap-1 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition ${
+                active
+                  ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
+                  : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+              }`
+        }
       >
-        <span className="max-w-32 truncate">{label}</span>
-        <IconChevronDown className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
+        {icon ? (
+          <>
+            {icon}
+            {active && (
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#3f6b3f]" />
+            )}
+          </>
+        ) : (
+          <>
+            <span className="max-w-32 truncate">{label}</span>
+            <IconChevronDown className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
+          </>
+        )}
       </button>
       {open &&
         position &&
