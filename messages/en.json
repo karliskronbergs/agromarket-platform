@@ -100,7 +100,8 @@
     "filterManufacturer": "Manufacturer",
     "manufacturerPlaceholder": "Manufacturer",
     "filterModel": "Model",
-    "modelPlaceholder": "Model"
+    "modelPlaceholder": "Model",
+    "titlePlaceholder": "Keyword in title"
   },
   "Listing": {
     "myListings": "Listings",

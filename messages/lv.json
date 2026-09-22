@@ -100,7 +100,8 @@
     "filterManufacturer": "Ražotājs",
     "manufacturerPlaceholder": "Ražotājs",
     "filterModel": "Modelis",
-    "modelPlaceholder": "Modelis"
+    "modelPlaceholder": "Modelis",
+    "titlePlaceholder": "Atslēgvārds nosaukumā"
   },
   "Listing": {
     "myListings": "Sludinājumi",

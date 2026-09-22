@@ -26,6 +26,7 @@ export default async function MapPage({
     condition?: string;
     manufacturer?: string;
     model?: string;
+    title?: string;
   }>;
 }) {
   const { locale } = await params;
@@ -41,6 +42,7 @@ export default async function MapPage({
     condition,
     manufacturer,
     model,
+    title: titleSearch,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
@@ -133,6 +135,7 @@ export default async function MapPage({
     if (condition) query = query.eq("condition", condition);
     if (manufacturer) query = query.ilike("manufacturer", `%${manufacturer}%`);
     if (model) query = query.ilike("model", `%${model}%`);
+    if (titleSearch) query = query.ilike("title", `%${titleSearch}%`);
 
     const { data } = await query;
 
@@ -198,6 +201,7 @@ export default async function MapPage({
       }}
       equipmentFilters={{ condition, priceMin, priceMax }}
       machineryFilters={{ manufacturer, model, condition, priceMin, priceMax }}
+      seedsFilters={{ title: titleSearch, priceMin, priceMax }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),
@@ -223,6 +227,8 @@ export default async function MapPage({
         manufacturerPlaceholder: t("manufacturerPlaceholder"),
         filterModel: t("filterModel"),
         modelPlaceholder: t("modelPlaceholder"),
+        filterTitle: tListing("title"),
+        titlePlaceholder: t("titlePlaceholder"),
         empty: t("empty"),
       }}
     />

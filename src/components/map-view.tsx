@@ -10,12 +10,14 @@ import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
 import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
+import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-panel";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
 import { getAnimalGroupForCategory } from "@/lib/livestock";
 import { getEquipmentCategoryIds } from "@/lib/equipment";
 import { getMachineryCategoryIds } from "@/lib/machinery";
+import { getSeedsCategoryIds } from "@/lib/seeds";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -61,6 +63,7 @@ export function MapView({
   livestockFilters,
   equipmentFilters,
   machineryFilters,
+  seedsFilters,
 }: {
   mode: MapMode;
   points: MapPoint[];
@@ -93,10 +96,13 @@ export function MapView({
     manufacturerPlaceholder: string;
     filterModel: string;
     modelPlaceholder: string;
+    filterTitle: string;
+    titlePlaceholder: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
   machineryFilters: MachineryFilters;
+  seedsFilters: SeedsFilters;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
@@ -115,6 +121,8 @@ export function MapView({
     mode !== "profiles" && !!selectedCategory && getEquipmentCategoryIds(categories).has(selectedCategory);
   const isMachinery =
     mode !== "profiles" && !!selectedCategory && getMachineryCategoryIds(categories).has(selectedCategory);
+  const isSeeds =
+    mode !== "profiles" && !!selectedCategory && getSeedsCategoryIds(categories).has(selectedCategory);
 
   useEffect(() => {
     let cancelled = false;
@@ -303,6 +311,26 @@ export function MapView({
               if (filters.manufacturer) query.manufacturer = filters.manufacturer;
               if (filters.model) query.model = filters.model;
               if (filters.condition) query.condition = filters.condition;
+              if (filters.priceMin) query.priceMin = filters.priceMin;
+              if (filters.priceMax) query.priceMax = filters.priceMax;
+              navigate(query);
+            }}
+            onClear={() => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              navigate(query);
+            }}
+          />
+        )}
+        {isSeeds && (
+          <SeedsFilterPanel
+            key={selectedCategory}
+            filters={seedsFilters}
+            labels={labels}
+            onApply={(filters) => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              if (filters.title) query.title = filters.title;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
               navigate(query);
