@@ -24,7 +24,7 @@ const OTHER_BREED: BreedOption = {
 export const BREED_OPTIONS: Record<AnimalGroup, BreedOption[]> = {
   sheep: [
     { value: "latvijas-tumsgalve", name_lv: "Latvijas tumšgalve", name_en: "Latvian Dark-headed" },
-    { value: "vacijas-melngalve", name_lv: "Vācijas melngalve", name_en: "German Black-headed" },
+    { value: "ile-de-france", name_lv: "Ile de France", name_en: "Ile de France" },
     { value: "vacijas-merino", name_lv: "Vācijas merino", name_en: "German Merino" },
     { value: "oksfordauna", name_lv: "Oksfordauna", name_en: "Oxford Down" },
     { value: "romanova", name_lv: "Romanova", name_en: "Romanov" },
@@ -39,7 +39,8 @@ export const BREED_OPTIONS: Record<AnimalGroup, BreedOption[]> = {
     { value: "hereforda", name_lv: "Herefordas", name_en: "Hereford" },
     { value: "limuzina", name_lv: "Limuzīna", name_en: "Limousin" },
     { value: "aberdinangus", name_lv: "Aberdīnangus", name_en: "Aberdeen Angus" },
-    { value: "blonde-akvitanu", name_lv: "Blondo akvitāņu", name_en: "Blonde d'Aquitaine" },
+    { value: "galoveja", name_lv: "Galovejas", name_en: "Galloway" },
+    { value: "simentale", name_lv: "Simentāle", name_en: "Simmental" },
     OTHER_BREED,
   ],
   "dairy-cattle": [
