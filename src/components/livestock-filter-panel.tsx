@@ -51,7 +51,9 @@ function FilterPill({
   children: (close: () => void) => React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const [position, setPosition] = useState<{ top: number; left: number; maxHeight: number } | null>(
+    null,
+  );
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -66,9 +68,11 @@ function FilterPill({
     }
     const rect = buttonRef.current?.getBoundingClientRect();
     if (rect) {
+      const top = rect.bottom + 8;
       setPosition({
-        top: rect.bottom + 8,
+        top,
         left: Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8)),
+        maxHeight: Math.max(160, window.innerHeight - top - 16),
       });
     }
     setOpen(true);
@@ -116,8 +120,15 @@ function FilterPill({
         createPortal(
           <div
             ref={panelRef}
-            style={{ position: "fixed", top: position.top, left: position.left, width: panelWidth, zIndex: 1100 }}
-            className="rounded-xl border border-[#e7e2d8] bg-white p-3 shadow-lg"
+            style={{
+              position: "fixed",
+              top: position.top,
+              left: position.left,
+              width: panelWidth,
+              maxHeight: position.maxHeight,
+              zIndex: 1100,
+            }}
+            className="overflow-y-auto overscroll-contain rounded-xl border border-[#e7e2d8] bg-white p-3 shadow-lg"
           >
             {children(close)}
           </div>,

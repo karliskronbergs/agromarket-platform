@@ -53,7 +53,9 @@ function RootMenu({
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
   const [open, setOpen] = useState(false);
   const [path, setPath] = useState<CategoryNode<CategoryRow>[]>([]);
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const [position, setPosition] = useState<{ top: number; left: number; maxHeight: number } | null>(
+    null,
+  );
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const isActiveRoot = findCategoryPath([root], selectedCategory).length > 0;
@@ -109,9 +111,11 @@ function RootMenu({
     const rect = buttonRef.current?.getBoundingClientRect();
     if (rect) {
       const panelWidth = 240;
+      const top = rect.bottom + 8;
       setPosition({
-        top: rect.bottom + 8,
+        top,
         left: Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8)),
+        maxHeight: Math.max(160, window.innerHeight - top - 16),
       });
     }
     setOpen(true);
@@ -147,8 +151,14 @@ function RootMenu({
         createPortal(
           <div
             ref={panelRef}
-            style={{ position: "fixed", top: position.top, left: position.left, zIndex: 1100 }}
-            className="flex flex-col gap-2"
+            style={{
+              position: "fixed",
+              top: position.top,
+              left: position.left,
+              maxHeight: position.maxHeight,
+              zIndex: 1100,
+            }}
+            className="flex flex-col gap-2 overflow-y-auto overscroll-contain"
           >
             {path.map((node, i) => (
               <Panel
