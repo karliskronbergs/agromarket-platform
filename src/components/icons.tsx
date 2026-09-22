@@ -145,6 +145,24 @@ export function IconCheck({ className }: IconProps) {
   );
 }
 
+// Bare checkmark glyph (no baked-in circle/color) for use inside a
+// separately-styled checkbox box -- IconCheck above hardcodes a white
+// stroke on a currentColor-filled circle, so it goes invisible if you
+// try to tint it white for a dark checkbox background.
+export function IconCheckmark({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M5 12.5l4.5 4.5L19 7"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconChevronDown({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

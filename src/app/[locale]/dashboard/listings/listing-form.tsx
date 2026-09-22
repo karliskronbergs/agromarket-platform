@@ -7,7 +7,7 @@ import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } fro
 import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
 import { getMachineryCategoryIds } from "@/lib/machinery";
 import { CategoryFieldTree } from "@/components/category-field-tree";
-import { IconCheck } from "@/components/icons";
+import { IconCheckmark } from "@/components/icons";
 import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
@@ -225,8 +225,8 @@ export function ListingForm({
               defaultChecked={initial?.organicCertified}
               className="peer sr-only"
             />
-            <span className="flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-[5px] border-[1.5px] border-[#c9c3b3] bg-white transition peer-checked:border-[#3f6b3f] peer-checked:bg-gradient-to-br peer-checked:from-[#4a7c4a] peer-checked:to-[#3f6b3f]">
-              <IconCheck className="h-3 w-3 text-white" />
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#c9c3b3] bg-white transition-all peer-checked:border-[#3f6b3f] peer-checked:bg-gradient-to-br peer-checked:from-[#57975a] peer-checked:to-[#2f5233] peer-checked:shadow-[0_1px_3px_rgba(47,82,51,0.5)]">
+              <IconCheckmark className="h-3.5 w-3.5 text-white" />
             </span>
             <span className="text-sm font-medium text-[#2b2a24]">{t("organicCertified")}</span>
           </label>

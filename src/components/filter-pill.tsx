@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { IconChevronDown, IconCheck } from "@/components/icons";
+import { IconChevronDown, IconCheckmark } from "@/components/icons";
 
 export function optionClass(active: boolean) {
   return `rounded-lg px-3 py-2 text-left text-sm transition ${
@@ -31,15 +31,15 @@ export function CheckboxPill({
       }`}
     >
       <span
-        className={`flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-[5px] border-[1.5px] transition-all ${
+        className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all ${
           checked
-            ? "border-[#3f6b3f] bg-gradient-to-br from-[#4a7c4a] to-[#3f6b3f] shadow-sm"
+            ? "border-[#3f6b3f] bg-gradient-to-br from-[#57975a] to-[#2f5233] shadow-[0_1px_3px_rgba(47,82,51,0.5)]"
             : "border-[#c9c3b3] bg-white"
         }`}
       >
-        <IconCheck
-          className={`h-3 w-3 text-white transition-all duration-150 ${
-            checked ? "scale-100 opacity-100" : "scale-50 opacity-0"
+        <IconCheckmark
+          className={`h-3.5 w-3.5 text-white transition-all duration-200 ${
+            checked ? "scale-100 opacity-100" : "scale-0 opacity-0"
           }`}
         />
       </span>
