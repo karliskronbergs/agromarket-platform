@@ -178,7 +178,7 @@ export default async function MapPage({
         priceMin,
         priceMax,
       }}
-      equipmentFilters={{ condition }}
+      equipmentFilters={{ condition, priceMin, priceMax }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),

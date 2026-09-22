@@ -270,6 +270,8 @@ export function MapView({
               const query: Record<string, string> = { mode };
               if (selectedCategory) query.category = selectedCategory;
               if (filters.condition) query.condition = filters.condition;
+              if (filters.priceMin) query.priceMin = filters.priceMin;
+              if (filters.priceMax) query.priceMax = filters.priceMax;
               navigate(query);
             }}
             onClear={() => {
