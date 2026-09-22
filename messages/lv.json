@@ -94,7 +94,9 @@
     "priceMinPlaceholder": "No (€)",
     "priceMaxPlaceholder": "Līdz (€)",
     "apply": "Lietot",
-    "clearFilters": "Notīrīt filtrus"
+    "clearFilters": "Notīrīt filtrus",
+    "filterCondition": "Stāvoklis",
+    "anyCondition": "Jebkurš stāvoklis"
   },
   "Listing": {
     "myListings": "Sludinājumi",
@@ -118,6 +120,7 @@
     "quantity": "Pieejamais daudzums",
     "ageMonthsShort": "mēn.",
     "quantityAvailable": "pieejami",
+    "condition": "Stāvoklis",
     "images": "Pievienot attēlus",
     "addPhotos": "Pievienot",
     "existingImages": "Esošie attēli",

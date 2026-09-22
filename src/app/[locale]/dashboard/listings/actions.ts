@@ -17,6 +17,7 @@ const listingSchema = z.object({
   breed: z.string().optional(),
   ageMonths: z.string().optional(),
   quantity: z.string().optional(),
+  condition: z.enum(["new", "used"]).optional(),
 });
 
 async function getOwnProfile(userId: string) {
@@ -54,6 +55,7 @@ export async function saveListing(
     breed: formData.get("breed") || undefined,
     ageMonths: formData.get("ageMonths") || undefined,
     quantity: formData.get("quantity") || undefined,
+    condition: formData.get("condition") || undefined,
   });
 
   if (!parsed.success) {
@@ -95,6 +97,7 @@ export async function saveListing(
     breed: parsed.data.breed ?? null,
     age_months: ageMonths,
     quantity,
+    condition: parsed.data.condition ?? null,
     lat: profile.lat,
     lng: profile.lng,
   };

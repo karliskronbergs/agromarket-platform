@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } from "@/lib/livestock";
+import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
@@ -39,6 +40,7 @@ export function ListingForm({
     breed: string | null;
     ageMonths: string | null;
     quantity: string | null;
+    condition: string | null;
   };
 }) {
   const t = useTranslations("Listing");
@@ -61,6 +63,9 @@ export function ListingForm({
     [categories, selectedCategoryId],
   );
   const breedOptions = animalGroup ? BREED_OPTIONS[animalGroup] : [];
+
+  const equipmentCategoryIds = useMemo(() => getEquipmentCategoryIds(categories), [categories]);
+  const showCondition = equipmentCategoryIds.has(selectedCategoryId);
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -157,6 +162,29 @@ export function ListingForm({
               />
             </Field>
           </div>
+        )}
+
+        {showCondition && (
+          <Field label={t("condition")}>
+            <fieldset className="flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
+              <legend className="sr-only">{t("condition")}</legend>
+              {CONDITION_OPTIONS.map((opt) => (
+                <label
+                  key={opt.value}
+                  className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition has-checked:bg-[#3f6b3f] has-checked:text-white"
+                >
+                  <input
+                    type="radio"
+                    name="condition"
+                    value={opt.value}
+                    defaultChecked={initial?.condition === opt.value}
+                    className="sr-only"
+                  />
+                  {locale === "lv" ? opt.name_lv : opt.name_en}
+                </label>
+              ))}
+            </fieldset>
+          </Field>
         )}
 
         <Field label={t("price")}>

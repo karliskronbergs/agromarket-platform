@@ -94,7 +94,9 @@
     "priceMinPlaceholder": "From (€)",
     "priceMaxPlaceholder": "To (€)",
     "apply": "Apply",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "filterCondition": "Condition",
+    "anyCondition": "Any condition"
   },
   "Listing": {
     "myListings": "Listings",
@@ -118,6 +120,7 @@
     "quantity": "Quantity available",
     "ageMonthsShort": "mo",
     "quantityAvailable": "available",
+    "condition": "Condition",
     "images": "Add images",
     "addPhotos": "Add",
     "existingImages": "Existing images",

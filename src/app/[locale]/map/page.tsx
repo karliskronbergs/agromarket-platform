@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
+import { conditionLabel } from "@/lib/equipment";
 import { priceUnitSuffix } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
@@ -22,10 +23,11 @@ export default async function MapPage({
     quantityMin?: string;
     priceMin?: string;
     priceMax?: string;
+    condition?: string;
   }>;
 }) {
   const { locale } = await params;
-  const { mode: rawMode, category, breed, ageMin, ageMax, quantityMin, priceMin, priceMax } =
+  const { mode: rawMode, category, breed, ageMin, ageMax, quantityMin, priceMin, priceMax, condition } =
     await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
@@ -101,7 +103,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -115,6 +117,7 @@ export default async function MapPage({
     if (quantityMin) query = query.gte("quantity", Number(quantityMin));
     if (priceMin) query = query.gte("price", Number(priceMin));
     if (priceMax) query = query.lte("price", Number(priceMax));
+    if (condition) query = query.eq("condition", condition);
 
     const { data } = await query;
 
@@ -142,10 +145,11 @@ export default async function MapPage({
             : "";
         const breedText =
           animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";
+        const conditionText = l.condition ? conditionLabel(l.condition as string, locale) : "";
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: [breedText, priceText].filter(Boolean).join(" · "),
+          subtitle: [breedText || conditionText, priceText].filter(Boolean).join(" · "),
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,
@@ -174,6 +178,7 @@ export default async function MapPage({
         priceMin,
         priceMax,
       }}
+      equipmentFilters={{ condition }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),
@@ -193,6 +198,8 @@ export default async function MapPage({
         apply: t("apply"),
         clearFilters: t("clearFilters"),
         ageMonthsShort: tListing("ageMonthsShort"),
+        filterCondition: t("filterCondition"),
+        anyCondition: t("anyCondition"),
         empty: t("empty"),
       }}
     />

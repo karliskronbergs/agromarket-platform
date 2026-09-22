@@ -8,10 +8,12 @@ import "leaflet/dist/leaflet.css";
 import { IconPin, IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
+import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
 import { getAnimalGroupForCategory } from "@/lib/livestock";
+import { getEquipmentCategoryIds } from "@/lib/equipment";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -55,6 +57,7 @@ export function MapView({
   locale,
   labels,
   livestockFilters,
+  equipmentFilters,
 }: {
   mode: MapMode;
   points: MapPoint[];
@@ -81,8 +84,11 @@ export function MapView({
     apply: string;
     clearFilters: string;
     ageMonthsShort: string;
+    filterCondition: string;
+    anyCondition: string;
   };
   livestockFilters: LivestockFilters;
+  equipmentFilters: EquipmentFilters;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
@@ -97,6 +103,8 @@ export function MapView({
   }
 
   const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, selectedCategory) : null;
+  const isEquipment =
+    mode !== "profiles" && !!selectedCategory && getEquipmentCategoryIds(categories).has(selectedCategory);
 
   useEffect(() => {
     let cancelled = false;
@@ -243,6 +251,25 @@ export function MapView({
               if (filters.quantityMin) query.quantityMin = filters.quantityMin;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
+              navigate(query);
+            }}
+            onClear={() => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              navigate(query);
+            }}
+          />
+        )}
+        {isEquipment && (
+          <EquipmentFilterPanel
+            key={selectedCategory}
+            locale={locale}
+            filters={equipmentFilters}
+            labels={labels}
+            onApply={(filters) => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              if (filters.condition) query.condition = filters.condition;
               navigate(query);
             }}
             onClear={() => {

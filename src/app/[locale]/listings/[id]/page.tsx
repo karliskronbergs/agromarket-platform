@@ -9,6 +9,7 @@ import { MiniMap } from "@/components/mini-map";
 import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
 import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
 import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
+import { conditionLabel } from "@/lib/equipment";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
@@ -58,7 +59,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -78,6 +79,7 @@ export default async function ListingDetailPage({
   const categoryLabel = category ? (locale === "lv" ? category.name_lv : category.name_en) : null;
   const animalGroup = getAnimalGroupForCategory(allCategories ?? [], listing.category_id);
   const breedText = animalGroup && listing.breed ? breedLabel(animalGroup, listing.breed, locale) : null;
+  const conditionText = listing.condition ? conditionLabel(listing.condition, locale) : null;
 
   let activeListingsCount = 0;
   let sellerAttributes: AttributeInfo[] = [];
@@ -203,6 +205,12 @@ export default async function ListingDetailPage({
                   <td className="py-2.5 font-medium text-[#2b2a24]">
                     {listing.quantity} {t("quantityAvailable")}
                   </td>
+                </tr>
+              )}
+              {conditionText && (
+                <tr className="border-b border-[#f0ede4]">
+                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("condition")}</td>
+                  <td className="py-2.5 font-medium text-[#2b2a24]">{conditionText}</td>
                 </tr>
               )}
               {profile?.address && (
