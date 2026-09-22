@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { BREED_OPTIONS, type AnimalGroup } from "@/lib/livestock";
 import { IconClose } from "@/components/icons";
-import { FilterPill, optionClass, filterFieldClass as fieldClass } from "@/components/filter-pill";
+import { FilterPill, CheckboxPill, optionClass, filterFieldClass as fieldClass } from "@/components/filter-pill";
 
 export type LivestockFilters = {
   breed?: string;
@@ -12,6 +12,7 @@ export type LivestockFilters = {
   quantityMin?: string;
   priceMin?: string;
   priceMax?: string;
+  organic?: string;
 };
 
 type Labels = {
@@ -28,6 +29,7 @@ type Labels = {
   apply: string;
   clearFilters: string;
   ageMonthsShort: string;
+  organicCertified: string;
 };
 
 export function LivestockFilterPanel({
@@ -205,6 +207,12 @@ export function LivestockFilterPanel({
           </div>
         )}
       </FilterPill>
+
+      <CheckboxPill
+        label={labels.organicCertified}
+        checked={!!filters.organic}
+        onToggle={() => onApply({ ...filters, organic: filters.organic ? undefined : "1" })}
+      />
 
       {hasActiveFilters && (
         <button

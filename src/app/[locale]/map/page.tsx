@@ -27,6 +27,7 @@ export default async function MapPage({
     manufacturer?: string;
     model?: string;
     title?: string;
+    organic?: string;
   }>;
 }) {
   const { locale } = await params;
@@ -43,6 +44,7 @@ export default async function MapPage({
     manufacturer,
     model,
     title: titleSearch,
+    organic,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
@@ -57,6 +59,22 @@ export default async function MapPage({
 
   let points: MapPoint[] = [];
   const categoryIds = category ? getSelfAndDescendantIds(categories ?? [], category) : null;
+
+  let organicProfileIds: string[] | null = null;
+  if (organic) {
+    const { data: organicAttr } = await supabase
+      .from("attributes")
+      .select("id")
+      .eq("slug", "organic-certified")
+      .maybeSingle();
+    const { data: links } = organicAttr
+      ? await supabase
+          .from("profile_attribute_links")
+          .select("profile_id")
+          .eq("attribute_id", organicAttr.id)
+      : { data: [] };
+    organicProfileIds = (links ?? []).map((l) => l.profile_id);
+  }
 
   if (mode === "profiles") {
     const { data } = categoryIds
@@ -136,6 +154,12 @@ export default async function MapPage({
     if (manufacturer) query = query.ilike("manufacturer", `%${manufacturer}%`);
     if (model) query = query.ilike("model", `%${model}%`);
     if (titleSearch) query = query.ilike("title", `%${titleSearch}%`);
+    if (organicProfileIds) {
+      query =
+        organicProfileIds.length > 0
+          ? query.in("profile_id", organicProfileIds)
+          : query.eq("id", "00000000-0000-0000-0000-000000000000");
+    }
 
     const { data } = await query;
 
@@ -198,10 +222,11 @@ export default async function MapPage({
         quantityMin,
         priceMin,
         priceMax,
+        organic,
       }}
       equipmentFilters={{ condition, priceMin, priceMax }}
       machineryFilters={{ manufacturer, model, condition, priceMin, priceMax }}
-      seedsFilters={{ title: titleSearch, priceMin, priceMax }}
+      seedsFilters={{ title: titleSearch, priceMin, priceMax, organic }}
       labels={{
         profiles: t("modeProfiles"),
         sell: t("modeSell"),
@@ -229,6 +254,7 @@ export default async function MapPage({
         modelPlaceholder: t("modelPlaceholder"),
         filterTitle: tListing("title"),
         titlePlaceholder: t("titlePlaceholder"),
+        organicCertified: t("organicCertified"),
         empty: t("empty"),
       }}
     />

@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { IconClose } from "@/components/icons";
-import { FilterPill, filterFieldClass as fieldClass } from "@/components/filter-pill";
+import { FilterPill, CheckboxPill, filterFieldClass as fieldClass } from "@/components/filter-pill";
 
 export type SeedsFilters = {
   title?: string;
   priceMin?: string;
   priceMax?: string;
+  organic?: string;
 };
 
 type Labels = {
@@ -18,6 +19,7 @@ type Labels = {
   priceMaxPlaceholder: string;
   apply: string;
   clearFilters: string;
+  organicCertified: string;
 };
 
 export function SeedsFilterPanel({
@@ -108,6 +110,12 @@ export function SeedsFilterPanel({
           </div>
         )}
       </FilterPill>
+
+      <CheckboxPill
+        label={labels.organicCertified}
+        checked={!!filters.organic}
+        onToggle={() => onApply({ ...filters, organic: filters.organic ? undefined : "1" })}
+      />
 
       {hasActiveFilters && (
         <button

@@ -101,7 +101,8 @@
     "manufacturerPlaceholder": "Manufacturer",
     "filterModel": "Model",
     "modelPlaceholder": "Model",
-    "titlePlaceholder": "Keyword in title"
+    "titlePlaceholder": "Keyword in title",
+    "organicCertified": "Organic certificate"
   },
   "Listing": {
     "myListings": "Listings",

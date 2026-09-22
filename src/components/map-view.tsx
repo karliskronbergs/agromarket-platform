@@ -98,6 +98,7 @@ export function MapView({
     modelPlaceholder: string;
     filterTitle: string;
     titlePlaceholder: string;
+    organicCertified: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -269,6 +270,7 @@ export function MapView({
               if (filters.quantityMin) query.quantityMin = filters.quantityMin;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
+              if (filters.organic) query.organic = filters.organic;
               navigate(query);
             }}
             onClear={() => {
@@ -333,6 +335,7 @@ export function MapView({
               if (filters.title) query.title = filters.title;
               if (filters.priceMin) query.priceMin = filters.priceMin;
               if (filters.priceMax) query.priceMax = filters.priceMax;
+              if (filters.organic) query.organic = filters.organic;
               navigate(query);
             }}
             onClear={() => {

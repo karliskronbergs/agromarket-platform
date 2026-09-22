@@ -2,12 +2,43 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { IconChevronDown } from "@/components/icons";
+import { IconChevronDown, IconCheck } from "@/components/icons";
 
 export function optionClass(active: boolean) {
   return `rounded-lg px-3 py-2 text-left text-sm transition ${
     active ? "bg-[#f1efe6] font-medium text-[#2b2a24]" : "text-[#55503f] hover:bg-[#faf8f3]"
   }`;
+}
+
+export function CheckboxPill({
+  label,
+  checked,
+  onToggle,
+}: {
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`flex flex-shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition ${
+        checked
+          ? "border-[#3f6b3f] bg-[#e7efe1] text-[#2f5233]"
+          : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+      }`}
+    >
+      <span
+        className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition ${
+          checked ? "border-[#3f6b3f] bg-[#3f6b3f]" : "border-[#c9c3b3] bg-white"
+        }`}
+      >
+        {checked && <IconCheck className="h-3 w-3 text-white" />}
+      </span>
+      {label}
+    </button>
+  );
 }
 
 export const filterFieldClass =

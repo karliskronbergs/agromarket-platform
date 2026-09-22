@@ -101,7 +101,8 @@
     "manufacturerPlaceholder": "Ražotājs",
     "filterModel": "Modelis",
     "modelPlaceholder": "Modelis",
-    "titlePlaceholder": "Atslēgvārds nosaukumā"
+    "titlePlaceholder": "Atslēgvārds nosaukumā",
+    "organicCertified": "Bioloģiskais sertifikāts"
   },
   "Listing": {
     "myListings": "Sludinājumi",
