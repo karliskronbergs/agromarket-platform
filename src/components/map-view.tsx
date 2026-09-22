@@ -68,14 +68,19 @@ export function MapView({
     all: string;
     back: string;
     empty: string;
+    filterBreed: string;
     anyBreed: string;
+    filterAge: string;
     ageMinPlaceholder: string;
     ageMaxPlaceholder: string;
+    filterQuantity: string;
     quantityMinPlaceholder: string;
+    filterPrice: string;
     priceMinPlaceholder: string;
     priceMaxPlaceholder: string;
-    applyFilters: string;
+    apply: string;
     clearFilters: string;
+    ageMonthsShort: string;
   };
   livestockFilters: LivestockFilters;
 }) {
@@ -224,6 +229,7 @@ export function MapView({
         />
         {animalGroup && (
           <LivestockFilterPanel
+            key={selectedCategory}
             animalGroup={animalGroup}
             locale={locale}
             filters={livestockFilters}
