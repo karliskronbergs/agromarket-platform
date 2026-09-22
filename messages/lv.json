@@ -129,6 +129,7 @@
     "condition": "Stāvoklis",
     "manufacturer": "Ražotājs",
     "model": "Modelis",
+    "organicCertified": "Bioloģiskais sertifikāts",
     "images": "Pievienot attēlus",
     "addPhotos": "Pievienot",
     "existingImages": "Esošie attēli",

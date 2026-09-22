@@ -104,6 +104,7 @@ export async function saveListing(
     condition: parsed.data.condition ?? null,
     manufacturer: parsed.data.manufacturer ?? null,
     model: parsed.data.model ?? null,
+    organic_certified: formData.get("organicCertified") === "on",
     lat: profile.lat,
     lng: profile.lng,
   };

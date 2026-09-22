@@ -7,6 +7,7 @@ import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } fro
 import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
 import { getMachineryCategoryIds } from "@/lib/machinery";
 import { CategoryFieldTree } from "@/components/category-field-tree";
+import { IconCheck } from "@/components/icons";
 import { Spinner } from "@/components/spinner";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
@@ -44,6 +45,7 @@ export function ListingForm({
     condition: string | null;
     manufacturer: string | null;
     model: string | null;
+    organicCertified: boolean;
   };
 }) {
   const t = useTranslations("Listing");
@@ -71,6 +73,8 @@ export function ListingForm({
   const machineryCategoryIds = useMemo(() => getMachineryCategoryIds(categories), [categories]);
   const showMachineryFields = machineryCategoryIds.has(selectedCategoryId);
   const showCondition = equipmentCategoryIds.has(selectedCategoryId) || showMachineryFields;
+
+  const showOrganicCertified = showLivestockFields || showPriceUnit;
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -211,6 +215,21 @@ export function ListingForm({
               ))}
             </fieldset>
           </Field>
+        )}
+
+        {showOrganicCertified && (
+          <label className="flex w-fit cursor-pointer items-center gap-2.5 rounded-full border border-[#e7e2d8] bg-white px-3.5 py-2 transition has-checked:border-[#3f6b3f] has-checked:bg-[#eaf4e8]">
+            <input
+              type="checkbox"
+              name="organicCertified"
+              defaultChecked={initial?.organicCertified}
+              className="peer sr-only"
+            />
+            <span className="flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-[5px] border-[1.5px] border-[#c9c3b3] bg-white transition peer-checked:border-[#3f6b3f] peer-checked:bg-gradient-to-br peer-checked:from-[#4a7c4a] peer-checked:to-[#3f6b3f]">
+              <IconCheck className="h-3 w-3 text-white" />
+            </span>
+            <span className="text-sm font-medium text-[#2b2a24]">{t("organicCertified")}</span>
+          </label>
         )}
 
         <Field label={t("price")}>

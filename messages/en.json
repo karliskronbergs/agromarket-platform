@@ -129,6 +129,7 @@
     "condition": "Condition",
     "manufacturer": "Manufacturer",
     "model": "Model",
+    "organicCertified": "Organic certificate",
     "images": "Add images",
     "addPhotos": "Add",
     "existingImages": "Existing images",

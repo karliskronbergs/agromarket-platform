@@ -23,18 +23,25 @@ export function CheckboxPill({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex flex-shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition ${
+      aria-pressed={checked}
+      className={`flex flex-shrink-0 snap-start items-center gap-2.5 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition-all ${
         checked
-          ? "border-[#3f6b3f] bg-[#e7efe1] text-[#2f5233]"
-          : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+          ? "border-[#3f6b3f] bg-[#eaf4e8] text-[#2f5233]"
+          : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]/50 hover:bg-[#faf8f3]"
       }`}
     >
       <span
-        className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition ${
-          checked ? "border-[#3f6b3f] bg-[#3f6b3f]" : "border-[#c9c3b3] bg-white"
+        className={`flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-[5px] border-[1.5px] transition-all ${
+          checked
+            ? "border-[#3f6b3f] bg-gradient-to-br from-[#4a7c4a] to-[#3f6b3f] shadow-sm"
+            : "border-[#c9c3b3] bg-white"
         }`}
       >
-        {checked && <IconCheck className="h-3 w-3 text-white" />}
+        <IconCheck
+          className={`h-3 w-3 text-white transition-all duration-150 ${
+            checked ? "scale-100 opacity-100" : "scale-50 opacity-0"
+          }`}
+        />
       </span>
       {label}
     </button>

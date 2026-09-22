@@ -28,7 +28,7 @@ export default async function EditListingPage({
   const { data: listing } = await supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, category_id, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, profile_id",
+      "id, listing_type, title, description, category_id, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, profile_id",
     )
     .eq("id", id)
     .maybeSingle();
@@ -71,6 +71,7 @@ export default async function EditListingPage({
             condition: listing.condition,
             manufacturer: listing.manufacturer,
             model: listing.model,
+            organicCertified: listing.organic_certified,
           }}
         />
       </div>

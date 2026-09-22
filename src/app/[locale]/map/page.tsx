@@ -49,6 +49,7 @@ export default async function MapPage({
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
   const tListing = await getTranslations("Listing");
+  const t = await getTranslations("Map");
   const supabase = await createClient();
 
   const { data: categories } = await supabase
@@ -59,22 +60,6 @@ export default async function MapPage({
 
   let points: MapPoint[] = [];
   const categoryIds = category ? getSelfAndDescendantIds(categories ?? [], category) : null;
-
-  let organicProfileIds: string[] | null = null;
-  if (organic) {
-    const { data: organicAttr } = await supabase
-      .from("attributes")
-      .select("id")
-      .eq("slug", "organic-certified")
-      .maybeSingle();
-    const { data: links } = organicAttr
-      ? await supabase
-          .from("profile_attribute_links")
-          .select("profile_id")
-          .eq("attribute_id", organicAttr.id)
-      : { data: [] };
-    organicProfileIds = (links ?? []).map((l) => l.profile_id);
-  }
 
   if (mode === "profiles") {
     const { data } = categoryIds
@@ -136,7 +121,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, lat, lng, profiles(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -154,12 +139,7 @@ export default async function MapPage({
     if (manufacturer) query = query.ilike("manufacturer", `%${manufacturer}%`);
     if (model) query = query.ilike("model", `%${model}%`);
     if (titleSearch) query = query.ilike("title", `%${titleSearch}%`);
-    if (organicProfileIds) {
-      query =
-        organicProfileIds.length > 0
-          ? query.in("profile_id", organicProfileIds)
-          : query.eq("id", "00000000-0000-0000-0000-000000000000");
-    }
+    if (organic) query = query.eq("organic_certified", true);
 
     const { data } = await query;
 
@@ -189,10 +169,11 @@ export default async function MapPage({
           animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";
         const conditionText = l.condition ? conditionLabel(l.condition as string, locale) : "";
         const manufacturerModelText = [l.manufacturer, l.model].filter(Boolean).join(" ");
+        const organicText = l.organic_certified ? t("organicCertified") : "";
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: [manufacturerModelText || breedText || conditionText, priceText]
+          subtitle: [manufacturerModelText || breedText || conditionText || organicText, priceText]
             .filter(Boolean)
             .join(" · "),
           lat,
@@ -205,8 +186,6 @@ export default async function MapPage({
       })
       .filter((p) => p.lat != null && p.lng != null) as MapPoint[];
   }
-
-  const t = await getTranslations("Map");
 
   return (
     <MapView

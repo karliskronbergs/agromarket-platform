@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { MiniMap } from "@/components/mini-map";
-import { IconPin, IconPhone, IconCheck, IconShield } from "@/components/icons";
+import { IconPin, IconPhone, IconCheck, IconShield, IconLeaf } from "@/components/icons";
 import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
 import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
 import { conditionLabel } from "@/lib/equipment";
@@ -59,7 +59,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -133,6 +133,12 @@ export default async function ListingDetailPage({
             {categoryLabel && (
               <span className="rounded-full bg-[#e7efe1] px-2.5 py-1 text-xs font-semibold text-[#3f6b3f]">
                 {categoryLabel}
+              </span>
+            )}
+            {listing.organic_certified && (
+              <span className="flex items-center gap-1 rounded-full bg-gradient-to-br from-[#eaf4e8] to-[#dcedd8] px-2.5 py-1 text-xs font-semibold text-[#2f5233]">
+                <IconLeaf className="h-3 w-3" />
+                {t("organicCertified")}
               </span>
             )}
           </div>
