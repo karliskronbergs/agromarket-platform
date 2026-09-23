@@ -20,7 +20,7 @@ export function MobileNav({ children }: { children: React.ReactNode }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Menu"
-        className="flex h-9 w-9 cursor-pointer items-center justify-center text-[#2b2a24] sm:hidden"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center text-white sm:hidden"
       >
         {open ? <IconClose className="h-6 w-6" /> : <IconMenu className="h-6 w-6" />}
       </button>

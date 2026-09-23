@@ -43,11 +43,15 @@ export async function SiteHeader({ locale }: { locale: string }) {
 
   const navLinks = (
     <>
-      <Link href="/map">{t("map")}</Link>
+      <Link href="/map" className="transition hover:opacity-70">
+        {t("map")}
+      </Link>
       {user ? (
         <>
-          <Link href="/dashboard">{t("dashboard")}</Link>
-          <Link href="/dashboard/messages" className="relative inline-block">
+          <Link href="/dashboard" className="transition hover:opacity-70">
+            {t("dashboard")}
+          </Link>
+          <Link href="/dashboard/messages" className="relative inline-block transition hover:opacity-70">
             {t("messages")}
             {unreadCount > 0 && (
               <span className="absolute -right-3 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
@@ -56,17 +60,19 @@ export async function SiteHeader({ locale }: { locale: string }) {
             )}
           </Link>
           <form action={boundSignOut}>
-            <button type="submit" className="cursor-pointer">
+            <button type="submit" className="cursor-pointer transition hover:opacity-70">
               {t("signOut")}
             </button>
           </form>
         </>
       ) : (
         <>
-          <Link href="/auth/login">{t("signIn")}</Link>
+          <Link href="/auth/login" className="transition hover:opacity-70">
+            {t("signIn")}
+          </Link>
           <Link
             href="/auth/sign-up"
-            className="w-fit rounded-full bg-[#d9713a] px-4 py-2 text-white"
+            className="w-fit rounded-full bg-[#d9713a] px-4 py-2 text-white transition hover:bg-[#c15f2c]"
           >
             {t("createProfile")}
           </Link>
@@ -80,16 +86,20 @@ export async function SiteHeader({ locale }: { locale: string }) {
       key={l}
       href="/"
       locale={l}
-      className={l === locale ? "font-semibold text-[#2b2a24]" : ""}
+      className={
+        l === locale
+          ? "font-semibold underline underline-offset-4"
+          : "opacity-70 transition hover:opacity-100"
+      }
     >
       {tLang(l)}
     </Link>
   ));
 
   return (
-    <header className="relative border-b border-[#e7e2d8] bg-white px-4 py-4 sm:px-6">
+    <header className="relative border-b border-[#2f4359] bg-[#3b5168] px-4 py-4 sm:px-6">
       <div className="flex items-center justify-between">
-        <Link href="/" className="flex items-center font-sans text-lg font-bold text-[#2b2a24]">
+        <Link href="/" className="flex items-center font-sans text-lg font-bold text-white">
           {logoUrl ? (
             <Image
               src={logoUrl}
@@ -104,9 +114,9 @@ export async function SiteHeader({ locale }: { locale: string }) {
           )}
         </Link>
 
-        <nav className="hidden items-center gap-5 text-sm font-medium text-[#55503f] sm:flex">
+        <nav className="hidden items-center gap-5 text-sm font-medium text-[#cfd8e3] sm:flex">
           {navLinks}
-          <span className="flex items-center gap-2 border-l border-[#e7e2d8] pl-5">
+          <span className="flex items-center gap-2 border-l border-white/20 pl-5">
             {langLinks}
           </span>
         </nav>
