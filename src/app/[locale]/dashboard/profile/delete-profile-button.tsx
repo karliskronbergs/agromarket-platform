@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { IconTrash } from "@/components/icons";
 import { deleteProfile } from "./actions";
 
 export function DeleteProfileButton({ locale }: { locale: string }) {
@@ -38,8 +39,9 @@ export function DeleteProfileButton({ locale }: { locale: string }) {
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      className="w-fit rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+      className="flex w-fit items-center gap-1.5 rounded-full border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
     >
+      <IconTrash className="h-4 w-4" />
       {t("deleteProfile")}
     </button>
   );

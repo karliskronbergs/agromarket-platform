@@ -74,7 +74,8 @@
   },
   "Dashboard": {
     "title": "Dashboard",
-    "welcome": "Hi, {email}"
+    "welcome": "Hi, {email}",
+    "views": "Views"
   },
   "Map": {
     "modeProfiles": "Profiles",
