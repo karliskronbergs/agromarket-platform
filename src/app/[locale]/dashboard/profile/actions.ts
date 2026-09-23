@@ -14,7 +14,7 @@ const profileSchema = z.object({
   contactEmail: z.string().max(200).optional(),
   website: z.string().max(200).optional(),
   address: z.string().min(3, "Address is required.").max(200),
-  categoryIds: z.array(z.string().uuid()).min(1, "Pick at least one category."),
+  categoryIds: z.array(z.string().uuid()),
   attributeIds: z.array(z.string().uuid()).optional(),
 });
 
@@ -68,6 +68,17 @@ export async function saveProfile(
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+
+  const { data: adminRow } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  const isAdmin = !!adminRow;
+
+  if (!isAdmin && parsed.data.categoryIds.length === 0) {
+    return { error: "Pick at least one category." };
   }
 
   const { data: existing } = await supabase
@@ -168,12 +179,14 @@ export async function saveProfile(
   }
 
   await supabase.from("profile_categories").delete().eq("profile_id", profile.id);
-  await supabase.from("profile_categories").insert(
-    parsed.data.categoryIds.map((categoryId) => ({
-      profile_id: profile.id,
-      category_id: categoryId,
-    })),
-  );
+  if (parsed.data.categoryIds.length > 0) {
+    await supabase.from("profile_categories").insert(
+      parsed.data.categoryIds.map((categoryId) => ({
+        profile_id: profile.id,
+        category_id: categoryId,
+      })),
+    );
+  }
 
   await supabase.from("profile_attribute_links").delete().eq("profile_id", profile.id);
   if (parsed.data.attributeIds && parsed.data.attributeIds.length > 0) {
