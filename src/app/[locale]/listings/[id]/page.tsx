@@ -59,13 +59,20 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone, status), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
-  const { data: listing } = isAdmin
+  const { data: rawListing } = isAdmin
     ? await listingQuery.maybeSingle()
     : await listingQuery.eq("status", "active").gt("expires_at", new Date().toISOString()).maybeSingle();
+
+  const rawProfile = rawListing
+    ? Array.isArray(rawListing.profiles)
+      ? rawListing.profiles[0]
+      : rawListing.profiles
+    : null;
+  const listing = !isAdmin && rawProfile?.status !== "active" ? null : rawListing;
 
   if (!listing) notFound();
 
@@ -99,9 +106,10 @@ export default async function ListingDetailPage({
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
       <ViewTracker listingId={listing.id} />
-      {isAdmin && listing.status !== "active" && (
+      {isAdmin && (listing.status !== "active" || rawProfile?.status !== "active") && (
         <div className="mb-4 rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
-          {t("adminPreviewNote")} ({listing.status})
+          {t("adminPreviewNote")} ({listing.status}
+          {rawProfile?.status !== "active" ? `, ${rawProfile?.status}` : ""})
         </div>
       )}
       <div className="mb-4 text-xs text-[#7a7566]">

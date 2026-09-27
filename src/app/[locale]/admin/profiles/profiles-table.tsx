@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { IconCheck, IconShield, IconSearch, IconTrash } from "@/components/icons";
-import { deleteProfileAsAdmin } from "./actions";
+import { IconCheck, IconShield, IconSearch, IconEye, IconEyeOff } from "@/components/icons";
+import { setProfileStatus } from "./actions";
 
 export type AdminProfileRow = {
   id: string;
@@ -176,20 +176,32 @@ export function ProfilesTable({ locale, profiles }: { locale: string; profiles: 
                     {new Date(p.createdAt).toLocaleDateString(locale === "lv" ? "lv-LV" : "en-GB")}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <form
-                      action={deleteProfileAsAdmin.bind(null, locale, p.id)}
-                      onSubmit={(e) => {
-                        if (!confirm(t("deleteProfileConfirmAdmin"))) e.preventDefault();
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700"
+                    {p.status === "active" ? (
+                      <form
+                        action={setProfileStatus.bind(null, locale, p.id, "suspended")}
+                        onSubmit={(e) => {
+                          if (!confirm(t("suspendProfileConfirm"))) e.preventDefault();
+                        }}
                       >
-                        <IconTrash className="h-4 w-4" />
-                        {t("delete")}
-                      </button>
-                    </form>
+                        <button
+                          type="submit"
+                          className="ml-auto flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-700"
+                        >
+                          <IconEyeOff className="h-4 w-4" />
+                          {t("suspendProfile")}
+                        </button>
+                      </form>
+                    ) : (
+                      <form action={setProfileStatus.bind(null, locale, p.id, "active")}>
+                        <button
+                          type="submit"
+                          className="ml-auto flex items-center gap-1 text-sm font-medium text-[#3f6b3f] hover:text-[#2f5233]"
+                        >
+                          <IconEye className="h-4 w-4" />
+                          {t("reactivateProfile")}
+                        </button>
+                      </form>
+                    )}
                   </td>
                 </tr>
               ))}
