@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy — Agromarket",
 };
 
-const CONTACT_EMAIL = "privacy@agromarket.lv";
+const CONTACT_EMAIL = "info@lauks24.lv";
 
 export default async function PrivacyPolicyPage({
   params,
@@ -20,7 +20,7 @@ export default async function PrivacyPolicyPage({
         <LegalSection title="1. Kas mēs esam">
           <p>
             Šo tīmekļa vietni (agromarket.lv, turpmāk — &quot;Agromarket&quot; vai &quot;mēs&quot;)
-            uztur [UZŅĒMUMA / PĀRVALDĪTĀJA NOSAUKUMS]. Jautājumu vai pieprasījumu gadījumā par šo
+            uztur lauks24.lv. Jautājumu vai pieprasījumu gadījumā par šo
             privātuma politiku vai savu datu apstrādi, raksti mums uz{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
               {CONTACT_EMAIL}
@@ -139,7 +139,7 @@ export default async function PrivacyPolicyPage({
       <LegalSection title="1. Who we are">
         <p>
           This website (agromarket.lv, &quot;Agromarket&quot;, &quot;we&quot;) is operated by
-          [COMPANY / OPERATOR NAME]. For any question or request about this policy or your data,
+          lauks24.lv. For any question or request about this policy or your data,
           contact us at{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
             {CONTACT_EMAIL}

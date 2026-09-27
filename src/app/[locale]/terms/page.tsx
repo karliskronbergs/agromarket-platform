@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Terms of Service — Agromarket",
 };
 
-const CONTACT_EMAIL = "info@agromarket.lv";
+const CONTACT_EMAIL = "info@lauks24.lv";
 
 export default async function TermsPage({
   params,
