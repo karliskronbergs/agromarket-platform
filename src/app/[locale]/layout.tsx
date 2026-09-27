@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Space_Grotesk, Work_Sans } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import "../globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <SiteHeader locale={locale} />
           {children}
+          <SiteFooter />
         </NextIntlClientProvider>
         <Analytics />
       </body>

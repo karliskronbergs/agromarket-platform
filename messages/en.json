@@ -7,6 +7,11 @@
     "dashboard": "Dashboard",
     "signOut": "Sign out"
   },
+  "Footer": {
+    "rights": "© {year} Agromarket. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
   "Home": {
     "title": "Find farming businesses near you",
     "subtitle": "Profiles, listings, and direct messaging in one place — for Latvia's farming community.",
@@ -36,6 +41,10 @@
     "signUpCta": "Sign up",
     "signInCta": "Sign in",
     "checkEmail": "Check your email to confirm your account.",
+    "agreeToTerms": "By signing up you agree to our",
+    "termsLink": "Terms of Service",
+    "and": "and",
+    "privacyLink": "Privacy Policy",
     "emailConfirmed": "Your email is confirmed. You can sign in now.",
     "codeError": "That confirmation link is no longer valid. Try signing up again."
   },

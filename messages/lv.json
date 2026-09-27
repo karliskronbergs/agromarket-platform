@@ -7,6 +7,11 @@
     "dashboard": "Profils",
     "signOut": "Iziet"
   },
+  "Footer": {
+    "rights": "© {year} Agromarket. Visas tiesības aizsargātas.",
+    "privacyPolicy": "Privātuma politika",
+    "terms": "Lietošanas noteikumi"
+  },
   "Home": {
     "title": "Atrodi lauksaimniecības uzņēmumus sev tuvumā",
     "subtitle": "Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem.",
@@ -36,6 +41,10 @@
     "signUpCta": "Reģistrēties",
     "signInCta": "Ieiet",
     "checkEmail": "Pārbaudi savu e-pastu, lai apstiprinātu kontu.",
+    "agreeToTerms": "Reģistrējoties tu piekrīti mūsu",
+    "termsLink": "lietošanas noteikumiem",
+    "and": "un",
+    "privacyLink": "privātuma politikai",
     "emailConfirmed": "Tavs e-pasts ir apstiprināts. Tagad vari ieiet.",
     "codeError": "Apstiprināšanas saite vairs nav derīga. Mēģini reģistrēties vēlreiz."
   },

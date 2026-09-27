@@ -65,6 +65,17 @@ export function SignUpForm({ locale }: { locale: string }) {
       {(mismatchError || state.error) && (
         <p className="text-sm text-red-600">{mismatchError ?? state.error}</p>
       )}
+      <p className="text-center text-xs text-[#7a7566]">
+        {t("agreeToTerms")}{" "}
+        <Link href="/terms" className="underline hover:text-[#3f6b3f]">
+          {t("termsLink")}
+        </Link>{" "}
+        {t("and")}{" "}
+        <Link href="/privacy" className="underline hover:text-[#3f6b3f]">
+          {t("privacyLink")}
+        </Link>
+        .
+      </p>
       <button
         type="submit"
         disabled={isPending}
