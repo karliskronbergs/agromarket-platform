@@ -33,7 +33,7 @@ async function geocode(address: string) {
   try {
     const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=lv&q=${encodeURIComponent(address)}`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "agromarket-platform (contact: kronberg.karlis@gmail.com)" },
+      headers: { "User-Agent": "lauks24.lv (contact: info@lauks24.lv)" },
     });
     if (!res.ok) return null;
     const results = (await res.json()) as Array<{ lat: string; lon: string }>;

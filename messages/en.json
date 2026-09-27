@@ -8,7 +8,7 @@
     "signOut": "Sign out"
   },
   "Footer": {
-    "rights": "© {year} Agromarket. All rights reserved.",
+    "rights": "© {year} lauks24.lv. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service"
   },
@@ -175,7 +175,7 @@
     "loginToMessage": "Sign in to message",
     "placeholder": "Write a message...",
     "send": "Send",
-    "adminName": "Agromarket Admin",
+    "adminName": "lauks24.lv Admin",
     "adminPrompt": "Questions? Message the admin."
   },
   "Report": {
@@ -235,7 +235,7 @@
     "cancel": "Cancel",
     "settings": "Settings",
     "noLogo": "No logo",
-    "logoHint": "Shown in the header in place of the Agromarket text. PNG or SVG with a transparent background works best.",
+    "logoHint": "Shown in the header in place of the lauks24.lv text. PNG or SVG with a transparent background works best.",
     "uploadLogo": "Upload logo",
     "removeLogo": "Remove logo",
     "removeLogoConfirm": "Remove the logo and go back to showing the site name as text?"

@@ -103,14 +103,14 @@ export async function SiteHeader({ locale }: { locale: string }) {
           {logoUrl ? (
             <Image
               src={logoUrl}
-              alt="Agromarket"
+              alt="lauks24.lv"
               width={140}
               height={36}
               className="h-9 w-auto"
               priority
             />
           ) : (
-            "Agromarket"
+            "lauks24.lv"
           )}
         </Link>
 

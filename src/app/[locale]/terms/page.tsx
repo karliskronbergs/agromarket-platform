@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/legal-page";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Agromarket",
+  title: "Terms of Service — lauks24.lv",
 };
 
 const CONTACT_EMAIL = "info@lauks24.lv";
@@ -19,14 +19,14 @@ export default async function TermsPage({
       <LegalPage title="Lietošanas noteikumi" updated="Pēdējie labojumi: 2026. gada septembris">
         <LegalSection title="1. Noteikumu pieņemšana">
           <p>
-            Reģistrējoties vai izmantojot Agromarket (agromarket.lv), tu piekrīti šiem lietošanas
-            noteikumiem un mūsu Privātuma politikai. Ja tiem nepiekrīti, lūdzu, neizmanto vietni.
+            Reģistrējoties vai izmantojot lauks24.lv, tu piekrīti šiem lietošanas noteikumiem un
+            mūsu Privātuma politikai. Ja tiem nepiekrīti, lūdzu, neizmanto vietni.
           </p>
         </LegalSection>
 
-        <LegalSection title="2. Kas ir Agromarket">
+        <LegalSection title="2. Kas ir lauks24.lv">
           <p>
-            Agromarket ir tiešsaistes katalogs un sludinājumu platforma, kas savieno lauksaimniecības
+            lauks24.lv ir tiešsaistes katalogs un sludinājumu platforma, kas savieno lauksaimniecības
             uzņēmumus Latvijā un ārvalstīs. Mēs nodrošinām rīku uzņēmuma profila un sludinājumu
             izveidei, kā arī saziņai starp lietotājiem — mēs paši neesam nevienas darījuma puse.
           </p>
@@ -42,7 +42,7 @@ export default async function TermsPage({
         </LegalSection>
 
         <LegalSection title="4. Sludinājumi un saturs">
-          <p>Publicējot sludinājumu vai citu saturu Agromarket, tu apliecini, ka:</p>
+          <p>Publicējot sludinājumu vai citu saturu vietnē lauks24.lv, tu apliecini, ka:</p>
           <ul className="list-disc pl-5">
             <li>informācija par preci, pakalpojumu vai dzīvnieku ir patiesa un precīza;</li>
             <li>tev ir tiesības piedāvāt attiecīgo preci vai pakalpojumu;</li>
@@ -60,7 +60,7 @@ export default async function TermsPage({
 
         <LegalSection title="5. Darījumi starp lietotājiem">
           <p>
-            Agromarket ir saziņas un sludinājumu platforma — mēs neesam pušu starpnieks pirkuma,
+            lauks24.lv ir saziņas un sludinājumu platforma — mēs neesam pušu starpnieks pirkuma,
             pārdošanas vai jebkāda cita darījuma noslēgšanā un neuzņemamies atbildību par darījumu
             izpildi, preces kvalitāti, samaksu vai piegādi. Ikviens darījums starp lietotājiem
             notiek uz pašu lietotāju atbildību un vienošanos.
@@ -69,7 +69,7 @@ export default async function TermsPage({
 
         <LegalSection title="6. Maksa par pakalpojumiem">
           <p>
-            Pašlaik Agromarket pamatfunkcijas ir bez maksas. Nākotnē atsevišķas papildu funkcijas
+            Pašlaik lauks24.lv pamatfunkcijas ir bez maksas. Nākotnē atsevišķas papildu funkcijas
             var kļūt maksas pakalpojumi — par to lietotāji tiks savlaicīgi informēti pirms izmaiņu
             stāšanās spēkā.
           </p>
@@ -121,14 +121,14 @@ export default async function TermsPage({
     <LegalPage title="Terms of Service" updated="Last updated: September 2026">
       <LegalSection title="1. Acceptance of these terms">
         <p>
-          By registering for or using Agromarket (agromarket.lv), you agree to these Terms of
-          Service and our Privacy Policy. If you do not agree, please do not use the site.
+          By registering for or using lauks24.lv, you agree to these Terms of Service and our
+          Privacy Policy. If you do not agree, please do not use the site.
         </p>
       </LegalSection>
 
-      <LegalSection title="2. What Agromarket is">
+      <LegalSection title="2. What lauks24.lv is">
         <p>
-          Agromarket is an online directory and listings platform connecting agricultural
+          lauks24.lv is an online directory and listings platform connecting agricultural
           businesses in Latvia and abroad. We provide tools to create a business profile and
           listings, and to communicate with other users — we are not a party to any transaction
           between users.
@@ -145,7 +145,7 @@ export default async function TermsPage({
       </LegalSection>
 
       <LegalSection title="4. Listings and content">
-        <p>By posting a listing or other content on Agromarket, you confirm that:</p>
+        <p>By posting a listing or other content on lauks24.lv, you confirm that:</p>
         <ul className="list-disc pl-5">
           <li>the information about the product, service, or animal is true and accurate;</li>
           <li>you have the right to offer the product or service in question;</li>
@@ -160,7 +160,7 @@ export default async function TermsPage({
 
       <LegalSection title="5. Transactions between users">
         <p>
-          Agromarket is a listings and communication platform — we are not an intermediary to any
+          lauks24.lv is a listings and communication platform — we are not an intermediary to any
           purchase, sale, or other transaction, and we take no responsibility for the fulfillment
           of a transaction, product quality, payment, or delivery. Any transaction between users
           happens at their own risk and by their own agreement.
@@ -169,7 +169,7 @@ export default async function TermsPage({
 
       <LegalSection title="6. Fees">
         <p>
-          Core Agromarket features are currently free to use. Certain additional features may
+          Core lauks24.lv features are currently free to use. Certain additional features may
           become paid in the future — users will be notified in advance of any such change taking
           effect.
         </p>

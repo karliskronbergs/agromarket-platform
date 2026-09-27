@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/legal-page";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Agromarket",
+  title: "Privacy Policy — lauks24.lv",
 };
 
 const CONTACT_EMAIL = "info@lauks24.lv";
@@ -19,9 +19,9 @@ export default async function PrivacyPolicyPage({
       <LegalPage title="Privātuma politika" updated="Pēdējie labojumi: 2026. gada septembris">
         <LegalSection title="1. Kas mēs esam">
           <p>
-            Šo tīmekļa vietni (agromarket.lv, turpmāk — &quot;Agromarket&quot; vai &quot;mēs&quot;)
-            uztur lauks24.lv. Jautājumu vai pieprasījumu gadījumā par šo
-            privātuma politiku vai savu datu apstrādi, raksti mums uz{" "}
+            Šo tīmekļa vietni uztur lauks24.lv (turpmāk — &quot;mēs&quot;). Jautājumu vai
+            pieprasījumu gadījumā par šo privātuma politiku vai savu datu apstrādi, raksti mums
+            uz{" "}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
               {CONTACT_EMAIL}
             </a>
@@ -30,7 +30,7 @@ export default async function PrivacyPolicyPage({
         </LegalSection>
 
         <LegalSection title="2. Kādus datus mēs apkopojam">
-          <p>Atkarībā no tā, kā izmanto Agromarket, mēs apstrādājam:</p>
+          <p>Atkarībā no tā, kā izmanto lauks24.lv, mēs apstrādājam:</p>
           <ul className="list-disc pl-5">
             <li>
               <strong>Konta datus</strong> — e-pasta adresi un paroli (paroles tiek glabātas
@@ -138,9 +138,8 @@ export default async function PrivacyPolicyPage({
     <LegalPage title="Privacy Policy" updated="Last updated: September 2026">
       <LegalSection title="1. Who we are">
         <p>
-          This website (agromarket.lv, &quot;Agromarket&quot;, &quot;we&quot;) is operated by
-          lauks24.lv. For any question or request about this policy or your data,
-          contact us at{" "}
+          This website is operated by lauks24.lv (&quot;we&quot;). For any question or request
+          about this policy or your data, contact us at{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
             {CONTACT_EMAIL}
           </a>
@@ -149,7 +148,7 @@ export default async function PrivacyPolicyPage({
       </LegalSection>
 
       <LegalSection title="2. What data we collect">
-        <p>Depending on how you use Agromarket, we process:</p>
+        <p>Depending on how you use lauks24.lv, we process:</p>
         <ul className="list-disc pl-5">
           <li>
             <strong>Account data</strong> — your email address and password (passwords are stored
