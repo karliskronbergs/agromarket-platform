@@ -1,5 +1,7 @@
-export function priceUnitSuffix(unit: string | null | undefined): string {
-  return unit ? `/${unit}` : "";
+export function priceUnitSuffix(unit: string | null | undefined, locale?: string): string {
+  if (!unit) return "";
+  if (unit === "bale") return locale === "lv" ? "/rullis" : "/bale";
+  return `/${unit}`;
 }
 
 export function formatRelativeDays(dateString: string, locale: string): string {

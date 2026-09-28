@@ -171,7 +171,7 @@ export default async function MapPage({
         const animalGroup = getAnimalGroupForCategory(categories ?? [], l.category_id as string | null);
         const priceText =
           l.price != null
-            ? `€${l.price}${priceUnitSuffix(l.price_unit)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
+            ? `€${l.price}${priceUnitSuffix(l.price_unit, locale)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
             : "";
         const breedText =
           animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";

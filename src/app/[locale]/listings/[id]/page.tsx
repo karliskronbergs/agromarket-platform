@@ -154,7 +154,7 @@ export default async function ListingDetailPage({
           {listing.price != null && (
             <div className="mt-3 flex items-baseline gap-1.5 font-sans text-2xl font-bold text-[#d9713a] sm:text-3xl">
               €{listing.price}
-              {priceUnitSuffix(listing.price_unit)}
+              {priceUnitSuffix(listing.price_unit, locale)}
               {listing.price_plus_vat && (
                 <span className="text-sm font-semibold text-[#7a7566]">{t("plusVat")}</span>
               )}

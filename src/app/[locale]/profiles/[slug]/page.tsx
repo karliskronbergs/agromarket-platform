@@ -234,7 +234,7 @@ export default async function PublicProfilePage({
                         {l.price != null && (
                           <div className="mb-1 text-sm font-bold text-[#d9713a]">
                             €{l.price}
-                            {priceUnitSuffix(l.price_unit)}
+                            {priceUnitSuffix(l.price_unit, locale)}
                             {l.price_plus_vat && (
                               <span className="ml-1 text-xs font-semibold text-[#7a7566]">
                                 {t("plusVat")}

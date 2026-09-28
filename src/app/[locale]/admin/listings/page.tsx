@@ -42,7 +42,7 @@ export default async function AdminListingsPage({
                   {" · "}
                   {l.listing_type === "sell" ? tListing("sell") : tListing("buy")}
                   {category ? ` · ${locale === "lv" ? category.name_lv : category.name_en}` : ""}
-                  {l.price != null ? ` · €${l.price}${priceUnitSuffix(l.price_unit)}` : ""}
+                  {l.price != null ? ` · €${l.price}${priceUnitSuffix(l.price_unit, locale)}` : ""}
                 </div>
               </div>
               <Link

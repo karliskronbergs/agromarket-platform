@@ -6,6 +6,7 @@ import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } from "@/lib/livestock";
 import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
 import { getMachineryCategoryIds } from "@/lib/machinery";
+import { PRICE_UNIT_OPTIONS, getPriceUnitGroup } from "@/lib/price-units";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { IconCheckmark } from "@/components/icons";
 import { Spinner } from "@/components/spinner";
@@ -37,7 +38,7 @@ export function ListingForm({
     description: string;
     categoryId: string;
     price: string;
-    priceUnit: "kg" | "t" | null;
+    priceUnit: "kg" | "t" | "bale" | null;
     plusVat: boolean;
     breed: string | null;
     ageMonths: string | null;
@@ -75,6 +76,12 @@ export function ListingForm({
   const showCondition = equipmentCategoryIds.has(selectedCategoryId) || showMachineryFields;
 
   const showOrganicCertified = showLivestockFields || showPriceUnit;
+
+  const priceUnitGroup = useMemo(
+    () => getPriceUnitGroup(categories, selectedCategoryId),
+    [categories, selectedCategoryId],
+  );
+  const priceUnitOptions = priceUnitGroup ? PRICE_UNIT_OPTIONS[priceUnitGroup] : [];
 
   return (
     <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
@@ -255,16 +262,16 @@ export function ListingForm({
               <span className="text-sm font-medium text-[#2b2a24]">{t("plusVat")}</span>
             </label>
           </div>
-          {showPriceUnit && (
+          {priceUnitGroup && (
             <fieldset className="mt-1 flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
               <legend className="sr-only">{t("priceUnit")}</legend>
-              {(
-                [
-                  { value: "", label: t("priceUnitTotal") },
-                  { value: "kg", label: "€/kg" },
-                  { value: "t", label: "€/t" },
-                ] as const
-              ).map((opt) => (
+              {[
+                { value: "", label: t("priceUnitTotal") },
+                ...priceUnitOptions.map((opt) => ({
+                  value: opt.value,
+                  label: locale === "lv" ? opt.label_lv : opt.label_en,
+                })),
+              ].map((opt) => (
                 <label
                   key={opt.value}
                   className="cursor-pointer rounded-full px-3 py-1 text-xs font-semibold text-[#55503f] transition has-checked:bg-[#3f6b3f] has-checked:text-white"

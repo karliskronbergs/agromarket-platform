@@ -19,6 +19,7 @@ import { getAnimalGroupForCategory } from "@/lib/livestock";
 import { getEquipmentCategoryIds } from "@/lib/equipment";
 import { getMachineryCategoryIds } from "@/lib/machinery";
 import { getSeedsCategoryIds } from "@/lib/seeds";
+import { getFeedCategoryIds } from "@/lib/feed";
 
 export type MapMode = "profiles" | "sell" | "buy";
 
@@ -132,7 +133,8 @@ export function MapView({
   const isMachinery =
     mode !== "profiles" && !!selectedCategory && getMachineryCategoryIds(categories).has(selectedCategory);
   const isSeeds =
-    mode !== "profiles" && !!selectedCategory && getSeedsCategoryIds(categories).has(selectedCategory);
+    (mode !== "profiles" && !!selectedCategory && getSeedsCategoryIds(categories).has(selectedCategory)) ||
+    (mode !== "profiles" && !!selectedCategory && getFeedCategoryIds(categories).has(selectedCategory));
 
   useEffect(() => {
     let cancelled = false;

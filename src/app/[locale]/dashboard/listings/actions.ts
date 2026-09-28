@@ -13,7 +13,7 @@ const listingSchema = z.object({
   description: z.string().max(4000).optional(),
   categoryId: z.string().uuid("Pick a category."),
   price: z.string().optional(),
-  priceUnit: z.enum(["kg", "t"]).optional(),
+  priceUnit: z.enum(["kg", "t", "bale"]).optional(),
   breed: z.string().optional(),
   ageMonths: z.string().optional(),
   quantity: z.string().optional(),

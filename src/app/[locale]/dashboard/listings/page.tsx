@@ -86,7 +86,7 @@ export default async function ListingsPage({
                   {l.price != null && (
                     <span className="text-xs text-[#7a7566]">
                       €{l.price}
-                      {priceUnitSuffix(l.price_unit)}
+                      {priceUnitSuffix(l.price_unit, locale)}
                       {l.price_plus_vat ? ` ${t("plusVat")}` : ""}
                     </span>
                   )}
