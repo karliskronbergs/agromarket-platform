@@ -234,7 +234,7 @@ export function MapView({
       <div className="flex flex-col gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1">
+            <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)]">
               {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
                 <button
                   key={m}
@@ -244,8 +244,17 @@ export function MapView({
                     if (selectedCategory) query.category = selectedCategory;
                     navigate(query);
                   }}
-                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition"
-                  style={mode === m ? { background: MODE_COLORS[m], color: "white" } : undefined}
+                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition-all"
+                  style={
+                    mode === m
+                      ? {
+                          background: MODE_COLORS[m],
+                          color: "white",
+                          boxShadow:
+                            "0 1px 2px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 1px rgba(0,0,0,0.12) inset",
+                        }
+                      : undefined
+                  }
                 >
                   {labels[m]}
                 </button>
