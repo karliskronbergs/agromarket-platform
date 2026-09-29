@@ -244,16 +244,20 @@ export function MapView({
                     if (selectedCategory) query.category = selectedCategory;
                     navigate(query);
                   }}
-                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition-all"
+                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition-all hover:bg-white/70"
                   style={
                     mode === m
                       ? {
                           background: MODE_COLORS[m],
                           color: "white",
                           boxShadow:
-                            "0 1px 2px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 1px rgba(0,0,0,0.12) inset",
+                            "0 3px 6px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.35) inset, 0 -2px 3px rgba(0,0,0,0.2) inset",
                         }
-                      : undefined
+                      : {
+                          background: "rgba(255,255,255,0.55)",
+                          boxShadow:
+                            "0 1px 2px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.6) inset, 0 -1px 1px rgba(0,0,0,0.05) inset",
+                        }
                   }
                 >
                   {labels[m]}
