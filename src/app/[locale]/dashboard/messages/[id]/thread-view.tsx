@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { markConversationRead } from "../actions";
+import { markConversationRead, notifyNewMessage } from "../actions";
 
 type Message = {
   id: string;
@@ -76,11 +76,16 @@ export function ThreadView({
     if (!body || isSending) return;
 
     setIsSending(true);
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("messages")
-      .insert({ conversation_id: conversationId, sender_id: currentUserId, body });
+      .insert({ conversation_id: conversationId, sender_id: currentUserId, body })
+      .select("id")
+      .single();
     setIsSending(false);
-    if (!error) setDraft("");
+    if (!error) {
+      setDraft("");
+      if (inserted) notifyNewMessage(locale, inserted.id);
+    }
   }
 
   return (

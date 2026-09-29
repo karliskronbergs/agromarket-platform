@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail, emailLayout, emailButton, ADMIN_NOTIFICATION_EMAIL } from "@/lib/email";
 
 export type ListingState = { error: string | null };
 
@@ -162,6 +163,17 @@ export async function saveListing(
   revalidatePath(`/${locale}/map`);
 
   if (!listingId) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+    await sendEmail({
+      to: ADMIN_NOTIFICATION_EMAIL,
+      subject: `Jauns sludinājums gaida apstiprinājumu: ${parsed.data.title}`,
+      html: emailLayout(
+        locale,
+        `<p>Jauns sludinājums iesniegts un gaida apstiprinājumu: <strong>${parsed.data.title}</strong>.</p>
+         ${emailButton(`${siteUrl}/${locale}/admin/listings`, "Skatīt sludinājumus")}`,
+      ),
+    });
+
     // Brand-new listings start out pending admin approval, so the public
     // page would 404 immediately -- send the seller to their listings
     // list instead, where the pending status is visible.

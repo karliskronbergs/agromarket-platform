@@ -46,7 +46,17 @@
     "and": "un",
     "privacyLink": "privātuma politikai",
     "emailConfirmed": "Tavs e-pasts ir apstiprināts. Tagad vari ieiet.",
-    "codeError": "Apstiprināšanas saite vairs nav derīga. Mēģini reģistrēties vēlreiz."
+    "codeError": "Apstiprināšanas saite vairs nav derīga. Mēģini reģistrēties vēlreiz.",
+    "forgotPasswordLink": "Aizmirsi paroli?",
+    "forgotPasswordTitle": "Atjaunot paroli",
+    "forgotPasswordHint": "Ievadi savu e-pasta adresi un mēs nosūtīsim saiti paroles atjaunošanai.",
+    "sendResetLink": "Nosūtīt saiti",
+    "resetEmailSent": "Ja šī e-pasta adrese ir reģistrēta, tu drīz saņemsi saiti paroles atjaunošanai.",
+    "resetPasswordTitle": "Izveidot jaunu paroli",
+    "newPassword": "Jaunā parole",
+    "updatePassword": "Saglabāt jauno paroli",
+    "passwordUpdated": "Parole saglabāta. Tiec novirzīts uz savu profilu...",
+    "resetLinkInvalid": "Šī saite vairs nav derīga. Pieprasi jaunu paroles atjaunošanas saiti."
   },
   "Profile": {
     "createTitle": "Izveido sava uzņēmuma profilu",

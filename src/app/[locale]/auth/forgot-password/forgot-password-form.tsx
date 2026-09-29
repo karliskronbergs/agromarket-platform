@@ -3,20 +3,29 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { PasswordInput } from "@/components/password-input";
-import { TurnstileWidget } from "@/components/turnstile-widget";
 import { Spinner } from "@/components/spinner";
-import { login, type AuthState } from "../actions";
+import { requestPasswordReset, type AuthState } from "../actions";
 
 const inputClass =
   "rounded-lg border border-[#e7e2d8] bg-white px-3 py-2.5 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
 
-export function LoginForm({ locale }: { locale: string }) {
+export function ForgotPasswordForm({ locale }: { locale: string }) {
   const t = useTranslations("Auth");
-  const boundLogin = login.bind(null, locale);
-  const [state, formAction, isPending] = useActionState<AuthState, FormData>(boundLogin, {
+  const boundRequest = requestPasswordReset.bind(null, locale);
+  const [state, formAction, isPending] = useActionState<AuthState, FormData>(boundRequest, {
     error: null,
   });
+
+  if (state.success) {
+    return (
+      <div className="flex flex-col items-center gap-4 text-center">
+        <p className="text-sm text-[#3f6b3f]">{t("resetEmailSent")}</p>
+        <Link href="/auth/login" className="text-sm font-medium text-[#3f6b3f]">
+          {t("signInCta")}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="flex w-full flex-col gap-4">
@@ -26,18 +35,6 @@ export function LoginForm({ locale }: { locale: string }) {
         </label>
         <input id="email" name="email" type="email" required className={inputClass} />
       </div>
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <label htmlFor="password" className="text-sm font-medium text-[#2b2a24]">
-            {t("password")}
-          </label>
-          <Link href="/auth/forgot-password" className="text-xs font-medium text-[#3f6b3f]">
-            {t("forgotPasswordLink")}
-          </Link>
-        </div>
-        <PasswordInput id="password" name="password" className={inputClass} />
-      </div>
-      <TurnstileWidget />
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button
         type="submit"
@@ -45,12 +42,11 @@ export function LoginForm({ locale }: { locale: string }) {
         className="flex items-center justify-center gap-2 rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
       >
         {isPending && <Spinner className="h-4 w-4" />}
-        {t("signInSubmit")}
+        {t("sendResetLink")}
       </button>
       <p className="text-center text-sm text-[#55503f]">
-        {t("noAccount")}{" "}
-        <Link href="/auth/sign-up" className="font-medium text-[#3f6b3f]">
-          {t("signUpCta")}
+        <Link href="/auth/login" className="font-medium text-[#3f6b3f]">
+          {t("signInCta")}
         </Link>
       </p>
     </form>

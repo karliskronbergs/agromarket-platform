@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail, emailLayout, emailButton, ADMIN_NOTIFICATION_EMAIL } from "@/lib/email";
 
 export type ProfileState = { error: string | null };
 
@@ -196,6 +197,19 @@ export async function saveProfile(
         attribute_id: attributeId,
       })),
     );
+  }
+
+  if (!existing) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+    await sendEmail({
+      to: ADMIN_NOTIFICATION_EMAIL,
+      subject: `Jauna reģistrācija: ${parsed.data.businessName}`,
+      html: emailLayout(
+        locale,
+        `<p>Reģistrējies jauns profils: <strong>${parsed.data.businessName}</strong>.</p>
+         ${emailButton(`${siteUrl}/${locale}/profiles/${profile.slug}`, "Skatīt profilu")}`,
+      ),
+    });
   }
 
   revalidatePath(`/${locale}/dashboard`);

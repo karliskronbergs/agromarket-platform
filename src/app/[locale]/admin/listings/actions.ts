@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail, emailLayout, emailButton } from "@/lib/email";
+import { getUserEmail } from "@/lib/supabase/admin";
 
 const LISTING_LIFETIME_DAYS = 21;
 
@@ -12,6 +14,13 @@ export async function approveListing(locale: string, listingId: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("title, profiles(user_id)")
+    .eq("id", listingId)
+    .maybeSingle();
+  const profile = Array.isArray(listing?.profiles) ? listing.profiles[0] : listing?.profiles;
 
   const expiresAt = new Date(Date.now() + LISTING_LIFETIME_DAYS * 24 * 60 * 60 * 1000);
   await supabase
@@ -25,6 +34,22 @@ export async function approveListing(locale: string, listingId: string) {
     target_type: "listing",
     target_id: listingId,
   });
+
+  if (profile?.user_id) {
+    const email = await getUserEmail(profile.user_id);
+    if (email) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+      await sendEmail({
+        to: email,
+        subject: `Sludinājums apstiprināts: ${listing?.title}`,
+        html: emailLayout(
+          locale,
+          `<p>Tavs sludinājums <strong>${listing?.title}</strong> ir apstiprināts un tagad ir redzams publiski.</p>
+           ${emailButton(`${siteUrl}/${locale}/listings/${listingId}`, "Skatīt sludinājumu")}`,
+        ),
+      });
+    }
+  }
 
   revalidatePath(`/${locale}/admin/listings`);
 }
@@ -93,6 +118,21 @@ export async function rejectListing(
         conversation_id: conversationId,
         sender_id: user!.id,
         body: `Your listing "${listing?.title}" was not approved. Reason: ${reason}`,
+      });
+    }
+
+    const email = await getUserEmail(profile.user_id);
+    if (email) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+      await sendEmail({
+        to: email,
+        subject: `Sludinājums nav apstiprināts: ${listing?.title}`,
+        html: emailLayout(
+          locale,
+          `<p>Tavs sludinājums <strong>${listing?.title}</strong> netika apstiprināts.</p>
+           <p>Iemesls: ${reason}</p>
+           ${emailButton(`${siteUrl}/${locale}/dashboard/listings`, "Rediģēt sludinājumu")}`,
+        ),
       });
     }
   }

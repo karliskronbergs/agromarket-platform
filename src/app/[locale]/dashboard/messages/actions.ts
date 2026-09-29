@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail, emailLayout, emailButton } from "@/lib/email";
+import { getUserEmail } from "@/lib/supabase/admin";
 
 export async function startConversation(
   locale: string,
@@ -61,4 +63,46 @@ export async function markConversationRead(locale: string, conversationId: strin
   // every route -- revalidating it here is what actually clears the stale
   // client-side router cache for it on the next navigation.
   revalidatePath(`/${locale}`, "layout");
+}
+
+export async function notifyNewMessage(locale: string, messageId: string) {
+  const supabase = await createClient();
+
+  const { data: message } = await supabase
+    .from("messages")
+    .select("sender_id, conversation_id, conversations(participant_one, participant_two)")
+    .eq("id", messageId)
+    .maybeSingle();
+  if (!message) return;
+
+  const conversation = Array.isArray(message.conversations)
+    ? message.conversations[0]
+    : message.conversations;
+  if (!conversation) return;
+
+  const recipientId =
+    conversation.participant_one === message.sender_id
+      ? conversation.participant_two
+      : conversation.participant_one;
+
+  const [{ data: senderProfile }, email] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("business_name")
+      .eq("user_id", message.sender_id)
+      .maybeSingle(),
+    getUserEmail(recipientId),
+  ]);
+  if (!email) return;
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+  await sendEmail({
+    to: email,
+    subject: `Jauna ziņa no ${senderProfile?.business_name ?? "lietotāja"}`,
+    html: emailLayout(
+      locale,
+      `<p>Tev ir jauna ziņa no <strong>${senderProfile?.business_name ?? "lietotāja"}</strong>.</p>
+       ${emailButton(`${siteUrl}/${locale}/dashboard/messages/${message.conversation_id}`, "Skatīt ziņu")}`,
+    ),
+  });
 }

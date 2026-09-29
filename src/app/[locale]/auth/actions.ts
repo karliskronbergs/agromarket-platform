@@ -94,3 +94,28 @@ export async function signOut(locale: string) {
   await supabase.auth.signOut();
   redirect(`/${locale}`);
 }
+
+const emailSchema = z.object({ email: z.string().email() });
+
+export async function requestPasswordReset(
+  locale: string,
+  _prevState: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const parsed = emailSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) {
+    return { error: "Please enter a valid email." };
+  }
+
+  const headersList = await headers();
+  const origin = headersList.get("origin") ?? `https://${headersList.get("host")}`;
+
+  const supabase = await createClient();
+  // Always report success regardless of whether the account exists, so this
+  // form can't be used to enumerate registered emails.
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${origin}/${locale}/auth/reset-password`,
+  });
+
+  return { error: null, success: true };
+}
