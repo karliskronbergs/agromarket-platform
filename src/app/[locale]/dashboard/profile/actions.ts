@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail, emailLayout, emailButton, ADMIN_NOTIFICATION_EMAIL } from "@/lib/email";
+import { getAdminEmails } from "@/lib/supabase/admin";
 
 export type ProfileState = { error: string | null };
 
@@ -201,8 +202,9 @@ export async function saveProfile(
 
   if (!existing) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
+    const adminEmails = await getAdminEmails();
     await sendEmail({
-      to: ADMIN_NOTIFICATION_EMAIL,
+      to: adminEmails.length > 0 ? adminEmails : ADMIN_NOTIFICATION_EMAIL,
       subject: `Jauna reģistrācija: ${parsed.data.businessName}`,
       html: emailLayout(
         locale,

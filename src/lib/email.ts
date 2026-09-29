@@ -15,22 +15,25 @@ export async function sendEmail({
   subject,
   html,
 }: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
 }): Promise<void> {
+  const recipients = Array.isArray(to) ? to : [to];
+  if (recipients.length === 0) return;
+
   const resend = getClient();
   if (!resend) {
     // Not configured yet -- log instead of failing the calling action, so
     // the rest of the app keeps working before RESEND_API_KEY is set.
-    console.warn(`[email] RESEND_API_KEY not set, skipping email "${subject}" to ${to}`);
+    console.warn(`[email] RESEND_API_KEY not set, skipping email "${subject}" to ${recipients.join(", ")}`);
     return;
   }
 
   try {
-    await resend.emails.send({ from: FROM_ADDRESS, to, subject, html });
+    await resend.emails.send({ from: FROM_ADDRESS, to: recipients, subject, html });
   } catch (err) {
-    console.error(`[email] failed to send "${subject}" to ${to}`, err);
+    console.error(`[email] failed to send "${subject}" to ${recipients.join(", ")}`, err);
   }
 }
 

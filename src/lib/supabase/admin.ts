@@ -21,3 +21,18 @@ export async function getUserEmail(userId: string): Promise<string | null> {
   if (error || !data.user) return null;
   return data.user.email ?? null;
 }
+
+// Real login emails for every account in the admins table, so admin
+// notifications land in an inbox someone actually checks instead of a
+// hardcoded address. Falls back to ADMIN_NOTIFICATION_EMAIL only if no
+// admin email could be resolved (e.g. service role not configured yet).
+export async function getAdminEmails(): Promise<string[]> {
+  const admin = createAdminClient();
+  if (!admin) return [];
+
+  const { data: adminRows } = await admin.from("admins").select("user_id");
+  if (!adminRows || adminRows.length === 0) return [];
+
+  const emails = await Promise.all(adminRows.map((row) => getUserEmail(row.user_id)));
+  return emails.filter((e): e is string => !!e);
+}
