@@ -128,7 +128,9 @@
     "sortPriceAsc": "Cena: lētākais vispirms",
     "sortPriceDesc": "Cena: dārgākais vispirms",
     "sortAgeAsc": "Vecums: jaunākie vispirms",
-    "sortAgeDesc": "Vecums: vecākie vispirms"
+    "sortAgeDesc": "Vecums: vecākie vispirms",
+    "searchPlaceholderProfiles": "Meklēt uzņēmumus...",
+    "searchPlaceholderListings": "Meklēt sludinājumus..."
   },
   "Listing": {
     "myListings": "Sludinājumi",

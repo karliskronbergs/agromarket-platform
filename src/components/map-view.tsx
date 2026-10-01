@@ -12,6 +12,7 @@ import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipm
 import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
 import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-panel";
 import { SortMenu } from "@/components/sort-menu";
+import { MapSearchBar } from "@/components/map-search-bar";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
@@ -67,6 +68,7 @@ export function MapView({
   machineryFilters,
   seedsFilters,
   sort,
+  search,
 }: {
   mode: MapMode;
   points: MapPoint[];
@@ -74,6 +76,7 @@ export function MapView({
   selectedCategory?: string;
   locale: string;
   sort?: string;
+  search?: string;
   labels: {
     profiles: string;
     sell: string;
@@ -109,6 +112,8 @@ export function MapView({
     sortPriceDesc: string;
     sortAgeAsc: string;
     sortAgeDesc: string;
+    searchPlaceholderProfiles: string;
+    searchPlaceholderListings: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -135,6 +140,7 @@ export function MapView({
   const isSeeds =
     (mode !== "profiles" && !!selectedCategory && getSeedsCategoryIds(categories).has(selectedCategory)) ||
     (mode !== "profiles" && !!selectedCategory && getFeedCategoryIds(categories).has(selectedCategory));
+  const hasSpecificFilters = !!animalGroup || isEquipment || isMachinery || isSeeds;
 
   useEffect(() => {
     let cancelled = false;
@@ -306,6 +312,20 @@ export function MapView({
             />
           )}
         </div>
+        {!hasSpecificFilters && (
+          <MapSearchBar
+            value={search}
+            placeholder={
+              mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings
+            }
+            onSearch={(q) => {
+              const query: Record<string, string> = { mode };
+              if (selectedCategory) query.category = selectedCategory;
+              if (q) query.q = q;
+              navigate(query);
+            }}
+          />
+        )}
         <CategoryFilterBar
           categories={categories}
           selectedCategory={selectedCategory}

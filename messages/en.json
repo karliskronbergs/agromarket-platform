@@ -128,7 +128,9 @@
     "sortPriceAsc": "Price: cheapest first",
     "sortPriceDesc": "Price: most expensive first",
     "sortAgeAsc": "Age: youngest first",
-    "sortAgeDesc": "Age: oldest first"
+    "sortAgeDesc": "Age: oldest first",
+    "searchPlaceholderProfiles": "Search businesses...",
+    "searchPlaceholderListings": "Search listings..."
   },
   "Listing": {
     "myListings": "Listings",

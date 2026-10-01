@@ -29,6 +29,7 @@ export default async function MapPage({
     title?: string;
     organic?: string;
     sort?: string;
+    q?: string;
   }>;
 }) {
   const { locale } = await params;
@@ -47,6 +48,7 @@ export default async function MapPage({
     title: titleSearch,
     organic,
     sort,
+    q,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
@@ -64,8 +66,8 @@ export default async function MapPage({
   const categoryIds = category ? getSelfAndDescendantIds(categories ?? [], category) : null;
 
   if (mode === "profiles") {
-    const { data } = categoryIds
-      ? await supabase
+    let profilesQuery = categoryIds
+      ? supabase
           .from("profiles")
           .select(
             "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, listing_view_count, profile_categories!inner(category_id)",
@@ -73,13 +75,16 @@ export default async function MapPage({
           .eq("status", "active")
           .not("lat", "is", null)
           .in("profile_categories.category_id", categoryIds)
-      : await supabase
+      : supabase
           .from("profiles")
           .select(
             "id, business_name, slug, address, lat, lng, avatar_url, verified, admin_badge, view_count, listing_view_count",
           )
           .eq("status", "active")
           .not("lat", "is", null);
+    if (q) profilesQuery = profilesQuery.ilike("business_name", `%${q}%`);
+
+    const { data } = await profilesQuery;
 
     (data ?? []).sort((a, b) => {
       const adminDiff = Number(b.admin_badge) - Number(a.admin_badge);
@@ -142,6 +147,7 @@ export default async function MapPage({
     if (manufacturer) query = query.ilike("manufacturer", `%${manufacturer}%`);
     if (model) query = query.ilike("model", `%${model}%`);
     if (titleSearch) query = query.ilike("title", `%${titleSearch}%`);
+    if (q) query = query.ilike("title", `%${q}%`);
     if (organic) query = query.eq("organic_certified", true);
 
     if (sort === "price-asc") query = query.order("price", { ascending: true, nullsFirst: false });
@@ -203,6 +209,7 @@ export default async function MapPage({
       selectedCategory={category}
       locale={locale}
       sort={sort}
+      search={q}
       livestockFilters={{
         breed,
         ageMin,
@@ -249,6 +256,8 @@ export default async function MapPage({
         sortPriceDesc: t("sortPriceDesc"),
         sortAgeAsc: t("sortAgeAsc"),
         sortAgeDesc: t("sortAgeDesc"),
+        searchPlaceholderProfiles: t("searchPlaceholderProfiles"),
+        searchPlaceholderListings: t("searchPlaceholderListings"),
         empty: t("empty"),
       }}
     />
