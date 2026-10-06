@@ -9,6 +9,7 @@ export default async function Home({
 }) {
   const { locale } = await params;
   const t = await getTranslations("Home");
+  const tNav = await getTranslations("Nav");
   const supabase = await createClient();
   const { data: categories } = await supabase
     .from("categories")
@@ -30,6 +31,12 @@ export default async function Home({
           className="rounded-full bg-[#3f6b3f] px-6 py-3 text-sm font-semibold text-white hover:bg-[#2f5233]"
         >
           {t("cta")}
+        </Link>
+        <Link
+          href="/auth/sign-up"
+          className="rounded-full bg-[#d9713a] px-6 py-3 text-sm font-semibold text-white hover:bg-[#c15f2c]"
+        >
+          {tNav("createProfile")}
         </Link>
 
         {categories && categories.length > 0 && (
