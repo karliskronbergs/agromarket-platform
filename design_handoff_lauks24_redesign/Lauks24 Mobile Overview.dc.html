@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — Mobilā versija, visi ekrāni</title>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#e9ebe8;font-family:'Lexend',system-ui,sans-serif;color:#1d2329}a{color:#3f6e4a}a:hover{color:#2f5538}</style>
+</helmet>
+<section style="padding:56px 64px 80px;display:flex;flex-direction:column;gap:32px;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h1 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-.01em">lauks24.lv — mobilā versija (virziens A)</h1>
+    <p style="margin:0;font-size:16px;color:#5d6670">Katrs tālrunis ir interaktīvs — var klikšķināt un pārvietoties starp lapām.</p>
+  </div>
+  <div style="display:flex;gap:48px;flex-wrap:nowrap;align-items:flex-start">
+    <div id="m1" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m1</span><span style="font-size:16px;font-weight:500">Sākumlapa</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="home" hint-size="410px,864px"></dc-import>
+    </div>
+    <div id="m2" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m2</span><span style="font-size:16px;font-weight:500">Karte — saraksts</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="map" start-view="list" start-mode="sell" hint-size="410px,864px"></dc-import>
+    </div>
+    <div id="m3" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m3</span><span style="font-size:16px;font-weight:500">Karte — kartes skats</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="map" start-view="map" hint-size="410px,864px"></dc-import>
+    </div>
+    <div id="m4" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m4</span><span style="font-size:16px;font-weight:500">Uzņēmuma profils</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="profile" hint-size="410px,864px"></dc-import>
+    </div>
+    <div id="m5" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m5</span><span style="font-size:16px;font-weight:500">Sludinājums</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="listing" hint-size="410px,864px"></dc-import>
+    </div>
+    <div id="m6" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">m6</span><span style="font-size:16px;font-weight:500">Reģistrācija</span></div>
+      <dc-import name="Lauks24 Mobile" start-page="auth" hint-size="410px,864px"></dc-import>
+    </div>
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

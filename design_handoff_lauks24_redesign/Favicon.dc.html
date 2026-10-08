@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — favicon</title>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#e9ebe8;font-family:'Lexend',system-ui,sans-serif;color:#1d2329}a{color:#3f6e4a}a:hover{color:#2f5538}</style>
+</helmet>
+<section style="padding:56px 64px 80px;display:flex;flex-direction:column;gap:28px;width:max-content">
+  <div style="display:flex;flex-direction:column;gap:6px;max-width:900px">
+    <h1 style="margin:0;font-size:30px;font-weight:600">Favicon — tā pati ideja, labākas proporcijas</h1>
+    <p style="margin:0;font-size:16px;line-height:1.5;color:#5d6670">Pašreizējais favicon ir platāks nekā augstāks (ar baltām malām augšā/apakšā), un tukšais rāmis 16 px izmērā saplūst. Visi varianti: kvadrāta flīze, rāmis kā logo, biezāka līnija.</p>
+  </div>
+  <div style="display:flex;gap:16px;align-items:center;padding:16px 20px;background:#fff;border-radius:14px;align-self:flex-start">
+    <span style="font-size:14px;color:#5d6670">Pašreizējais:</span>
+    <img src="https://www.lauks24.lv/favicon.ico" alt="" style="width:64px;height:64px;image-rendering:pixelated;border:1px dashed #d9dee2">
+    <img src="https://www.lauks24.lv/favicon.ico" alt="" style="width:32px;height:32px;border:1px dashed #d9dee2">
+    <img src="https://www.lauks24.lv/favicon.ico" alt="" style="width:16px;height:16px;border:1px dashed #d9dee2">
+  </div>
+  <div style="display:flex;gap:32px;flex-wrap:nowrap;align-items:flex-start">
+    <sc-for list="{{ options }}" as="o" hint-placeholder-count="3">
+      <div id="{{ o.id }}" style="width:380px;background:#fff;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="padding:3px 9px;border-radius:6px;background:#3b5166;color:#fff;font-size:13px;font-weight:600">{{ o.id }}</span><span style="font-size:16px;font-weight:600">{{ o.name }}</span></div>
+        <div style="display:flex;justify-content:center;padding:12px 0;background:#f6f7f5;border-radius:14px"><img src="{{ o.src }}" alt="" style="width:200px;height:200px;display:block"></div>
+        <div style="display:flex;align-items:flex-end;gap:20px;justify-content:center">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><img src="{{ o.src }}" alt="" style="width:64px;height:64px"><span style="font-size:12px;color:#5d6670">64</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><img src="{{ o.src }}" alt="" style="width:32px;height:32px"><span style="font-size:12px;color:#5d6670">32</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><img src="{{ o.src }}" alt="" style="width:16px;height:16px"><span style="font-size:12px;color:#5d6670">16</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#dfe3e6;border-radius:10px 10px 0 0">
+            <img src="{{ o.src }}" alt="" style="width:16px;height:16px"><span style="font-size:12px;color:#1d2329;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Atrodi lauksaimniecības uzņēmumus…</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#2b2f33;border-radius:10px 10px 0 0">
+            <img src="{{ o.src }}" alt="" style="width:16px;height:16px"><span style="font-size:12px;color:#e9ebe8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Atrodi lauksaimniecības uzņēmumus…</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;padding:8px 0 0">
+            <img src="{{ o.src }}" alt="" style="width:56px;height:56px;border-radius:13px"><span style="font-size:13px;color:#5d6670;line-height:1.4">Tālruņa sākuma ekrāns<br>(apple-touch-icon)</span>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:#4a535b">{{ o.note }}</p>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  svg(inner) {
+    const s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3b5166"/>' + inner + '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  }
+  renderVals() {
+    const g = c => '<g transform="translate(5.6 0) skewX(-10)">' + c + '</g>';
+    const frame = (sw, fill) => '<rect x="11.5" y="16" width="41" height="32" rx="8" fill="' + (fill || 'none') + '" stroke="#f1f3f4" stroke-width="' + sw + '"/>';
+    const L = col => '<path d="M24.5 22.5h6v13h11v6h-17z" fill="' + col + '"/>';
+    this._opts = this._opts || [
+      { id: '1a', name: 'Tikai rāmis (precizēts)', src: this.svg(g(frame(5))), note: 'Tieši tāda pati ideja kā tagad — tikai kvadrāta flīze, rāmis centrēts un biezāka līnija, lai mazā izmērā nesaplūst.' },
+      { id: '1b', name: 'Rāmis + L', src: this.svg(g(frame(4.5) + L('#f1f3f4'))), note: 'Rāmī ievietots slīpais “L” no logo. Cilnē atpazīstams arī 16 px izmērā.' },
+      { id: '1c', name: 'Pilns rāmis + L', src: this.svg(g(frame(0, '#f1f3f4') + L('#3b5166'))), note: 'Balts, aizpildīts rāmis ar zilu “L”. Viskontrastākais — labi redzams gan gaišās, gan tumšās cilnēs.' }
+    ];
+    return { options: this._opts };
+  }
+}
+</script>
+</body>
+</html>

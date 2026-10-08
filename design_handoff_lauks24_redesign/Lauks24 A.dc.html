@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — Virziens A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{margin:0;background:#f6f7f5;color:#1d2329;font-family:'Lexend',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#3f6e4a;text-decoration:none}a:hover{color:#2f5538;text-decoration:underline}
+input::placeholder{color:#8a929a}
+.leaflet-container{font-family:'Lexend',system-ui,sans-serif}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<header style="background:#3b5166;color:#fff;position:sticky;top:0;z-index:2000;box-shadow:0 1px 0 rgba(0,0,0,.08)">
+  <div style="max-width:1280px;margin:0 auto;padding:10px 24px;min-height:44px;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+    <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" onClick="{{ goHome }}" style="height:30px;cursor:pointer;display:block">
+    <nav style="display:flex;gap:4px;flex:1;flex-wrap:wrap">
+      <div onClick="{{ goMap }}" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="background:rgba(255,255,255,.1)">Karte</div>
+      <div onClick="{{ goListings }}" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="background:rgba(255,255,255,.1)">Sludinājumi</div>
+      <div onClick="{{ goHow }}" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="background:rgba(255,255,255,.1)">Kā tas darbojas</div>
+    </nav>
+    <div style="display:flex;align-items:center;gap:6px;font-size:14px">
+      <span style="font-weight:600;color:#fff;padding:4px 6px;border-bottom:2px solid #fff">LV</span>
+      <span style="color:rgba(255,255,255,.75);padding:4px 6px;cursor:pointer">EN</span>
+    </div>
+    <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div onClick="{{ goLogin }}" style="padding:9px 14px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="background:rgba(255,255,255,.1)">Ieiet</div>
+        <div onClick="{{ goSignup }}" style="padding:9px 16px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;background:#fff;color:#3b5166" style-hover="background:#e9eef3">Izveidot profilu</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="padding:9px 14px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="background:rgba(255,255,255,.1)">Ziņas</div>
+        <div onClick="{{ goMyProfile }}" style="display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;background:rgba(255,255,255,.12);cursor:pointer">
+          <div style="width:30px;height:30px;border-radius:50%;background:#fff;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">AA</div>
+          <span style="font-size:14px;font-weight:500">Mans profils</span>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</header>
+
+<main style="flex:1">
+
+<!-- HOME -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <section style="background:#fff;border-bottom:1px solid #e3e6e8">
+    <div style="max-width:1280px;margin:0 auto;padding:56px 24px 64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:48px;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <h1 style="margin:0;font-size:clamp(34px,4.4vw,52px);line-height:1.08;font-weight:600;letter-spacing:-.02em;text-wrap:balance">Atrodi lauksaimniecības uzņēmumus sev tuvumā</h1>
+        <p style="margin:0;font-size:18px;line-height:1.55;color:#5d6670;max-width:540px;text-wrap:pretty">Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem.</p>
+        <div style="background:#fff;border:1px solid #d9dee2;border-radius:16px;padding:8px;box-shadow:0 8px 24px rgba(29,35,41,.06);display:flex;flex-direction:column;gap:8px;max-width:600px">
+          <div style="display:flex;gap:4px;padding:2px">
+            <sc-for list="{{ heroTabs }}" as="t" hint-placeholder-count="3">
+              <div onClick="{{ t.set }}" style="padding:8px 14px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input value="{{ heroQ }}" onChange="{{ onHeroQ }}" onKeyDown="{{ onHeroKey }}" placeholder="{{ heroPlaceholder }}" style="flex:1 1 240px;min-width:0;border:1px solid #e3e6e8;background:#f6f7f5;border-radius:10px;padding:14px 16px;font:inherit;font-size:16px;color:#1d2329;outline:none">
+            <div onClick="{{ heroSearch }}" style="flex:0 0 auto;padding:14px 26px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center" style-hover="background:#355d3e">Meklēt</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:14px;color:#5d6670;margin-right:4px">Populāri:</span>
+          <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="5">
+            <div onClick="{{ c.open }}" style="padding:6px 12px;border-radius:999px;border:1px solid #e3e6e8;font-size:14px;cursor:pointer;background:#fff" style-hover="border-color:#3f6e4a;color:#2f5538">{{ c.name }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="position:relative;border-radius:20px;overflow:hidden;border:1px solid #e3e6e8;height:460px;background:#e8ece6">
+        <div ref="{{ homeMapRef }}" style="position:absolute;inset:0"></div>
+        <div style="position:absolute;left:16px;right:16px;bottom:16px;z-index:500;background:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:16px;box-shadow:0 6px 20px rgba(29,35,41,.12);flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <div style="font-size:15px;font-weight:600">Uzņēmumi un saimniecības kartē</div>
+            <div style="font-size:13px;color:#5d6670;margin-top:2px">Filtrē pēc nozares un atrašanās vietas</div>
+          </div>
+          <div onClick="{{ goMap }}" style="padding:10px 16px;border-radius:10px;background:#3b5166;color:#fff;font-size:14px;font-weight:600;cursor:pointer" style-hover="background:#2f4254">Atvērt karti →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section ref="{{ howRef }}" style="max-width:1280px;margin:0 auto;padding:72px 24px 24px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:#3f6e4a;margin-bottom:8px">Kā tas darbojas</div>
+        <h2 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-.01em">Trīs veidi, kā izmantot lauks24.lv</h2>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+        <div style="width:40px;height:40px;border-radius:12px;background:#eef3ee;color:#2f5538;display:flex;align-items:center;justify-content:center;font-weight:600">1</div>
+        <h3 style="margin:0;font-size:20px;font-weight:600">Parādi savu saimniecību kartē</h3>
+        <p style="margin:0;color:#5d6670;line-height:1.55;font-size:15px">Izveido profilu ar nozari un atrašanās vietu, lai tevi atrastu pircēji un partneri tuvākajā apkārtnē.</p>
+        <div onClick="{{ goSignup }}" style="margin-top:auto;padding-top:8px;font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Izveidot profilu →</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+        <div style="width:40px;height:40px;border-radius:12px;background:#eef3ee;color:#2f5538;display:flex;align-items:center;justify-content:center;font-weight:600">2</div>
+        <h3 style="margin:0;font-size:20px;font-weight:600">Pārdod vai pērc</h3>
+        <p style="margin:0;color:#5d6670;line-height:1.55;font-size:15px">Publicē un meklē sludinājumus par tehniku, dzīvniekiem, sēklām, pakalpojumiem u.c.</p>
+        <div onClick="{{ goListings }}" style="margin-top:auto;padding-top:8px;font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Skatīt sludinājumus →</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+        <div style="width:40px;height:40px;border-radius:12px;background:#eef3ee;color:#2f5538;display:flex;align-items:center;justify-content:center;font-weight:600">3</div>
+        <h3 style="margin:0;font-size:20px;font-weight:600">Sazinies</h3>
+        <p style="margin:0;color:#5d6670;line-height:1.55;font-size:15px">Raksti ziņu vai zvani pārdevējam pa tiešo. Bez starpniekiem.</p>
+        <div onClick="{{ goMap }}" style="margin-top:auto;padding-top:8px;font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Atrast partnerus →</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1280px;margin:0 auto;padding:56px 24px 24px">
+    <h2 style="margin:0 0 24px;font-size:28px;font-weight:600;letter-spacing:-.01em">Pārlūko pēc nozares</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
+      <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="5">
+        <div onClick="{{ c.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s" style-hover="transform:translateY(-2px);box-shadow:0 10px 24px rgba(29,35,41,.08)">
+          <div style="height:120px;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">{{ c.img }}</div>
+          <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <span style="font-size:15px;font-weight:500">{{ c.name }}</span>
+            <span style="color:#3f6e4a">→</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1280px;margin:0 auto;padding:56px 24px 24px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px;flex-wrap:wrap">
+      <h2 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.01em">Jaunākie sludinājumi</h2>
+      <div onClick="{{ goListings }}" style="font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Visi sludinājumi →</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">
+      <sc-for list="{{ latest }}" as="l" hint-placeholder-count="4">
+        <div onClick="{{ l.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:box-shadow .15s" style-hover="box-shadow:0 10px 24px rgba(29,35,41,.08)">
+          <div style="position:relative;height:170px;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">
+            {{ l.img }}
+            <span style="position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ l.typeBg }};color:{{ l.typeFg }}">{{ l.typeLabel }}</span>
+          </div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:6px;flex:1">
+            <div style="font-size:12px;color:#5d6670">{{ l.catName }}</div>
+            <div style="font-size:16px;font-weight:500;line-height:1.35">{{ l.title }}</div>
+            <div style="font-size:18px;font-weight:600;margin-top:2px">{{ l.price }} <span style="font-size:13px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+            <div style="margin-top:auto;padding-top:10px;border-top:1px solid #eef0f1;display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#5d6670">
+              <span>{{ l.loc }}</span><span>{{ l.posted }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1280px;margin:0 auto;padding:56px 24px 80px">
+    <div style="background:#3b5166;color:#fff;border-radius:24px;padding:48px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap">
+      <div style="max-width:620px">
+        <h2 style="margin:0 0 10px;font-size:30px;font-weight:600;letter-spacing:-.01em;text-wrap:balance">Ļauj pircējiem un partneriem tevi atrast</h2>
+        <p style="margin:0;font-size:16px;line-height:1.55;color:#d6dee6">Profila izveide aizņem pāris minūtes. Pievieno savu saimniecību kartei un sāc publicēt sludinājumus.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div onClick="{{ goSignup }}" style="padding:14px 22px;border-radius:10px;background:#fff;color:#3b5166;font-weight:600;cursor:pointer" style-hover="background:#e9eef3">Izveidot profilu</div>
+        <div onClick="{{ goMap }}" style="padding:14px 22px;border-radius:10px;border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:500;cursor:pointer" style-hover="background:rgba(255,255,255,.08)">Skatīt karti</div>
+      </div>
+    </div>
+  </section>
+</sc-if>
+
+<!-- MAP -->
+<sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#fff;border-bottom:1px solid #e3e6e8">
+    <div style="max-width:1600px;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;gap:2px;padding:4px;background:#f0f2f0;border-radius:12px">
+          <sc-for list="{{ modeTabs }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.set }}" style="padding:8px 16px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <input value="{{ q }}" onChange="{{ onQ }}" placeholder="{{ mapPlaceholder }}" style="flex:1 1 280px;max-width:520px;min-width:0;border:1px solid #d9dee2;border-radius:12px;padding:11px 16px;font:inherit;font-size:15px;outline:none;background:#fff;color:#1d2329">
+        <sc-if value="{{ isListingMode }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ goSignup }}" style="margin-left:auto;padding:10px 16px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:14px;font-weight:600;cursor:pointer" style-hover="background:#355d3e">+ Pievienot sludinājumu</div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+          <div onClick="{{ c.set }}" style="white-space:nowrap;padding:7px 14px;border-radius:999px;font-size:14px;cursor:pointer;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.name }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;max-width:1600px;margin:0 auto">
+    <div style="flex:1 1 360px;max-width:440px;min-width:0;height:calc(100vh - 190px);min-height:520px;overflow-y:auto;background:#f6f7f5;border-right:1px solid #e3e6e8;padding:16px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:13px;color:#5d6670;padding:0 4px 4px">{{ resultLabel }}</div>
+      <sc-if value="{{ isProfileMode }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ profileResults }}" as="p" hint-placeholder-count="3">
+          <div onClick="{{ p.open }}" onMouseEnter="{{ p.hover }}" style="background:{{ p.bg }};border:1px solid {{ p.bd }};border-radius:14px;padding:14px;display:flex;gap:14px;cursor:pointer;transition:box-shadow .15s" style-hover="box-shadow:0 6px 18px rgba(29,35,41,.08)">
+            <div style="width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">{{ p.initials }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:15px;font-weight:600">{{ p.name }}</span>
+                <sc-if value="{{ p.verified }}" hint-placeholder-val="{{ false }}"><span title="Pārbaudīts" style="width:16px;height:16px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center">✓</span></sc-if>
+              </div>
+              <div style="align-self:flex-start;padding:3px 9px;border-radius:6px;background:#eef3ee;color:#2f5538;font-size:12px;font-weight:500">{{ p.spec }}</div>
+              <div style="font-size:13px;color:#5d6670">{{ p.loc }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{ isListingMode }}" hint-placeholder-val="{{ false }}">
+        <sc-for list="{{ listingResults }}" as="l" hint-placeholder-count="3">
+          <div onClick="{{ l.open }}" onMouseEnter="{{ l.hover }}" style="background:{{ l.bg }};border:1px solid {{ l.bd }};border-radius:14px;padding:12px;display:flex;gap:14px;cursor:pointer" style-hover="box-shadow:0 6px 18px rgba(29,35,41,.08)">
+            <div style="width:92px;height:92px;flex:0 0 92px;border-radius:10px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;padding:4px;box-sizing:border-box">{{ l.img }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:12px;color:#5d6670">{{ l.catName }}</div>
+              <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+              <div style="font-size:16px;font-weight:600">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+              <div style="font-size:12px;color:#5d6670;margin-top:auto">{{ l.loc }} · {{ l.posted }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:40px 16px;color:#5d6670;display:flex;flex-direction:column;gap:12px;align-items:center">
+          <div style="font-size:16px;font-weight:500;color:#1d2329">Nekas netika atrasts</div>
+          <div style="font-size:14px">Pamēģini citu kategoriju vai meklēšanas vārdu.</div>
+          <div onClick="{{ resetFilters }}" style="padding:9px 16px;border-radius:10px;border:1px solid #d9dee2;background:#fff;font-size:14px;cursor:pointer;color:#1d2329">Notīrīt filtrus</div>
+        </div>
+      </sc-if>
+    </div>
+    <div style="flex:3 1 480px;position:relative;height:calc(100vh - 190px);min-height:520px;background:#e8ece6">
+      <div ref="{{ mainMapRef }}" style="position:absolute;inset:0"></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- PROFILE -->
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1200px;margin:0 auto;padding:24px 24px 72px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;gap:8px;font-size:14px;color:#5d6670;flex-wrap:wrap">
+      <span onClick="{{ goMap }}" style="cursor:pointer;color:#3f6e4a">Karte</span><span>/</span><span>{{ profile.catName }}</span><span>/</span><span style="color:#1d2329">{{ profile.name }}</span>
+    </div>
+    <div style="background:#fff;border:1px solid #e3e6e8;border-radius:20px;overflow:hidden">
+      <div style="height:160px;background:repeating-linear-gradient(135deg,#eceee9 0 12px,#e4e7e1 12px 24px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">vāka foto: saimniecība</div>
+      <div style="padding:0 28px 28px;display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap">
+        <div style="width:104px;height:104px;border-radius:50%;background:#e4eaf0;color:#3b5166;border:4px solid #fff;margin-top:-52px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:600">{{ profile.initials }}</div>
+        <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:8px;padding-top:16px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-.01em">{{ profile.name }}</h1>
+            <sc-if value="{{ profile.verified }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:13px;font-weight:500"><span style="width:14px;height:14px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span>Pārbaudīts</span></sc-if>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:15px;color:#5d6670">
+            <span style="color:#1d2329;font-weight:500">{{ profile.spec }}</span><span>{{ profile.loc }}</span><span>Uz lauks24.lv kopš {{ profile.since }}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div onClick="{{ togglePhone }}" style="padding:12px 18px;border-radius:10px;border:1px solid #d9dee2;font-size:15px;font-weight:500;cursor:pointer;background:#fff" style-hover="border-color:#3f6e4a">{{ phoneText }}</div>
+          <div style="padding:12px 20px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#355d3e">Rakstīt ziņu</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;gap:4px;border-bottom:1px solid #e3e6e8">
+          <sc-for list="{{ profileTabs }}" as="t" hint-placeholder-count="2">
+            <div onClick="{{ t.set }}" style="padding:12px 16px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:-1px;border-bottom:2px solid {{ t.bd }};color:{{ t.fg }}">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ tabListings }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">
+            <sc-for list="{{ profileListings }}" as="l" hint-placeholder-count="2">
+              <div onClick="{{ l.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;overflow:hidden;cursor:pointer" style-hover="box-shadow:0 8px 20px rgba(29,35,41,.08)">
+                <div style="position:relative;height:140px;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">{{ l.img }}<span style="position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ l.typeBg }};color:{{ l.typeFg }}">{{ l.typeLabel }}</span></div>
+                <div style="padding:14px;display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:15px;font-weight:500">{{ l.title }}</div>
+                  <div style="font-size:16px;font-weight:600">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+                  <div style="font-size:12px;color:#5d6670">{{ l.posted }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ tabAbout }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px">
+            <p style="margin:0;font-size:16px;line-height:1.65;text-wrap:pretty">{{ profile.about }}</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span style="padding:5px 12px;border-radius:999px;background:#f0f2f0;font-size:13px">{{ profile.catName }}</span>
+              <span style="padding:5px 12px;border-radius:999px;background:#f0f2f0;font-size:13px">{{ profile.spec }}</span>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="flex:1 1 300px;max-width:400px;display:flex;flex-direction:column;gap:16px">
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:16px;font-weight:600">Kontakti</div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Adrese</span><span style="font-size:15px">{{ profile.loc }}</span></div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Tālrunis</span><span style="font-size:15px">{{ phoneMasked }}</span></div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">E-pasts</span><span style="font-size:15px">{{ profile.email }}</span></div>
+        </div>
+        <div style="position:relative;height:240px;border-radius:16px;overflow:hidden;border:1px solid #e3e6e8;background:#e8ece6">
+          <div ref="{{ miniMapRef }}" style="position:absolute;inset:0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- LISTING -->
+<sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1200px;margin:0 auto;padding:24px 24px 72px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;gap:8px;font-size:14px;color:#5d6670;flex-wrap:wrap">
+      <span onClick="{{ goListings }}" style="cursor:pointer;color:#3f6e4a">Sludinājumi</span><span>/</span><span>{{ listing.catName }}</span><span>/</span><span style="color:#1d2329">{{ listing.title }}</span>
+    </div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="aspect-ratio:4/3;max-height:540px;border-radius:18px;background:repeating-linear-gradient(135deg,#eceee9 0 14px,#e4e7e1 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7a8279">{{ mainImg }}</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+            <sc-for list="{{ thumbs }}" as="t" hint-placeholder-count="4">
+              <div onClick="{{ t.set }}" style="aspect-ratio:4/3;border-radius:10px;border:2px solid {{ t.bd }};background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;text-align:center">{{ t.short }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px">
+          <div>
+            <h2 style="margin:0 0 10px;font-size:20px;font-weight:600">Apraksts</h2>
+            <p style="margin:0;font-size:16px;line-height:1.65;text-wrap:pretty">{{ listing.desc }}</p>
+          </div>
+          <div>
+            <h2 style="margin:0 0 6px;font-size:20px;font-weight:600">Detaļas</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));column-gap:24px">
+              <sc-for list="{{ details }}" as="d" hint-placeholder-count="6">
+                <div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef0f1;font-size:15px"><span style="color:#5d6670">{{ d.k }}</span><span style="font-weight:500;text-align:right">{{ d.v }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1 1 320px;max-width:400px;position:sticky;top:88px;display:flex;flex-direction:column;gap:14px">
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:{{ listing.typeBg }};color:{{ listing.typeFg }}">{{ listing.typeLabel }}</span>
+            <span style="font-size:13px;color:#5d6670">{{ listing.catName }}</span>
+          </div>
+          <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-.01em;text-wrap:balance">{{ listing.title }}</h1>
+          <div style="font-size:30px;font-weight:700;letter-spacing:-.01em">{{ listing.price }} <span style="font-size:15px;font-weight:400;color:#5d6670">{{ listing.unit }}</span></div>
+          <div style="font-size:14px;color:#5d6670">{{ listing.loc }} · {{ listing.posted }}</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <div style="padding:14px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer" style-hover="background:#355d3e">{{ contactLabel }}</div>
+            <div onClick="{{ togglePhone }}" style="padding:14px;border-radius:10px;border:1px solid #d9dee2;font-size:16px;font-weight:500;text-align:center;cursor:pointer" style-hover="border-color:#3f6e4a">{{ phoneText }}</div>
+          </div>
+        </div>
+        <div onClick="{{ seller.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:18px;padding:18px;display:flex;gap:14px;align-items:center;cursor:pointer" style-hover="border-color:#3f6e4a">
+          <div style="width:52px;height:52px;flex:0 0 52px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600">{{ seller.initials }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">{{ seller.name }}</span><sc-if value="{{ seller.verified }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span></sc-if></div>
+            <div style="font-size:13px;color:#5d6670;margin-top:2px">{{ seller.spec }}</div>
+          </div>
+          <span style="font-size:14px;color:#3f6e4a;font-weight:500">Profils →</span>
+        </div>
+        <div style="padding:14px 16px;border-radius:14px;background:#f0f2f0;font-size:13px;line-height:1.5;color:#4a535b">Padoms: pirms samaksas apskati preci klātienē un vienojies par piegādi rakstiski.</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <h2 style="margin:0 0 16px;font-size:24px;font-weight:600">Līdzīgi sludinājumi</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">
+        <sc-for list="{{ similar }}" as="l" hint-placeholder-count="3">
+          <div onClick="{{ l.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:12px;display:flex;gap:12px;cursor:pointer" style-hover="box-shadow:0 8px 20px rgba(29,35,41,.08)">
+            <div style="width:80px;height:80px;flex:0 0 80px;border-radius:10px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px)"></div>
+            <div style="min-width:0;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+              <div style="font-size:15px;font-weight:600">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+              <div style="font-size:12px;color:#5d6670">{{ l.loc }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- AUTH -->
+<sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1040px;margin:0 auto;padding:48px 24px 80px">
+    <div style="background:#fff;border:1px solid #e3e6e8;border-radius:24px;overflow:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))">
+      <div style="padding:40px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;gap:2px;padding:4px;background:#f0f2f0;border-radius:12px;align-self:flex-start">
+          <sc-for list="{{ authTabs }}" as="t" hint-placeholder-count="2">
+            <div onClick="{{ t.set }}" style="padding:8px 18px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <div>
+          <h1 style="margin:0 0 6px;font-size:28px;font-weight:600;letter-spacing:-.01em">{{ authTitle }}</h1>
+          <p style="margin:0;font-size:15px;color:#5d6670">{{ authSub }}</p>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">E-pasts
+          <input type="email" placeholder="vards@saimnieciba.lv" style="border:1px solid #d9dee2;border-radius:10px;padding:13px 14px;font:inherit;font-size:15px;font-weight:400;outline:none">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">
+          <span style="display:flex;justify-content:space-between">Parole<sc-if value="{{ isLoginMode }}" hint-placeholder-val="{{ false }}"><span style="font-weight:400;color:#3f6e4a;cursor:pointer">Aizmirsi paroli?</span></sc-if></span>
+          <input type="password" placeholder="••••••••" style="border:1px solid #d9dee2;border-radius:10px;padding:13px 14px;font:inherit;font-size:15px;font-weight:400;outline:none">
+          <sc-if value="{{ isSignupMode }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;font-weight:400;color:#5d6670">Vismaz 8 rakstzīmes</span></sc-if>
+        </label>
+        <sc-if value="{{ isSignupMode }}" hint-placeholder-val="{{ true }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Apstiprini paroli
+            <input type="password" placeholder="••••••••" style="border:1px solid #d9dee2;border-radius:10px;padding:13px 14px;font:inherit;font-size:15px;font-weight:400;outline:none">
+          </label>
+        </sc-if>
+        <div onClick="{{ doAuth }}" style="padding:14px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer;margin-top:4px" style-hover="background:#355d3e">{{ authCta }}</div>
+        <sc-if value="{{ isSignupMode }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:13px;color:#5d6670;line-height:1.5">Reģistrējoties tu piekrīti mūsu <a href="#">lietošanas noteikumiem</a> un <a href="#">privātuma politikai</a>.</p>
+        </sc-if>
+        <div style="font-size:14px;color:#5d6670">{{ authSwitchText }} <span onClick="{{ authSwitch }}" style="color:#3f6e4a;font-weight:500;cursor:pointer">{{ authSwitchCta }}</span></div>
+      </div>
+      <div style="background:#3b5166;color:#fff;padding:40px;display:flex;flex-direction:column;gap:24px">
+        <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:30px;align-self:flex-start">
+        <h2 style="margin:0;font-size:24px;font-weight:600;line-height:1.25;text-wrap:balance">Ar profilu tu vari</h2>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;gap:14px"><span style="width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">1</span><div><div style="font-weight:600;margin-bottom:2px">Parādīties kartē</div><div style="font-size:14px;color:#d6dee6;line-height:1.5">Pircēji un partneri tevi atradīs pēc nozares un atrašanās vietas.</div></div></div>
+          <div style="display:flex;gap:14px"><span style="width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">2</span><div><div style="font-weight:600;margin-bottom:2px">Publicēt sludinājumus</div><div style="font-size:14px;color:#d6dee6;line-height:1.5">Pārdod vai meklē tehniku, lopus, sēklas, graudus un kokmateriālus.</div></div></div>
+          <div style="display:flex;gap:14px"><span style="width:28px;height:28px;flex:0 0 28px;border-radius:8px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">3</span><div><div style="font-weight:600;margin-bottom:2px">Saņemt ziņas</div><div style="font-size:14px;color:#d6dee6;line-height:1.5">Sazinies ar pircējiem un pārdevējiem tieši platformā.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</main>
+
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+<footer style="background:#2f4254;color:#d6dee6">
+  <div style="max-width:1280px;margin:0 auto;padding:44px 24px 28px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap">
+      <div style="max-width:340px;display:flex;flex-direction:column;gap:12px">
+        <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:26px;align-self:flex-start">
+        <p style="margin:0;font-size:14px;line-height:1.55">Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem Latvijā.</p>
+      </div>
+      <div style="display:flex;gap:56px;flex-wrap:wrap;font-size:14px">
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="color:#fff;font-weight:600">Platforma</span><span onClick="{{ goMap }}" style="cursor:pointer">Karte</span><span onClick="{{ goListings }}" style="cursor:pointer">Sludinājumi</span><span onClick="{{ goSignup }}" style="cursor:pointer">Izveidot profilu</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="color:#fff;font-weight:600">Informācija</span><span style="cursor:pointer">Privātuma politika</span><span style="cursor:pointer">Lietošanas noteikumi</span></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:13px;color:#aebccb">© 2026 lauks24.lv. Visas tiesības aizsargātas.</div>
+  </div>
+</footer>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;map&quot;,&quot;profile&quot;,&quot;listing&quot;,&quot;auth&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;loggedIn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  T = { blue: '#3b5166', green: '#3f6e4a', ink: '#1d2329', muted: '#5d6670', line: '#e3e6e8', selBg: '#f3f7f3', tabOnBg: '#3f6e4a', tabOnFg: '#fff', chipOnBg: '#3f6e4a', chipOnFg: '#fff', chipOnBd: '#3f6e4a', chipBg: '#fff', heroOnBg: '#eef3ee', heroOnFg: '#2f5538', segOnBg: '#fff', segOnFg: '#1d2329', segOffFg: '#5d6670', sellBg: '#e6efe6', sellFg: '#2f5538', buyBg: '#f5ecd9', buyFg: '#7a5516', pin: '#3f6e4a', pinSel: '#3b5166' };
+  cats = [
+    { id: 'lop', name: 'Lopkopība', img: 'foto: liellopi ganībās' },
+    { id: 'teh', name: 'Lauksaimniecības tehnika', img: 'foto: traktors' },
+    { id: 'sek', name: 'Sēklas un graudi', img: 'foto: graudu lauks' },
+    { id: 'mez', name: 'Mežsaimniecība', img: 'foto: mežs / kokmateriāli' },
+    { id: 'daz', name: 'Dažādi', img: 'foto: saimniecības produkcija' }
+  ];
+  profiles = [
+    { id: 'p1', name: 'Aizstrautu Angus', initials: 'AA', spec: 'Gaļas liellopi', cat: 'lop', loc: 'Aizstrauti, Dobeles nov.', ll: [56.62, 23.28], verified: true, since: '2026', phone: '+371 29 114 562', email: 'info@aizstrautuangus.lv', about: 'Ģimenes saimniecība, kas audzē tīršķirnes Aberdīnas-Angus gaļas liellopus. Pārdodam teles, buļļus un vaislas dzīvniekus; iespējama apskate saimniecībā pēc iepriekšējas vienošanās.' },
+    { id: 'p2', name: 'ZS „Kalnāji”', initials: 'K', spec: 'Graudkopība', cat: 'sek', loc: 'Vecsaule, Bauskas nov.', ll: [56.43, 24.30], verified: true, since: '2026', phone: '+371 26 402 318', email: 'kalnaji@inbox.lv', about: 'Audzējam ziemas kviešus, rapsi un miežus. Piedāvājam sertificētu sēklu un graudu pārdošanu lielākos apjomos, iespējama piegāde.' },
+    { id: 'p3', name: 'Agro Serviss Vidzeme', initials: 'AS', spec: 'Tehnika un rezerves daļas', cat: 'teh', loc: 'Cēsis, Cēsu nov.', ll: [57.31, 25.27], verified: true, since: '2026', phone: '+371 27 550 901', email: 'serviss@agrovidzeme.lv', about: 'Lietotas lauksaimniecības tehnikas tirdzniecība, apkope un rezerves daļas. Strādājam ar saimniecībām visā Vidzemē.' },
+    { id: 'p4', name: 'SIA Meža Puse', initials: 'MP', spec: 'Mežizstrāde un malka', cat: 'mez', loc: 'Lubāna, Madonas nov.', ll: [56.90, 26.72], verified: false, since: '2026', phone: '+371 25 773 214', email: 'mezapuse@gmail.com', about: 'Mežizstrādes pakalpojumi, cirsmu iepirkšana un skaldītas malkas pārdošana ar piegādi.' },
+    { id: 'p5', name: 'Dravnieks „Medusmaize”', initials: 'M', spec: 'Biškopība', cat: 'daz', loc: 'Kuldīga, Kuldīgas nov.', ll: [56.97, 21.97], verified: false, since: '2026', phone: '+371 28 019 455', email: 'medusmaize@inbox.lv', about: 'Neliela dravniecība Kurzemē. Ziedu, liepu un griķu medus, bišu vasks un propoliss.' },
+    { id: 'p6', name: 'ZS „Purenes”', initials: 'P', spec: 'Piena lopkopība', cat: 'lop', loc: 'Svēte, Jelgavas nov.', ll: [56.60, 23.66], verified: true, since: '2026', phone: '+371 29 660 127', email: 'purenes@gmail.com', about: 'Piena lopkopības saimniecība ar 180 slaucamām govīm. Pārdodam vaislas telītes un iepērkam lopbarību.' }
+  ];
+  listings = [
+    { id: 'l1', type: 'sell', title: 'Traktors John Deere 6155R, 2016', price: '78 000 €', unit: '', cat: 'teh', seller: 'p3', posted: 'Šodien', cond: 'Lietots, 5 400 m/st', qty: '1 gab.', img: 'foto: traktors', desc: 'Labā tehniskā stāvoklī, regulāri apkopts servisā. AutoTrac gatavība, priekšējais iekārtu uzkares mehānisms, gaisa kondicionieris. Iespējama apskate un izmēģinājums Cēsīs.' },
+    { id: 'l2', type: 'sell', title: 'Angus teles, 8–10 mēnešus vecas', price: '1 150 €', unit: '/ gab.', cat: 'lop', seller: 'p1', posted: 'Vakar', cond: 'Tīršķirnes, ar ciltsrakstiem', qty: '12 gab.', img: 'foto: teles', desc: 'Pārdodam tīršķirnes Aberdīnas-Angus teles no slimību brīva ganāmpulka. Dzīvnieki pieraduši pie cilvēkiem, vakcinēti. Iespējama piegāde visā Latvijā.' },
+    { id: 'l3', type: 'buy', title: 'Pērku lopbarības miežus', price: 'Pēc vienošanās', unit: '', cat: 'sek', seller: 'p6', posted: 'Pirms 2 d.', cond: 'Mitrums līdz 14 %', qty: 'Līdz 200 t', img: 'foto: mieži', desc: 'Iepērkam lopbarības miežus no šī gada ražas. Varam paši organizēt transportu no Zemgales un Kurzemes. Samaksa 5 darba dienu laikā.' },
+    { id: 'l4', type: 'sell', title: 'Ziemas rapša sēkla, C1 kategorija', price: '9,80 €', unit: '/ kg', cat: 'sek', seller: 'p2', posted: 'Pirms 3 d.', cond: 'Sertificēta', qty: '2 t', img: 'foto: rapša sēkla', desc: 'Sertificēta ziemas rapša sēkla, kodināta. Iepakojumā pa 25 kg. Iespējama piegāde Zemgales reģionā.' },
+    { id: 'l5', type: 'sell', title: 'Bērza malka, skaldīta, 40 cm', price: '45 €', unit: '/ ber. m³', cat: 'mez', seller: 'p4', posted: 'Pirms 4 d.', cond: 'Sausa, 1 gadu žāvēta', qty: '40 ber. m³', img: 'foto: malka', desc: 'Sausa bērza malka, skaldīta 40 cm garumā. Piegāde ar pašizgāzēju Madonas, Gulbenes un Rēzeknes novados.' },
+    { id: 'l6', type: 'buy', title: 'Meklēju ruļļu presi', price: 'Līdz 12 000 €', unit: '', cat: 'teh', seller: 'p1', posted: 'Pirms 5 d.', cond: 'Lietota, darba kārtībā', qty: '1 gab.', img: 'foto: ruļļu prese', desc: 'Meklēju lietotu ruļļu presi ar tīšanas funkciju, vēlams Krone vai Claas. Var būt nepieciešams neliels remonts.' },
+    { id: 'l7', type: 'sell', title: 'Ziedu medus, 3 l burkās', price: '24 €', unit: '/ burka', cat: 'daz', seller: 'p5', posted: 'Pirms 6 d.', cond: 'Šī gada raža', qty: '60 burkas', img: 'foto: medus', desc: 'Kurzemes ziedu medus no pašu dravas. Iespējams saņemt Kuldīgā vai sūtīt ar pakomātu.' },
+    { id: 'l8', type: 'sell', title: 'Vaislas telītes, Holšteinas šķirne', price: '1 400 €', unit: '/ gab.', cat: 'lop', seller: 'p6', posted: 'Pirms 1 ned.', cond: 'Grūsnas, 5–6 mēn.', qty: '6 gab.', img: 'foto: telītes', desc: 'Grūsnas Holšteinas šķirnes telītes no augstražīga ganāmpulka. Pieejami ciltsraksti un veterinārā dokumentācija.' }
+  ];
+  state = { page: this.props.startPage ?? 'home', mode: 'profiles', cat: 'all', q: '', heroMode: 'profiles', heroQ: '', profileId: 'p1', listingId: 'l1', authMode: 'signup', selected: null, profileTab: 'listings', imgIdx: 0, showPhone: false };
+  mainMapRef = React.createRef(); homeMapRef = React.createRef(); miniMapRef = React.createRef(); howRef = React.createRef();
+
+  componentDidMount() { this.syncMaps(); this._iv = setInterval(() => this.syncMaps(), 250); }
+  componentDidUpdate(pp, ps) {
+    if (pp.startPage !== this.props.startPage && this.props.startPage) this.setState({ page: this.props.startPage });
+    if (ps.page !== this.state.page && !this._keepScroll) window.scrollTo(0, 0);
+    this._keepScroll = false;
+    this.syncMaps();
+    clearTimeout(this._t2); this._t2 = setTimeout(() => this.syncMaps(), 80);
+  }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._t); Object.values(this._maps || {}).forEach(m => m.map.remove()); }
+  go(page, extra = {}) { this.setState({ page, selected: null, showPhone: false, imgIdx: 0, ...extra }); }
+  prof(id) { return this.profiles.find(p => p.id === id); }
+  llOf(l) { const p = this.prof(l.seller); const n = parseInt(l.id.slice(1)); return [p.ll[0] + (n % 3 - 1) * 0.04, p.ll[1] + (n % 2 ? 0.06 : -0.06)]; }
+
+  filtered() {
+    const s = this.state, q = s.q.trim().toLowerCase();
+    const okCat = c => s.cat === 'all' || c === s.cat;
+    if (s.mode === 'profiles') return this.profiles.filter(p => okCat(p.cat) && (!q || (p.name + ' ' + p.spec + ' ' + p.loc).toLowerCase().includes(q)));
+    return this.listings.filter(l => l.type === s.mode && okCat(l.cat) && (!q || (l.title + ' ' + this.prof(l.seller).loc).toLowerCase().includes(q)));
+  }
+
+  syncMaps() { try { this._sync(); } catch (e) { console.warn('map', e); clearTimeout(this._t); this._t = setTimeout(() => this.syncMaps(), 200); } }
+  _sync() {
+    const L = window.L;
+    if (!L) { clearTimeout(this._t); this._t = setTimeout(() => this.syncMaps(), 150); return; }
+    this._maps = this._maps || {};
+    const specs = { main: this.mainMapRef, home: this.homeMapRef, mini: this.miniMapRef };
+    for (const k in specs) {
+      const el = specs[k].current, m = this._maps[k];
+      if (m && !el) { try { m.map.remove(); } catch (e) {} delete this._maps[k]; continue; }
+      if (m && (m.el !== el || !m.el.isConnected)) { try { m.map.remove(); } catch (e) {} delete this._maps[k]; }
+      if (el && el.isConnected && !this._maps[k]) {
+        const map = L.map(el, { zoomControl: k === 'main', scrollWheelZoom: k === 'main', attributionControl: true }).setView([56.88, 24.4], 7);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
+        this._maps[k] = { el, map, layer: L.layerGroup().addTo(map), sig: null, ids: null };
+        setTimeout(() => map.invalidateSize(), 60);
+      }
+    }
+    const s = this.state, T = this.T;
+    const pts = {};
+    if (this._maps.main) {
+      const r = this.filtered();
+      pts.main = r.map(x => ({ id: x.id, ll: x.ll || this.llOf(x), label: x.name || x.title, sel: s.selected === x.id }));
+    }
+    if (this._maps.home) pts.home = this.profiles.map(p => ({ id: p.id, ll: p.ll, label: p.name, sel: false, open: true }));
+    if (this._maps.mini) { const p = this.prof(s.profileId); pts.mini = [{ id: p.id, ll: p.ll, label: p.name, sel: true }]; }
+    for (const k in pts) {
+      const m = this._maps[k], list = pts[k];
+      const ids = list.map(p => p.id).join(','), sig = ids + '|' + list.filter(p => p.sel).map(p => p.id).join(',');
+      if (m.sig === sig) continue;
+      m.layer.clearLayers();
+      list.forEach(p => {
+        const mk = L.circleMarker(p.ll, { radius: p.sel ? 11 : 8, color: '#fff', weight: 3, fillColor: p.sel ? T.pinSel : T.pin, fillOpacity: 1 }).addTo(m.layer);
+        mk.bindTooltip(p.label, { direction: 'top', offset: [0, -8] });
+        if (k === 'main') mk.on('click', () => this.setState({ selected: p.id }));
+        if (k === 'home') mk.on('click', () => this.go('profile', { profileId: p.id, profileTab: 'listings' }));
+      });
+      if (m.ids !== ids) {
+        if (k === 'mini') m.map.setView(list[0].ll, 9);
+        else if (list.length > 1) m.map.fitBounds(list.map(p => p.ll), { padding: k === 'home' ? [40, 40, 110, 40] : [50, 50], maxZoom: 9 });
+        else if (list.length === 1) m.map.setView(list[0].ll, 9);
+      }
+      m.sig = sig; m.ids = ids;
+    }
+  }
+
+  renderVals() {
+    const s = this.state, T = this.T, loggedIn = !!this.props.loggedIn;
+    const catName = id => (this.cats.find(c => c.id === id) || {}).name;
+    const decP = p => ({ ...p, catName: catName(p.cat), open: () => this.go('profile', { profileId: p.id, profileTab: 'listings' }), hover: () => s.selected !== p.id && this.setState({ selected: p.id }), bd: s.selected === p.id ? T.green : T.line, bg: s.selected === p.id ? T.selBg : '#fff' });
+    const decL = l => { const sp = this.prof(l.seller); const sell = l.type === 'sell'; return { ...l, catName: catName(l.cat), sellerName: sp.name, loc: sp.loc, typeLabel: sell ? 'Pārdod' : 'Pērk', typeBg: sell ? T.sellBg : T.buyBg, typeFg: sell ? T.sellFg : T.buyFg, open: () => this.go('listing', { listingId: l.id }), hover: () => s.selected !== l.id && this.setState({ selected: l.id }), bd: s.selected === l.id ? T.green : T.line, bg: s.selected === l.id ? T.selBg : '#fff' }; };
+    const modes = [['profiles', 'Uzņēmumi'], ['sell', 'Pārdod'], ['buy', 'Pērk']];
+    const results = this.filtered();
+    const n = results.length;
+    const isProfileMode = s.mode === 'profiles';
+    const noun = isProfileMode ? (n === 1 ? 'uzņēmums' : 'uzņēmumi') : (n === 1 ? 'sludinājums' : 'sludinājumi');
+    const profile = decP(this.prof(s.profileId));
+    const listing = decL(this.listings.find(l => l.id === s.listingId));
+    const seller = decP(this.prof(listing.seller));
+    const sim = this.listings.filter(l => l.id !== listing.id && l.cat === listing.cat).concat(this.listings.filter(l => l.id !== listing.id && l.cat !== listing.cat)).slice(0, 3);
+    const shots = [listing.img, 'foto: detaļas', 'foto: no sāniem', 'foto: dokumenti'];
+    const phoneOwner = s.page === 'listing' ? seller : profile;
+    const isSignup = s.authMode === 'signup';
+    const placeholders = { profiles: 'Meklē uzņēmumu, nozari vai vietu…', sell: 'Ko vēlies nopirkt? Piem., traktors, teles, malka…', buy: 'Ko meklē pircēji? Piem., mieži, prese…' };
+    const heroSearch = () => this.go('map', { mode: s.heroMode, q: s.heroQ, cat: 'all' });
+    return {
+      loggedIn, loggedOut: !loggedIn, showFooter: s.page !== 'map',
+      isHome: s.page === 'home', isMap: s.page === 'map', isProfile: s.page === 'profile', isListing: s.page === 'listing', isAuth: s.page === 'auth',
+      goHome: () => this.go('home'), goMap: () => this.go('map', { mode: 'profiles', cat: 'all', q: '' }), goListings: () => this.go('map', { mode: 'sell', cat: 'all', q: '' }),
+      goLogin: () => this.go('auth', { authMode: 'login' }), goSignup: () => this.go('auth', { authMode: 'signup' }), goMyProfile: () => this.go('profile', { profileId: 'p1', profileTab: 'listings' }),
+      goHow: () => { this._keepScroll = true; this.go('home'); setTimeout(() => { const el = this.howRef.current; if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }); }, 60); },
+      heroTabs: modes.map(([id, label]) => ({ label, set: () => this.setState({ heroMode: id }), bg: s.heroMode === id ? T.heroOnBg : 'transparent', fg: s.heroMode === id ? T.heroOnFg : T.muted })),
+      heroQ: s.heroQ, heroPlaceholder: placeholders[s.heroMode], onHeroQ: e => this.setState({ heroQ: e.target.value }), onHeroKey: e => { if (e.key === 'Enter') heroSearch(); }, heroSearch,
+      homeCats: this.cats.map(c => ({ ...c, open: () => this.go('map', { mode: 'profiles', cat: c.id, q: '' }) })),
+      latest: this.listings.slice(0, 4).map(decL),
+      modeTabs: modes.map(([id, label]) => ({ label, set: () => this.setState({ mode: id, selected: null }), bg: s.mode === id ? T.segOnBg : 'transparent', fg: s.mode === id ? T.segOnFg : T.segOffFg })),
+      catChips: [{ id: 'all', name: 'Visas kategorijas' }].concat(this.cats).map(c => { const on = s.cat === c.id; return { name: c.name, set: () => this.setState({ cat: c.id, selected: null }), bg: on ? T.chipOnBg : T.chipBg, fg: on ? T.chipOnFg : T.ink, bd: on ? T.chipOnBd : T.line }; }),
+      q: s.q, onQ: e => this.setState({ q: e.target.value, selected: null }), mapPlaceholder: placeholders[s.mode],
+      isProfileMode, isListingMode: !isProfileMode, empty: n === 0, resultLabel: n === 0 ? 'Nav rezultātu' : n + ' ' + noun,
+      profileResults: isProfileMode ? results.map(decP) : [], listingResults: isProfileMode ? [] : results.map(decL),
+      resetFilters: () => this.setState({ cat: 'all', q: '' }),
+      profile, profileListings: this.listings.filter(l => l.seller === profile.id).map(decL),
+      profileTabs: [['listings', 'Sludinājumi'], ['about', 'Par saimniecību']].map(([id, label]) => ({ label, set: () => this.setState({ profileTab: id }), bd: s.profileTab === id ? T.green : 'transparent', fg: s.profileTab === id ? T.ink : T.muted })),
+      tabListings: s.profileTab === 'listings', tabAbout: s.profileTab === 'about',
+      togglePhone: () => this.setState({ showPhone: !s.showPhone }),
+      phoneText: s.showPhone ? phoneOwner.phone : 'Parādīt tālruni', phoneMasked: s.showPhone ? phoneOwner.phone : phoneOwner.phone.slice(0, 8) + ' ••• •••',
+      listing, seller, similar: sim.map(decL), contactLabel: listing.type === 'sell' ? 'Rakstīt pārdevējam' : 'Piedāvāt pircējam',
+      mainImg: shots[s.imgIdx], thumbs: shots.map((label, i) => ({ short: label.replace('foto: ', ''), set: () => this.setState({ imgIdx: i }), bd: i === s.imgIdx ? T.green : 'transparent' })),
+      details: [['Kategorija', listing.catName], ['Stāvoklis', listing.cond], ['Daudzums', listing.qty], ['Atrašanās vieta', listing.loc], ['Publicēts', listing.posted], ['Sludinājuma nr.', '10' + listing.id.slice(1) + '42']].map(([k, v]) => ({ k, v })),
+      authTabs: [['login', 'Ieiet'], ['signup', 'Reģistrēties']].map(([id, label]) => ({ label, set: () => this.setState({ authMode: id }), bg: s.authMode === id ? T.segOnBg : 'transparent', fg: s.authMode === id ? T.segOnFg : T.segOffFg })),
+      isSignupMode: isSignup, isLoginMode: !isSignup,
+      authTitle: isSignup ? 'Izveido savu profilu' : 'Laipni lūdzam atpakaļ', authSub: isSignup ? 'Aizņem tikai pāris minūtes.' : 'Ieej, lai pārvaldītu profilu un sludinājumus.',
+      authCta: isSignup ? 'Reģistrēties' : 'Ieiet', authSwitchText: isSignup ? 'Jau ir konts?' : 'Vēl nav konta?', authSwitchCta: isSignup ? 'Ieiet' : 'Reģistrēties',
+      authSwitch: () => this.setState({ authMode: isSignup ? 'login' : 'signup' }), doAuth: () => this.go('profile', { profileId: 'p1', profileTab: 'listings' }),
+      homeMapRef: this.homeMapRef, mainMapRef: this.mainMapRef, miniMapRef: this.miniMapRef, howRef: this.howRef
+    };
+  }
+}
+</script>
+</body>
+</html>
