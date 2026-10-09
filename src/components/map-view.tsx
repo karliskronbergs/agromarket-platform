@@ -137,7 +137,6 @@ export function MapView({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<string | null>(null);
-  const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
   function navigate(query: Record<string, string>) {
     startTransition(() => {
@@ -243,7 +242,6 @@ export function MapView({
     };
   }, []);
 
-  const selectedPoint = points.find((p) => p.id === selected) ?? null;
   const resultLabel = labels.resultLabel;
 
   function categoryQuery(): Record<string, string> {
@@ -469,16 +467,17 @@ export function MapView({
   );
 
   return (
-    <div className="flex h-[calc(100dvh-56px)] flex-col overflow-hidden sm:h-[calc(100dvh-44px)]">
-      {filterBar}
+    <div className="flex flex-col sm:h-[calc(100dvh-44px)]">
+      <div className="sticky top-14 z-30 sm:static">{filterBar}</div>
 
-      <div className="relative flex flex-1 overflow-hidden">
-        {/* List pane */}
-        <div
-          className={`absolute inset-0 z-10 flex flex-col gap-2.5 overflow-y-auto bg-[#f6f7f5] p-4 pb-24 sm:static sm:z-auto sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4 ${
-            mobileView === "map" ? "hidden sm:flex" : "flex"
-          }`}
-        >
+      <div className="relative flex flex-1 flex-col sm:flex-row sm:overflow-hidden">
+        {/* Map pane: fixed-height box above the list on mobile, side pane on desktop */}
+        <div className="relative isolate h-[42vh] min-h-[260px] flex-shrink-0 bg-[#e8ece6] sm:order-2 sm:h-auto sm:flex-1">
+          <div ref={mapContainerRef} className="absolute inset-0" />
+        </div>
+
+        {/* List pane: normal scrolling flow below the map on mobile, side column on desktop */}
+        <div className="flex flex-col gap-2.5 bg-[#f6f7f5] p-4 pb-24 sm:order-1 sm:w-[440px] sm:flex-shrink-0 sm:overflow-y-auto sm:border-r sm:border-[#e3e6e8] sm:pb-4">
           <div className="px-1 pb-1 text-[13px] text-[#5d6670]">{resultLabel}</div>
           {points.length === 0 ? (
             <EmptyState
@@ -502,66 +501,10 @@ export function MapView({
           )}
         </div>
 
-        {/* Map pane (always mounted to avoid Leaflet sizing issues when hidden) */}
-        <div
-          className={`absolute inset-0 bg-[#e8ece6] transition-opacity sm:relative sm:flex-1 sm:opacity-100 ${
-            mobileView === "list" ? "pointer-events-none opacity-0" : "opacity-100"
-          }`}
-        >
-          <div ref={mapContainerRef} className="absolute inset-0" />
-
-          {/* Mobile-only selection surface */}
-          <div className="sm:hidden">
-            {selectedPoint ? (
-              <Link
-                href={selectedPoint.href}
-                className="absolute inset-x-3 bottom-[76px] z-[600] flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
-              >
-                <div
-                  style={{
-                    backgroundImage:
-                      !selectedPoint.imageUrl && mode !== "profiles"
-                        ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
-                        : undefined,
-                  }}
-                  className={`relative h-14 w-14 flex-shrink-0 overflow-hidden ${mode === "profiles" ? "rounded-full bg-[#e4eaf0]" : "rounded-[10px]"}`}
-                >
-                  {selectedPoint.imageUrl ? (
-                    <Image src={selectedPoint.imageUrl} alt="" fill sizes="56px" className="object-cover" />
-                  ) : mode === "profiles" ? (
-                    <div className="flex h-full w-full items-center justify-center font-semibold text-[#3b5166]">
-                      {initialsFor(selectedPoint.title)}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[15px] font-semibold leading-[1.25] text-[#1d2329]">
-                    {selectedPoint.title}
-                  </div>
-                  <div className="truncate text-[13px] text-[#5d6670]">{selectedPoint.subtitle}</div>
-                </div>
-                <span className="text-lg text-[#3f6e4a]">→</span>
-              </Link>
-            ) : (
-              <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)]">
-                {resultLabel} · {labels.tapPointHint}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile-only floating controls */}
-        <button
-          type="button"
-          onClick={() => setMobileView((v) => (v === "list" ? "map" : "list"))}
-          className="absolute bottom-4 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1d2329] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
-        >
-          {mobileView === "list" ? labels.toggleShowMap : labels.toggleShowList}
-        </button>
         {mode !== "profiles" && (
           <Link
             href={`/${locale}/dashboard/listings/new`}
-            className="absolute bottom-4 right-4 z-[700] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+            className="fixed bottom-[92px] right-4 z-[1900] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
           >
             +
           </Link>
