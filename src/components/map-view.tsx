@@ -540,12 +540,12 @@ export function MapView({
                 href={selectedPoint.href}
                 style={{
                   left: Math.min(
-                    Math.max(popupPos.x, 123),
-                    (mapContainerRef.current?.clientWidth ?? 390) - 123,
+                    Math.max(popupPos.x, 138),
+                    (mapContainerRef.current?.clientWidth ?? 390) - 138,
                   ),
                   top: Math.max(popupPos.y - 18, 8),
                 }}
-                className="absolute z-[600] flex w-[230px] -translate-x-1/2 -translate-y-full items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+                className="absolute z-[600] flex w-[276px] -translate-x-1/2 -translate-y-full items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
               >
                 <div
                   style={{
@@ -554,23 +554,23 @@ export function MapView({
                         ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
                         : undefined,
                   }}
-                  className={`relative h-14 w-14 flex-shrink-0 overflow-hidden ${mode === "profiles" ? "rounded-full bg-[#e4eaf0]" : "rounded-[10px]"}`}
+                  className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${mode === "profiles" ? "rounded-full bg-[#e4eaf0]" : "rounded-[10px]"}`}
                 >
                   {selectedPoint.imageUrl ? (
-                    <Image src={selectedPoint.imageUrl} alt="" fill sizes="56px" className="object-cover" />
+                    <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
                   ) : mode === "profiles" ? (
-                    <div className="flex h-full w-full items-center justify-center font-semibold text-[#3b5166]">
+                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
                       {initialsFor(selectedPoint.title)}
                     </div>
                   ) : null}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[15px] font-semibold leading-[1.25] text-[#1d2329]">
+                  <div className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
                     {selectedPoint.title}
                   </div>
-                  <div className="truncate text-[13px] text-[#5d6670]">{selectedPoint.subtitle}</div>
+                  <div className="truncate text-[11px] text-[#5d6670]">{selectedPoint.subtitle}</div>
                 </div>
-                <span className="text-lg text-[#3f6e4a]">→</span>
+                <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
               </Link>
             ) : (
               <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)]">
