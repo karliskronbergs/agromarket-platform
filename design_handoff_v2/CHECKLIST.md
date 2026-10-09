@@ -42,11 +42,11 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Mobile: fixed bottom action bar (Zvanīt / Rakstīt ziņu)
 
 ## 5. Listing detail
-- [ ] Gallery + thumbnails (mobile: tap/swipe + dots)
-- [ ] Sticky price card with primary + phone buttons, badges
-- [ ] Seller card, safety tip, description, details list
-- [ ] Similar listings
-- [ ] Mobile: fixed bottom action bar
+- [x] Gallery + thumbnails (mobile: tap/swipe + dots)
+- [x] Sticky price card with primary + phone buttons, badges
+- [x] Seller card, safety tip, description, details list
+- [x] Similar listings
+- [x] Mobile: fixed bottom action bar
 
 ## 6. Sign up / Log in
 - [ ] Two-panel card (desktop), single column (mobile), Ieiet/Reģistrēties toggle

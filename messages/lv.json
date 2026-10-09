@@ -240,6 +240,8 @@
     "seller": "Pārdevējs",
     "details": "Detaļas",
     "location": "Atrašanās vieta",
+    "postedLabel": "Publicēts",
+    "listingNumber": "Sludinājuma nr.",
     "activeListings": "aktīvi sludinājumi",
     "callSeller": "Zvanīt",
     "getDirections": "Rādīt maršrutu",

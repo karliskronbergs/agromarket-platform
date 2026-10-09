@@ -240,6 +240,8 @@
     "seller": "Seller",
     "details": "Details",
     "location": "Location",
+    "postedLabel": "Posted",
+    "listingNumber": "Listing no.",
     "activeListings": "active listings",
     "callSeller": "Call",
     "getDirections": "Get directions",

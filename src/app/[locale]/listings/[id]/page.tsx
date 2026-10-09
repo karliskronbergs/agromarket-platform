@@ -175,6 +175,7 @@ export default async function ListingDetailPage({
               <div className="text-[13px] text-[#5d6670]">
                 {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
               </div>
+              {sellerAttributes.length > 0 && <AttributeBadges attributes={sellerAttributes} locale={locale} />}
             </div>
 
             {/* Mobile: seller card right after the top info block */}
@@ -221,11 +222,13 @@ export default async function ListingDetailPage({
                   )}
                   {conditionText && <DetailRow label={t("condition")} value={conditionText} />}
                   {profile?.address && <DetailRow label={t("location")} value={profile.address} />}
+                  <DetailRow label={t("postedLabel")} value={formatRelativeDays(listing.created_at, locale)} />
+                  <DetailRow label={t("listingNumber")} value={listing.id.slice(0, 8).toUpperCase()} />
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl bg-[#f0f2f0] p-3.5 text-[13px] leading-[1.5] text-[#4a535b] sm:rounded-2xl sm:p-4">
+            <div className="rounded-xl bg-[#f0f2f0] px-3.5 py-3 text-[13px] leading-[1.5] text-[#4a535b] sm:hidden">
               {t("safetyTip")}
             </div>
 
@@ -254,6 +257,7 @@ export default async function ListingDetailPage({
               <div className="text-sm text-[#5d6670]">
                 {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
               </div>
+              {sellerAttributes.length > 0 && <AttributeBadges attributes={sellerAttributes} locale={locale} />}
               <div className="mt-1 flex flex-col gap-2">
                 {profile && (
                   <MessageSellerButton
@@ -291,11 +295,9 @@ export default async function ListingDetailPage({
               </Link>
             )}
 
-            {sellerAttributes.length > 0 && (
-              <div className="rounded-[18px] border border-[#e3e6e8] bg-white p-[18px]">
-                <AttributeBadges attributes={sellerAttributes} locale={locale} />
-              </div>
-            )}
+            <div className="hidden rounded-[14px] bg-[#f0f2f0] px-4 py-3.5 text-[13px] leading-[1.5] text-[#4a535b] sm:block">
+              {t("safetyTip")}
+            </div>
 
             {listing.lat != null && listing.lng != null && (
               <div className="overflow-hidden rounded-[18px] border border-[#e3e6e8] bg-[#e8ece6]">

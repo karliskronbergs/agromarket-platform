@@ -45,8 +45,8 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
                   aria-label={`Image ${i + 1}`}
                   className="h-2 rounded-full transition-all"
                   style={{
-                    width: i === active ? "18px" : "8px",
-                    background: i === active ? "#fff" : "rgba(255,255,255,0.55)",
+                    width: i === active ? "22px" : "8px",
+                    background: i === active ? "#fff" : "rgba(255,255,255,0.6)",
                   }}
                 />
               ))}
