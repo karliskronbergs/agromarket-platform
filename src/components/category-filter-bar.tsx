@@ -121,7 +121,9 @@ function RootMenu({
       setPosition({
         top,
         left: Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 8)),
-        maxHeight: Math.max(160, window.innerHeight - top - 16),
+        // Leave room for the fixed bottom tab bar (76px, shown on this page)
+        // so a tall cascading panel never ends up painted over by it.
+        maxHeight: Math.max(160, window.innerHeight - top - 16 - 76),
       });
     }
     setOpen(true);
