@@ -140,7 +140,7 @@ export default async function MessagesPage({
                   )}
                 </div>
                 {other?.verified && (
-                  <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#3f6e4a] text-white ring-2 ring-white" />
+                  <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6e4a] ring-2 ring-white" />
                 )}
               </div>
               <div className="min-w-0 flex-1">

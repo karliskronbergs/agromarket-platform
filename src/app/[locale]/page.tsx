@@ -110,8 +110,26 @@ export default async function Home({
           />
         </section>
 
+        <section className="px-4 pt-6">
+          <Link
+            href="/map"
+            className="relative block h-[200px] overflow-hidden rounded-2xl border border-[#e3e6e8] bg-[#e8ece6]"
+          >
+            <HomeMapPreview points={mapPoints} />
+            <div className="absolute inset-x-2.5 bottom-2.5 z-[500] flex items-center gap-3 rounded-xl bg-white p-3 shadow-[0_4px_14px_rgba(29,35,41,0.12)]">
+              <div className="min-w-0 flex-1">
+                <div className="text-[15px] font-semibold text-[#1d2329]">{t("mapPreviewTitleMobile")}</div>
+                <div className="mt-0.5 text-xs text-[#5d6670]">{t("mapPreviewSubtitleMobile")}</div>
+              </div>
+              <span className="flex-shrink-0 rounded-[9px] bg-[#3b5166] px-3 py-2 text-[13px] font-semibold text-white">
+                {t("mapPreviewCtaShort")}
+              </span>
+            </div>
+          </Link>
+        </section>
+
         {topCategories.length > 0 && (
-          <section className="flex flex-col gap-3 pt-6">
+          <section className="flex flex-col gap-3 pt-7">
             <h2 className="m-0 px-4 text-lg font-semibold text-[#1d2329]">{t("industriesLabel")}</h2>
             <div className="flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {topCategories.map((c) => (
@@ -135,24 +153,6 @@ export default async function Home({
             </div>
           </section>
         )}
-
-        <section className="px-4 pt-6">
-          <Link
-            href="/map"
-            className="relative block h-[200px] overflow-hidden rounded-2xl border border-[#e3e6e8] bg-[#e8ece6]"
-          >
-            <HomeMapPreview points={mapPoints} />
-            <div className="absolute inset-x-2.5 bottom-2.5 z-[500] flex items-center gap-3 rounded-xl bg-white p-3 shadow-[0_4px_14px_rgba(29,35,41,0.12)]">
-              <div className="min-w-0 flex-1">
-                <div className="text-[15px] font-semibold text-[#1d2329]">{t("mapPreviewTitleMobile")}</div>
-                <div className="mt-0.5 text-xs text-[#5d6670]">{t("mapPreviewSubtitleMobile")}</div>
-              </div>
-              <span className="flex-shrink-0 rounded-[9px] bg-[#3b5166] px-3 py-2 text-[13px] font-semibold text-white">
-                {t("mapPreviewCtaShort")}
-              </span>
-            </div>
-          </Link>
-        </section>
 
         {listingCards.length > 0 && (
           <section className="flex flex-col gap-3 pt-7">

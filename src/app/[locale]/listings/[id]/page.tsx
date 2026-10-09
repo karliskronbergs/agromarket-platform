@@ -400,11 +400,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 function VerifiedDot() {
-  return (
-    <span className="flex h-[15px] w-[15px] flex-shrink-0 items-center justify-center rounded-full bg-[#3f6e4a] text-white">
-      <IconCheck className="h-2 w-2" />
-    </span>
-  );
+  return <IconCheck className="h-[15px] w-[15px] flex-shrink-0 text-[#3f6e4a]" />;
 }
 
 type SellerLite = {

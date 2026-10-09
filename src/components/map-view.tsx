@@ -634,17 +634,14 @@ function ResultCard({
               </div>
             )}
           </div>
-          {(p.verified || p.adminBadge) && (
-            <span
-              className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white"
-              style={{ background: p.adminBadge ? "#dc2626" : "#3f6e4a" }}
-            >
-              {p.adminBadge ? (
-                <IconShield className="h-2.5 w-2.5 text-white" />
-              ) : (
-                <IconCheck className="h-2.5 w-2.5 text-white" />
-              )}
+          {p.adminBadge ? (
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-[#dc2626]">
+              <IconShield className="h-2.5 w-2.5 text-white" />
             </span>
+          ) : (
+            p.verified && (
+              <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#3f6e4a] ring-2 ring-white" />
+            )
           )}
         </div>
       ) : (
@@ -665,11 +662,8 @@ function ResultCard({
             <div className="flex items-center gap-1.5">
               <span className="truncate text-[15px] font-semibold text-[#1d2329]">{p.title}</span>
               {p.verified && (
-                <span
-                  title={verifiedLabel}
-                  className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#3f6e4a] text-white"
-                >
-                  <IconCheck className="h-2.5 w-2.5" />
+                <span title={verifiedLabel} className="flex-shrink-0">
+                  <IconCheck className="h-4 w-4 text-[#3f6e4a]" />
                 </span>
               )}
             </div>

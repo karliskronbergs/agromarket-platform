@@ -216,9 +216,7 @@ export default async function PublicProfilePage({
                 </h1>
                 {profile.verified && (
                   <span className="flex items-center gap-1.5 rounded-full bg-[#eef3ee] px-2.5 py-1 text-[13px] font-medium text-[#2f5538] sm:px-2.5">
-                    <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#3f6e4a] text-white">
-                      <IconCheck className="h-2 w-2" />
-                    </span>
+                    <IconCheck className="h-3.5 w-3.5 flex-shrink-0 text-[#3f6e4a]" />
                     {tProfile("verifiedShort")}
                   </span>
                 )}

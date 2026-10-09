@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/auth/actions";
 import { MobileBackButton, MobileLoginCta } from "@/components/mobile-header-extras";
+import { IconMail } from "@/components/icons";
 
 function initialsFor(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -109,6 +110,20 @@ export async function SiteHeader({ locale }: { locale: string }) {
           )}
         </Link>
         <div className="flex-1" />
+        {user && (
+          <Link
+            href="/dashboard/messages"
+            aria-label={t("messages")}
+            className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-white active:bg-white/15"
+          >
+            <IconMail className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-red-600 px-[3px] text-[9px] font-bold leading-none text-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
+        )}
         <div className="flex flex-shrink-0 items-center overflow-hidden rounded-lg border border-white/30 text-[13px] font-semibold">
           {mobileLangLinks}
         </div>
