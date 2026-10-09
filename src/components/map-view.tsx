@@ -8,7 +8,6 @@ import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
-import { FiltriButton } from "@/components/filtri-button";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
 import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
@@ -160,16 +159,6 @@ export function MapView({
     (mode !== "profiles" && !!effectiveCategoryId && getSeedsCategoryIds(categories).has(effectiveCategoryId)) ||
     (mode !== "profiles" && !!effectiveCategoryId && getFeedCategoryIds(categories).has(effectiveCategoryId));
   const hasSpecificFilters = !!animalGroup || isEquipment || isMachinery || isSeeds;
-
-  const specificFilterCount = animalGroup
-    ? Object.values(livestockFilters).filter(Boolean).length
-    : isEquipment
-      ? Object.values(equipmentFilters).filter(Boolean).length
-      : isMachinery
-        ? Object.values(machineryFilters).filter(Boolean).length
-        : isSeeds
-          ? Object.values(seedsFilters).filter(Boolean).length
-          : 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -397,96 +386,85 @@ export function MapView({
           selectedSubcategory={selectedSubcategory}
           locale={locale}
           allLabel={labels.all}
-          allSubcategoryLabel={labels.allSubcategories}
           onSelect={(categoryId, subcategoryId) => {
             const query: Record<string, string> = { mode };
             if (categoryId) query.category = categoryId;
             if (subcategoryId) query.subcategory = subcategoryId;
             navigate(query);
           }}
-          trailing={
-            hasSpecificFilters ? (
-              <FiltriButton
-                label={labels.filtri}
-                count={specificFilterCount}
-                clearLabel={labels.clearFilters}
-                onClear={clearSpecificFilters}
-              >
-                {animalGroup && (
-                  <LivestockFilterPanel
-                    key={effectiveCategoryId}
-                    animalGroup={animalGroup}
-                    locale={locale}
-                    filters={livestockFilters}
-                    labels={labels}
-                    onApply={(f) =>
-                      applyFilterQuery({
-                        ...(f.breed ? { breed: f.breed } : {}),
-                        ...(f.ageMin ? { ageMin: f.ageMin } : {}),
-                        ...(f.ageMax ? { ageMax: f.ageMax } : {}),
-                        ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
-                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                        ...(f.organic ? { organic: f.organic } : {}),
-                      })
-                    }
-                    onClear={clearSpecificFilters}
-                  />
-                )}
-                {isEquipment && (
-                  <EquipmentFilterPanel
-                    key={effectiveCategoryId}
-                    locale={locale}
-                    filters={equipmentFilters}
-                    labels={labels}
-                    onApply={(f) =>
-                      applyFilterQuery({
-                        ...(f.condition ? { condition: f.condition } : {}),
-                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                      })
-                    }
-                    onClear={clearSpecificFilters}
-                  />
-                )}
-                {isMachinery && (
-                  <MachineryFilterPanel
-                    key={effectiveCategoryId}
-                    locale={locale}
-                    filters={machineryFilters}
-                    labels={labels}
-                    onApply={(f) =>
-                      applyFilterQuery({
-                        ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
-                        ...(f.model ? { model: f.model } : {}),
-                        ...(f.condition ? { condition: f.condition } : {}),
-                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                      })
-                    }
-                    onClear={clearSpecificFilters}
-                  />
-                )}
-                {isSeeds && (
-                  <SeedsFilterPanel
-                    key={effectiveCategoryId}
-                    filters={seedsFilters}
-                    labels={labels}
-                    onApply={(f) =>
-                      applyFilterQuery({
-                        ...(f.title ? { title: f.title } : {}),
-                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                        ...(f.organic ? { organic: f.organic } : {}),
-                      })
-                    }
-                    onClear={clearSpecificFilters}
-                  />
-                )}
-              </FiltriButton>
-            ) : undefined
-          }
         />
+
+        {animalGroup && (
+          <LivestockFilterPanel
+            key={effectiveCategoryId}
+            animalGroup={animalGroup}
+            locale={locale}
+            filters={livestockFilters}
+            labels={labels}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.breed ? { breed: f.breed } : {}),
+                ...(f.ageMin ? { ageMin: f.ageMin } : {}),
+                ...(f.ageMax ? { ageMax: f.ageMax } : {}),
+                ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                ...(f.organic ? { organic: f.organic } : {}),
+              })
+            }
+            onClear={clearSpecificFilters}
+          />
+        )}
+        {isEquipment && (
+          <EquipmentFilterPanel
+            key={effectiveCategoryId}
+            locale={locale}
+            filters={equipmentFilters}
+            labels={labels}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.condition ? { condition: f.condition } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              })
+            }
+            onClear={clearSpecificFilters}
+          />
+        )}
+        {isMachinery && (
+          <MachineryFilterPanel
+            key={effectiveCategoryId}
+            locale={locale}
+            filters={machineryFilters}
+            labels={labels}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
+                ...(f.model ? { model: f.model } : {}),
+                ...(f.condition ? { condition: f.condition } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              })
+            }
+            onClear={clearSpecificFilters}
+          />
+        )}
+        {isSeeds && (
+          <SeedsFilterPanel
+            key={effectiveCategoryId}
+            filters={seedsFilters}
+            labels={labels}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.title ? { title: f.title } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                ...(f.organic ? { organic: f.organic } : {}),
+              })
+            }
+            onClear={clearSpecificFilters}
+          />
+        )}
       </div>
     </div>
   );
