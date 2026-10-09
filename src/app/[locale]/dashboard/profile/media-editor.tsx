@@ -47,7 +47,7 @@ export function ProfileMediaEditor({
         style={{
           background: coverPreview
             ? undefined
-            : "linear-gradient(120deg,#3f6b3f,#5c8a2e,#7a9c4a)",
+            : "linear-gradient(120deg,#3f6e4a,#5c8a2e,#7a9c4a)",
         }}
       >
         {coverPreview && (
@@ -73,9 +73,9 @@ export function ProfileMediaEditor({
         <button
           type="button"
           onClick={() => avatarInputRef.current?.click()}
-          className="group relative -mt-10 h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-4 border-[#faf8f3] sm:-mt-12 sm:h-24 sm:w-24"
+          className="group relative -mt-10 h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-4 border-white sm:-mt-12 sm:h-24 sm:w-24"
         >
-          <div className={`h-full w-full ${avatarPreview ? "bg-white" : "bg-[#3f6b3f]"}`}>
+          <div className={`h-full w-full ${avatarPreview ? "bg-white" : "bg-[#3b5166]"}`}>
             {avatarPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarPreview} alt="" className="h-full w-full object-cover" />
@@ -100,7 +100,7 @@ export function ProfileMediaEditor({
           onChange={(e) => onPick(e, setAvatarPreview)}
         />
         <div className="pb-1">
-          <div className="font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
+          <div className="text-xl font-semibold tracking-[-0.01em] text-[#1d2329] sm:text-2xl">
             {businessName || namePlaceholder}
           </div>
         </div>

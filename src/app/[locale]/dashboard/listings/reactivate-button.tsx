@@ -9,7 +9,10 @@ export function ReactivateButton({ locale, listingId }: { locale: string; listin
 
   return (
     <form action={boundReactivate}>
-      <button type="submit" className="text-sm font-medium text-[#3f6b3f]">
+      <button
+        type="submit"
+        className="rounded-[9px] border border-[#d9dee2] bg-white px-3.5 py-2 text-sm font-medium text-[#1d2329] transition hover:border-[#3f6e4a]"
+      >
         {t("reactivate")}
       </button>
     </form>

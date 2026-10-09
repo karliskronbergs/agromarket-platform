@@ -53,13 +53,13 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Existing auth logic unchanged
 
 ## 7. User dashboard
-- [ ] Sidebar (desktop) / pill nav + tab bar (mobile)
-- [ ] Pārskats: profile card, stats, verification card, listings preview, empty state
-- [ ] Mani sludinājumi: filter, rows, Rediģēt / Paslēpt / Dzēst with confirm
-- [ ] Add/edit listing form with real categories, subcategories, badges
-- [ ] Uzņēmuma profils edit form + map location
-- [ ] Konts: password, verification status, delete profile
-- [ ] Existing dashboard logic unchanged
+- [x] Sidebar (desktop) / pill nav + tab bar (mobile)
+- [x] Pārskats: profile card, stats, verification card, listings preview, empty state
+- [x] Mani sludinājumi: filter, rows, Rediģēt / Paslēpt / Dzēst with confirm
+- [x] Add/edit listing form with real categories, subcategories, badges
+- [x] Uzņēmuma profils edit form + map location
+- [x] Konts: password, verification status, delete profile
+- [x] Existing dashboard logic unchanged
 
 ## 8. Final pass
 - [ ] Every page checked at 1440px, 1024px, 768px and 390px widths

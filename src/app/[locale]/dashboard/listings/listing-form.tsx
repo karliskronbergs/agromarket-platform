@@ -2,6 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { getSelfAndDescendantIds, type CategoryRow } from "@/lib/categories";
 import { BREED_OPTIONS, getAnimalGroupForCategory, getLivestockCategoryIds } from "@/lib/livestock";
 import { CONDITION_OPTIONS, getEquipmentCategoryIds } from "@/lib/equipment";
@@ -19,7 +20,7 @@ type ExistingImage = { id: string; url: string };
 const WEIGHT_UNIT_CATEGORY_SLUG = "seklas-un-graudi";
 
 const inputClass =
-  "rounded-lg border border-[#e7e2d8] bg-white px-3 py-2.5 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
+  "rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
 
 export function ListingForm({
   locale,
@@ -27,11 +28,13 @@ export function ListingForm({
   categories,
   initial,
   existingImages,
+  address,
 }: {
   locale: string;
   listingId: string | null;
   categories: Category[];
   existingImages: ExistingImage[];
+  address: string;
   initial?: {
     listingType: "sell" | "buy";
     title: string;
@@ -50,11 +53,15 @@ export function ListingForm({
   };
 }) {
   const t = useTranslations("Listing");
+  const td = useTranslations("Dashboard");
   const boundSave = saveListing.bind(null, locale, listingId);
   const [state, formAction, isPending] = useActionState<ListingState, FormData>(boundSave, {
     error: null,
   });
   const [selectedCategoryId, setSelectedCategoryId] = useState(initial?.categoryId ?? "");
+  const [listingType, setListingType] = useState<"sell" | "buy">(initial?.listingType ?? "sell");
+  const [negotiable, setNegotiable] = useState(!initial?.price);
+  const [price, setPrice] = useState(initial?.price ?? "");
 
   const weightUnitCategoryIds = useMemo(() => {
     const root = categories.find((c) => c.slug === WEIGHT_UNIT_CATEGORY_SLUG);
@@ -84,43 +91,42 @@ export function ListingForm({
   const priceUnitOptions = priceUnitGroup ? PRICE_UNIT_OPTIONS[priceUnitGroup] : [];
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-8">
-      <Section>
-        <fieldset className="flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
-          <legend className="sr-only">{t("type")}</legend>
-          <label className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition has-checked:bg-[#d9713a] has-checked:text-white">
-            <input
-              type="radio"
-              name="listingType"
-              value="sell"
-              defaultChecked={(initial?.listingType ?? "sell") === "sell"}
-              className="sr-only"
-            />
-            {t("sell")}
-          </label>
-          <label className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition has-checked:bg-[#2f6690] has-checked:text-white">
-            <input
-              type="radio"
-              name="listingType"
-              value="buy"
-              defaultChecked={initial?.listingType === "buy"}
-              className="sr-only"
-            />
-            {t("buy")}
-          </label>
-        </fieldset>
+    <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-5">
+      <div className="flex flex-col gap-[22px] rounded-2xl border border-[#e3e6e8] bg-white p-4 sm:p-6">
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-[#1d2329]">{td("formWhatToDo")}</span>
+          <div className="grid grid-cols-2 gap-2.5">
+            {(
+              [
+                ["sell", td("formTypeSellTitle"), td("formTypeSellSub")],
+                ["buy", td("formTypeBuyTitle"), td("formTypeBuySub")],
+              ] as const
+            ).map(([value, label, sub]) => (
+              <label
+                key={value}
+                className="flex cursor-pointer flex-col gap-0.5 rounded-xl border-2 p-3.5 transition"
+                style={{
+                  borderColor: listingType === value ? "#3f6e4a" : "#e3e6e8",
+                  background: listingType === value ? "#f3f7f3" : "#fff",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="listingType"
+                  value={value}
+                  checked={listingType === value}
+                  onChange={() => setListingType(value)}
+                  className="sr-only"
+                />
+                <span className="text-[15px] font-semibold text-[#1d2329]">{label}</span>
+                <span className="text-[13px] leading-[1.35] text-[#5d6670]">{sub}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
         <Field label={t("title")}>
           <input name="title" defaultValue={initial?.title} required className={inputClass} />
-        </Field>
-
-        <Field label={t("description")}>
-          <textarea
-            name="description"
-            defaultValue={initial?.description}
-            rows={4}
-            className={inputClass}
-          />
         </Field>
 
         <Field label={t("category")}>
@@ -144,11 +150,7 @@ export function ListingForm({
         {showLivestockFields && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label={t("breed")}>
-              <select
-                name="breed"
-                defaultValue={initial?.breed ?? ""}
-                className={inputClass}
-              >
+              <select name="breed" defaultValue={initial?.breed ?? ""} className={inputClass}>
                 <option value="">{t("breedSelect")}</option>
                 {breedOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -183,32 +185,21 @@ export function ListingForm({
         {showMachineryFields && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t("manufacturer")}>
-              <input
-                name="manufacturer"
-                type="text"
-                defaultValue={initial?.manufacturer ?? undefined}
-                className={inputClass}
-              />
+              <input name="manufacturer" type="text" defaultValue={initial?.manufacturer ?? undefined} className={inputClass} />
             </Field>
             <Field label={t("model")}>
-              <input
-                name="model"
-                type="text"
-                defaultValue={initial?.model ?? undefined}
-                className={inputClass}
-              />
+              <input name="model" type="text" defaultValue={initial?.model ?? undefined} className={inputClass} />
             </Field>
           </div>
         )}
 
         {showCondition && (
           <Field label={t("condition")}>
-            <fieldset className="flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
-              <legend className="sr-only">{t("condition")}</legend>
+            <div className="flex w-fit gap-1 rounded-xl bg-[#f0f2f0] p-1">
               {CONDITION_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}
-                  className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition has-checked:bg-[#3f6b3f] has-checked:text-white"
+                  className="cursor-pointer rounded-[9px] px-3.5 py-2 text-sm font-medium text-[#5d6670] transition has-checked:bg-white has-checked:text-[#1d2329]"
                 >
                   <input
                     type="radio"
@@ -220,112 +211,109 @@ export function ListingForm({
                   {locale === "lv" ? opt.name_lv : opt.name_en}
                 </label>
               ))}
-            </fieldset>
+            </div>
           </Field>
         )}
 
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1fr_1fr]">
+          <Field label={t("price")}>
+            <input
+              name="price"
+              type="number"
+              step="0.01"
+              min="0"
+              value={price}
+              disabled={negotiable}
+              onChange={(e) => setPrice(e.target.value)}
+              className={`${inputClass} disabled:bg-[#f6f7f5] disabled:text-[#8a929a]`}
+            />
+          </Field>
+          {priceUnitGroup && (
+            <Field label={t("priceUnit")}>
+              <select name="priceUnit" defaultValue={initial?.priceUnit ?? ""} className={inputClass}>
+                <option value="">{t("priceUnitTotal")}</option>
+                {priceUnitOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {locale === "lv" ? opt.label_lv : opt.label_en}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+        </div>
+        <label className="-mt-2 flex w-fit cursor-pointer items-center gap-2.5 text-sm text-[#1d2329]">
+          <input
+            type="checkbox"
+            checked={negotiable}
+            onChange={(e) => {
+              setNegotiable(e.target.checked);
+              if (e.target.checked) setPrice("");
+            }}
+            className="h-[18px] w-[18px] accent-[#3f6e4a]"
+          />
+          {td("formNegotiable")}
+        </label>
+
+        <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-[#1d2329]">
+          <input type="checkbox" name="plusVat" defaultChecked={initial?.plusVat} className="h-[18px] w-[18px] accent-[#3f6e4a]" />
+          {t("plusVat")}
+        </label>
+
         {showOrganicCertified && (
-          <label className="flex w-fit cursor-pointer items-center gap-2.5 rounded-full border border-[#e7e2d8] bg-white px-3.5 py-2 transition has-checked:border-[#3f6b3f] has-checked:bg-[#eaf4e8]">
+          <label className="flex w-fit cursor-pointer items-center gap-2.5 rounded-full border border-[#d9dee2] bg-white px-3.5 py-2 transition has-checked:border-[#3f6e4a] has-checked:bg-[#eef3ee]">
             <input
               type="checkbox"
               name="organicCertified"
               defaultChecked={initial?.organicCertified}
               className="peer sr-only"
             />
-            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#c9c3b3] bg-white transition-all peer-checked:border-[#3f6b3f] peer-checked:bg-gradient-to-br peer-checked:from-[#57975a] peer-checked:to-[#2f5233] peer-checked:shadow-[0_1px_3px_rgba(47,82,51,0.5)]">
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#d9dee2] bg-white transition-all peer-checked:border-[#3f6e4a] peer-checked:bg-[#3f6e4a]">
               <IconCheckmark className="h-3.5 w-3.5 text-white" />
             </span>
-            <span className="text-sm font-medium text-[#2b2a24]">{t("organicCertified")}</span>
+            <span className="text-sm font-medium text-[#1d2329]">{t("organicCertified")}</span>
           </label>
         )}
 
-        <Field label={t("price")}>
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              name="price"
-              type="number"
-              step="0.01"
-              min="0"
-              defaultValue={initial?.price}
-              className={`flex-1 ${inputClass}`}
-            />
-            <label className="flex cursor-pointer items-center gap-2">
-              <span className="relative inline-block h-5 w-9 flex-shrink-0">
-                <input
-                  type="checkbox"
-                  name="plusVat"
-                  defaultChecked={initial?.plusVat}
-                  className="peer sr-only"
-                />
-                <span className="absolute inset-0 rounded-full bg-[#e7e2d8] transition-colors peer-checked:bg-[#3f6b3f] after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-4" />
-              </span>
-              <span className="text-sm font-medium text-[#2b2a24]">{t("plusVat")}</span>
-            </label>
-          </div>
-          {priceUnitGroup && (
-            <fieldset className="mt-1 flex w-fit gap-1 rounded-full bg-[#f1efe6] p-1">
-              <legend className="sr-only">{t("priceUnit")}</legend>
-              {[
-                { value: "", label: t("priceUnitTotal") },
-                ...priceUnitOptions.map((opt) => ({
-                  value: opt.value,
-                  label: locale === "lv" ? opt.label_lv : opt.label_en,
-                })),
-              ].map((opt) => (
-                <label
-                  key={opt.value}
-                  className="cursor-pointer rounded-full px-3 py-1 text-xs font-semibold text-[#55503f] transition has-checked:bg-[#3f6b3f] has-checked:text-white"
-                >
-                  <input
-                    type="radio"
-                    name="priceUnit"
-                    value={opt.value}
-                    defaultChecked={(initial?.priceUnit ?? "") === opt.value}
-                    className="sr-only"
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </fieldset>
-          )}
+        <Field label={t("description")}>
+          <textarea name="description" defaultValue={initial?.description} rows={5} className={inputClass} />
         </Field>
-      </Section>
 
-      <Section title={t("images")}>
-        <ImageUploader existingImages={existingImages} />
-      </Section>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-[#1d2329]">{t("images")}</span>
+          <ImageUploader existingImages={existingImages} />
+        </div>
+
+        <div className="rounded-xl bg-[#f0f2f0] px-3.5 py-3 text-[13px] leading-[1.5] text-[#4a535b]">
+          {td("formLocationNote", { address })}
+        </div>
+      </div>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="flex w-fit items-center justify-center gap-2 rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2f5233] disabled:opacity-60"
-      >
-        {isPending && <Spinner className="h-4 w-4" />}
-        {t("save")}
-      </button>
+      <div className="flex flex-wrap justify-end gap-2.5">
+        <Link
+          href="/dashboard/listings"
+          className="rounded-[10px] border border-[#d9dee2] bg-white px-[18px] py-3 text-[15px] font-medium text-[#1d2329] transition hover:border-[#3f6e4a]"
+        >
+          {td("formCancel")}
+        </Link>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex items-center justify-center gap-2 rounded-[10px] bg-[#3f6e4a] px-[22px] py-3 text-[15px] font-semibold text-white transition hover:bg-[#355d3e] disabled:opacity-60"
+        >
+          {isPending && <Spinner className="h-4 w-4" />}
+          {listingId ? td("formSaveChanges") : td("formPublish")}
+        </button>
+      </div>
     </form>
-  );
-}
-
-function Section({ title, children }: { title?: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-4 border-t border-[#e7e2d8] pt-6 first:border-t-0 first:pt-0">
-      {title && (
-        <div className="text-xs font-semibold uppercase tracking-wide text-[#7a7566]">
-          {title}
-        </div>
-      )}
-      <div className="flex flex-col gap-5">{children}</div>
-    </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-[#2b2a24]">{label}</span>
+      <span className="text-sm font-medium text-[#1d2329]">{label}</span>
       {children}
     </label>
   );

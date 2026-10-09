@@ -36,7 +36,7 @@ export function CategoryFieldTree({
       return (
         <label
           key={node.id}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#e7e2d8] bg-white px-3.5 py-2 text-sm font-medium text-[#55503f] shadow-sm transition hover:border-[#3f6b3f] has-checked:border-[#3f6b3f] has-checked:bg-[#3f6b3f] has-checked:text-white"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#d9dee2] bg-white px-3.5 py-2 text-sm font-medium text-[#1d2329] shadow-sm transition hover:border-[#3f6e4a] has-checked:border-[#3f6e4a] has-checked:bg-[#3f6e4a] has-checked:text-white"
         >
           <input
             type={type}
@@ -53,10 +53,10 @@ export function CategoryFieldTree({
 
     const headerContent =
       leafOnly ? (
-        <span className="text-sm font-semibold text-[#2b2a24]">{label(node)}</span>
+        <span className="text-sm font-semibold text-[#1d2329]">{label(node)}</span>
       ) : (
         <label
-          className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#e7e2d8] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6b3f] has-checked:bg-[#e7efe1] has-checked:text-[#3f6b3f]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#d9dee2] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6e4a] has-checked:bg-[#eef3ee] has-checked:text-[#2f5538]"
           onClick={(e) => e.stopPropagation()}
         >
           <input
@@ -73,13 +73,13 @@ export function CategoryFieldTree({
     return (
       <details
         key={node.id}
-        className="group overflow-hidden rounded-xl border border-[#e7e2d8] bg-white shadow-sm"
+        className="group overflow-hidden rounded-xl border border-[#e3e6e8] bg-white"
         open={hasSelectedDescendant(node, isSelected)}
         style={depth > 0 ? { marginLeft: 16 } : undefined}
       >
-        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 bg-[#faf8f3] px-3.5 py-2.5">
+        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 bg-[#f6f7f5] px-3.5 py-2.5">
           {headerContent}
-          <IconChevronDown className="h-4 w-4 flex-shrink-0 text-[#7a7566] transition-transform group-open:rotate-180" />
+          <IconChevronDown className="h-4 w-4 flex-shrink-0 text-[#5d6670] transition-transform group-open:rotate-180" />
         </summary>
         <div className="flex flex-wrap gap-2 p-3">
           {node.children.map((child) => renderNode(child, depth + 1))}

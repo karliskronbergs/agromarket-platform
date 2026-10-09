@@ -84,11 +84,11 @@ export function ImageUploader({ existingImages }: { existingImages: ExistingImag
         <input key={id} type="hidden" name="removeImageIds" value={id} />
       ))}
 
-      <div className="grid grid-cols-4 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-4 gap-2.5 sm:[grid-template-columns:repeat(auto-fill,minmax(96px,1fr))]">
         {existing.map((img) => (
           <div
             key={img.id}
-            className="relative aspect-square overflow-hidden rounded-lg border border-[#e7e2d8]"
+            className="relative aspect-square overflow-hidden rounded-xl border border-[#e3e6e8]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={img.url} alt="" className="h-full w-full object-cover" />
@@ -105,7 +105,7 @@ export function ImageUploader({ existingImages }: { existingImages: ExistingImag
         {newImages.map((img, i) => (
           <div
             key={img.previewUrl}
-            className="relative aspect-square overflow-hidden rounded-lg border border-[#e7e2d8]"
+            className="relative aspect-square overflow-hidden rounded-xl border border-[#e3e6e8]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={img.previewUrl} alt="" className="h-full w-full object-cover" />
@@ -133,17 +133,17 @@ export function ImageUploader({ existingImages }: { existingImages: ExistingImag
               setDragOver(false);
               if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
             }}
-            className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed text-xs font-medium text-[#7a7566] transition ${
-              dragOver ? "border-[#3f6b3f] bg-[#e7efe1]" : "border-[#e7e2d8] bg-[#faf8f3]"
+            className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed text-xs font-medium text-[#5d6670] transition ${
+              dragOver ? "border-[#3f6e4a] bg-[#f3f7f3]" : "border-[#c9d0d5] bg-[#fafbfa]"
             }`}
           >
-            <span className="text-xl leading-none text-[#3f6b3f]">+</span>
+            <span className="text-xl leading-none text-[#3f6e4a]">+</span>
             {t("addPhotos")}
           </button>
         )}
       </div>
 
-      <p className="text-xs text-[#7a7566]">
+      <p className="text-xs text-[#5d6670]">
         {existing.length + newImages.length}/{MAX_IMAGES}
       </p>
     </div>

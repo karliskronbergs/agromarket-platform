@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./profile-form";
 
@@ -9,6 +10,7 @@ export default async function ProfilePage({
 }) {
   const { locale } = await params;
   const t = await getTranslations("Profile");
+  const td = await getTranslations("Dashboard");
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,7 +26,7 @@ export default async function ProfilePage({
     supabase
       .from("profiles")
       .select(
-        "id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url",
+        "id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, lat, lng, slug",
       )
       .eq("user_id", user!.id)
       .maybeSingle(),
@@ -42,17 +44,29 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">
-        {profile ? t("editTitle") : t("createTitle")}
-      </h1>
-      <div className="rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="m-0 mb-1 text-2xl font-semibold tracking-[-0.01em] text-[#1d2329] sm:text-[30px]">
+            {profile ? t("editTitle") : t("createTitle")}
+          </h1>
+          {profile && <div className="text-[15px] leading-[1.45] text-[#5d6670]">{t("addressHint")}</div>}
+        </div>
+        {profile && (
+          <Link href={`/profiles/${profile.slug}`} className="text-sm font-medium text-[#3f6e4a]">
+            {td("viewPublicProfileCta")}
+          </Link>
+        )}
+      </div>
+      <div className="mt-2.5">
         <ProfileForm
           locale={locale}
           categories={categories ?? []}
           selectedCategoryIds={selectedCategoryIds}
           attributes={attributes ?? []}
           selectedAttributeIds={selectedAttributeIds}
+          lat={profile?.lat ?? null}
+          lng={profile?.lng ?? null}
           initial={
             profile
               ? {

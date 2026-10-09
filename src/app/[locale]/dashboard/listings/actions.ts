@@ -179,7 +179,7 @@ export async function saveListing(
     // Brand-new listings start out pending admin approval, so the public
     // page would 404 immediately -- send the seller to their listings
     // list instead, where the pending status is visible.
-    redirect(`/${locale}/dashboard/listings`);
+    redirect(`/${locale}/dashboard/listings?toast=listingPublished`);
   }
 
   // Only active listings have a public page -- an edited listing that's
@@ -188,7 +188,7 @@ export async function saveListing(
   if (listing.status === "active") {
     redirect(`/${locale}/listings/${listing.id}`);
   }
-  redirect(`/${locale}/dashboard/listings`);
+  redirect(`/${locale}/dashboard/listings?toast=listingSaved`);
 }
 
 export async function deleteListing(locale: string, listingId: string) {
@@ -201,7 +201,7 @@ export async function deleteListing(locale: string, listingId: string) {
   await supabase.from("listings").delete().eq("id", listingId);
 
   revalidatePath(`/${locale}/dashboard/listings`);
-  redirect(`/${locale}/dashboard/listings`);
+  redirect(`/${locale}/dashboard/listings?toast=listingDeleted`);
 }
 
 const LISTING_LIFETIME_DAYS = 21;
@@ -220,4 +220,25 @@ export async function reactivateListing(locale: string, listingId: string) {
     .eq("id", listingId);
 
   revalidatePath(`/${locale}/dashboard/listings`);
+  redirect(`/${locale}/dashboard/listings?toast=listingShown`);
+}
+
+// Hides a listing from public view without deleting it, by moving its
+// expiry into the past -- reuses the exact same active-but-expired
+// mechanism reactivateListing already undoes, instead of adding a new
+// status value.
+export async function hideListing(locale: string, listingId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  await supabase
+    .from("listings")
+    .update({ expires_at: new Date(Date.now() - 1000).toISOString() })
+    .eq("id", listingId);
+
+  revalidatePath(`/${locale}/dashboard/listings`);
+  redirect(`/${locale}/dashboard/listings?toast=listingHidden`);
 }

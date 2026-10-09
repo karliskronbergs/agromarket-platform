@@ -17,13 +17,13 @@ export function MobileTabBarClient({
   const router = useRouter();
   const segment = pathname?.split("/").filter(Boolean)[1] ?? "";
 
-  const visible = segment === "" || segment === "map";
+  const visible = segment === "" || segment === "map" || segment === "dashboard";
   if (!visible) return null;
 
   const isMapPage = segment === "map";
   const mapMode = searchParams.get("mode");
   const isListMode = isMapPage && (mapMode === "sell" || mapMode === "buy");
-  const active: TabId = segment === "" ? "home" : isListMode ? "list" : "map";
+  const active: TabId = segment === "" ? "home" : segment === "dashboard" ? "me" : isListMode ? "list" : "map";
 
   const tabs: { id: TabId; label: string; radius: string; onClick: () => void }[] = [
     { id: "home", label: labels.home, radius: "6px", onClick: () => router.push("/") },

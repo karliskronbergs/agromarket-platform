@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ListingForm } from "../listing-form";
 
@@ -19,7 +20,7 @@ export default async function EditListingPage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, address")
     .eq("user_id", user!.id)
     .maybeSingle();
 
@@ -49,32 +50,36 @@ export default async function EditListingPage({
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="font-sans text-2xl font-semibold text-[#2b2a24]">{t("editTitle")}</h1>
-      <div className="rounded-2xl border border-[#e7e2d8] bg-white p-6 shadow-sm sm:p-8">
-        <ListingForm
-          locale={locale}
-          listingId={listing.id}
-          categories={categories ?? []}
-          existingImages={images ?? []}
-          initial={{
-            listingType: listing.listing_type,
-            title: listing.title,
-            description: listing.description ?? "",
-            categoryId: listing.category_id ?? "",
-            price: listing.price != null ? String(listing.price) : "",
-            priceUnit: listing.price_unit,
-            plusVat: listing.price_plus_vat,
-            breed: listing.breed,
-            ageMonths: listing.age_months != null ? String(listing.age_months) : null,
-            quantity: listing.quantity != null ? String(listing.quantity) : null,
-            condition: listing.condition,
-            manufacturer: listing.manufacturer,
-            model: listing.model,
-            organicCertified: listing.organic_certified,
-          }}
-        />
-      </div>
+    <div className="flex flex-col gap-1.5">
+      <Link href="/dashboard/listings" className="w-fit text-sm font-medium text-[#3f6e4a]">
+        ← {t("myListings")}
+      </Link>
+      <h1 className="m-0 mb-2.5 text-2xl font-semibold tracking-[-0.01em] text-[#1d2329] sm:text-[30px]">
+        {t("editTitle")}
+      </h1>
+      <ListingForm
+        locale={locale}
+        listingId={listing.id}
+        categories={categories ?? []}
+        existingImages={images ?? []}
+        address={profile.address ?? ""}
+        initial={{
+          listingType: listing.listing_type,
+          title: listing.title,
+          description: listing.description ?? "",
+          categoryId: listing.category_id ?? "",
+          price: listing.price != null ? String(listing.price) : "",
+          priceUnit: listing.price_unit,
+          plusVat: listing.price_plus_vat,
+          breed: listing.breed,
+          ageMonths: listing.age_months != null ? String(listing.age_months) : null,
+          quantity: listing.quantity != null ? String(listing.quantity) : null,
+          condition: listing.condition,
+          manufacturer: listing.manufacturer,
+          model: listing.model,
+          organicCertified: listing.organic_certified,
+        }}
+      />
     </div>
   );
 }
