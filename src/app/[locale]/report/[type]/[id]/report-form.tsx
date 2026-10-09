@@ -30,7 +30,7 @@ export function ReportForm({
         required
         rows={5}
         placeholder={t("reasonLabel")}
-        className="rounded-[10px] border border-[#d9dee2] px-3.5 py-3 text-[15px] outline-none transition focus:border-[#3f6e4a]"
+        className="rounded-[10px] border border-[#d9dee2] px-3.5 py-3 text-base sm:text-[15px] outline-none transition focus:border-[#3f6e4a]"
       />
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button

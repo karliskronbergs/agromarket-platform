@@ -49,7 +49,7 @@ export function CheckboxPill({
 }
 
 export const filterFieldClass =
-  "w-full rounded-lg border border-[#d9dee2] bg-white px-3 py-2 text-sm text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
+  "w-full rounded-lg border border-[#d9dee2] bg-white px-3 py-2 text-base sm:text-sm text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
 
 export function FilterPill({
   label,

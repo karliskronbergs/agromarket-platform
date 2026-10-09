@@ -3,11 +3,66 @@
 :root {
   --background: #f6f7f5;
   --foreground: #1d2329;
+
+  /* Design tokens — design_handoff_v2/README.md "Design tokens" */
+  --color-brand-blue: #3b5166;
+  --color-brand-blue-dark: #2f4254;
+  --color-brand-green: #3f6e4a;
+  --color-brand-green-hover: #355d3e;
+  --color-brand-green-text: #2f5538;
+  --color-tint-green: #eef3ee;
+  --color-tint-green-strong: #e6efe6;
+  --color-tint-buy: #f5ecd9;
+  --color-tint-buy-text: #7a5516;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f0f2f0;
+  --color-ink: #1d2329;
+  --color-muted: #5d6670;
+  --color-placeholder: #8a929a;
+  --color-border-card: #e3e6e8;
+  --color-border-input: #d9dee2;
+  --color-border-row: #eef0f1;
+  --color-avatar-bg: #e4eaf0;
+  --color-avatar-text: #3b5166;
+  --color-on-blue: #ffffff;
+  --color-on-blue-muted: #d6dee6;
+  --color-marker: #3f6e4a;
+  --color-marker-selected: #3b5166;
+
+  --shadow-card-hover: 0 10px 24px rgba(29, 35, 41, 0.08);
+  --shadow-floating-card: 0 6px 20px rgba(29, 35, 41, 0.12);
+  --shadow-floating-button: 0 8px 20px rgba(29, 35, 41, 0.25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-blue: var(--color-brand-blue);
+  --color-brand-blue-dark: var(--color-brand-blue-dark);
+  --color-brand-green: var(--color-brand-green);
+  --color-brand-green-hover: var(--color-brand-green-hover);
+  --color-brand-green-text: var(--color-brand-green-text);
+  --color-tint-green: var(--color-tint-green);
+  --color-tint-green-strong: var(--color-tint-green-strong);
+  --color-tint-buy: var(--color-tint-buy);
+  --color-tint-buy-text: var(--color-tint-buy-text);
+  --color-surface: var(--color-surface);
+  --color-surface-subtle: var(--color-surface-subtle);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-placeholder: var(--color-placeholder);
+  --color-border-card: var(--color-border-card);
+  --color-border-input: var(--color-border-input);
+  --color-border-row: var(--color-border-row);
+  --color-avatar-bg: var(--color-avatar-bg);
+  --color-avatar-text: var(--color-avatar-text);
+  --color-on-blue: var(--color-on-blue);
+  --color-on-blue-muted: var(--color-on-blue-muted);
+  --color-marker: var(--color-marker);
+  --color-marker-selected: var(--color-marker-selected);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-floating-card: var(--shadow-floating-card);
+  --shadow-floating-button: var(--shadow-floating-button);
   --font-sans: var(--font-heading);
   --font-body: var(--font-heading);
 }

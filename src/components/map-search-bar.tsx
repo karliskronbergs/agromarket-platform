@@ -27,7 +27,7 @@ export function MapSearchBar({
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-[#d9dee2] bg-white px-4 py-[11px] text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
+        className="w-full rounded-xl border border-[#d9dee2] bg-white px-4 py-[11px] text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
       />
       {draft && (
         <button

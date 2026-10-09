@@ -9,7 +9,7 @@ import { Spinner } from "@/components/spinner";
 import { signUp, type AuthState } from "../actions";
 
 const inputClass =
-  "rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
+  "rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
 
 export function SignUpForm({ locale }: { locale: string }) {
   const t = useTranslations("Auth");

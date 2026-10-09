@@ -76,7 +76,7 @@ export function ResetPasswordForm() {
           id="password"
           name="password"
           minLength={8}
-          className="rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
+          className="rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
         />
       </div>
       <div className="flex flex-col gap-1.5">
@@ -87,7 +87,7 @@ export function ResetPasswordForm() {
           id="confirmPassword"
           name="confirmPassword"
           minLength={8}
-          className="rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
+          className="rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
         />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}

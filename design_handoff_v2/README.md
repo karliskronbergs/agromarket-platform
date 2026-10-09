@@ -140,6 +140,18 @@ New favicon in `favicon/` (option 1b from `Favicon.dc.html`): square `#3b5166` t
 - Otherwise add to `<head>`:
   `<link rel="icon" href="/favicon.ico" sizes="any">`, `<link rel="icon" href="/icon.svg" type="image/svg+xml">`, `<link rel="apple-touch-icon" href="/apple-touch-icon.png">`, `<link rel="manifest" href="/site.webmanifest">`, `<meta name="theme-color" content="#3b5166">`.
 
+## User dashboard ("Mans profils") — `Lauks24 Dashboard.dc.html`
+Overview of all states: `Lauks24 Dashboard Overview.dc.html`. Props: `startTab` (overview | listings | form | profile | account), `hasListings`, `verified`, `compact` (mobile layout).
+Keep ALL existing dashboard logic (auth, verification request, profile delete, listing CRUD, badges, map location). Only restyle/restructure.
+- **Layout (desktop):** same header as the site; left sidebar 232px (sticky): avatar + name + email, nav Pārskats · Sludinājumi (count) · Uzņēmuma profils · Konts, divider, Iziet. Active item = white bg + subtle shadow. Content max-width 1200.
+- **Layout (mobile):** compact header; nav becomes a sticky row of horizontally scrolling pills under the header (active = `#3b5166` bg, white text); bottom tab bar with "Profils" active. Inputs 16px.
+- **Pārskats:** "Sveiks!" + email, primary "+ Pievienot sludinājumu"; profile summary card (avatar, name, Pārbaudīts, spec · address, "Rediģēt profilu", "Skatīt publisko profilu ↗"); 2 stat tiles (Profila skatījumi, Aktīvie sludinājumi); green verification card with "Pieprasīt verifikāciju" (hidden when verified; shows "Pieprasījums nosūtīts" after request); "Mani sludinājumi" preview (3 rows + "Visi (N) →"); empty state with "+ Pievienot pirmo sludinājumu" for new users.
+- **Sludinājumi:** segmented filter Visi / Aktīvie / Paslēptie; rows with thumbnail, Pārdod/Pērk + Aktīvs/Paslēpts badges, title, price · category · date; actions Rediģēt · Paslēpt/Aktivizēt · Dzēst (red outline, confirm modal).
+- **Jauns / Rediģēt sludinājums:** type cards Pārdodu / Pērku; Virsraksts; Kategorija + Apakškategorija (use real data); Cena, Mērvienība, Daudzums; "Cena pēc vienošanās" checkbox; Apraksts; photo grid (first = main, dashed "+ Pievienot" tile); badge toggles (real badge list); note that location/contacts come from the profile; Atcelt + "Publicēt sludinājumu" / "Saglabāt izmaiņas". Success toast at bottom.
+- **Uzņēmuma profils:** logo/cover upload, fields (nosaukums, specializācija, kategorija, adrese, tālrunis, e-pasts), "Par saimniecību", badge toggles, map location picker, Atcelt + "Saglabāt izmaiņas".
+- **Konts:** E-pasts, Parole ("Mainīt paroli"), Verifikācija status; separate red-bordered "Dzēst profilu" card with confirm modal.
+- Toast: dark `#1d2329` pill, bottom centre, 2.4s.
+
 ## Copy
 All UI copy is Latvian and lives in the prototype files. The key new strings are the hero H1, the lead paragraph, the "Kā tas darbojas" cards, the CTA band text, and the empty states. Add EN equivalents to the existing i18n files.
 
@@ -151,5 +163,6 @@ All UI copy is Latvian and lives in the prototype files. The key new strings are
 ## Files
 - `Lauks24 A.dc.html`: desktop/responsive prototype, all 5 pages. Props: `startPage`, `loggedIn`.
 - `Lauks24 Mobile.dc.html`: one interactive phone. Props: `startPage`, `startView`, `startMode`, `loggedIn`.
+- `Lauks24 Dashboard.dc.html` / `Lauks24 Dashboard Overview.dc.html` — user dashboard, desktop + mobile.
 - `Lauks24 Mobile Overview.dc.html`: all 6 mobile states side by side.
 - `support.js`: runtime needed to open the `.dc.html` files in a browser. It is not part of the implementation.

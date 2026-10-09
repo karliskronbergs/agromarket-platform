@@ -3,14 +3,14 @@
 Work through this list **in order**. After each item: open the page in the browser, compare it side by side with the matching `.dc.html` prototype (desktop AND mobile width), fix differences, then tick the box. Do not move on while an item still differs. Details for every item are in `README.md`.
 
 ## 0. Foundations (do first — everything else depends on it)
-- [ ] Lexend font loaded site-wide (400/500/600/700) and set as the body font
-- [ ] Design tokens (colours, radii, shadows from README "Design tokens") added as CSS variables / Tailwind theme — no hard-coded old colours left
-- [ ] Page background `#f6f7f5`, ink `#1d2329`, muted `#5d6670`
-- [ ] Shared button styles: primary green `#3f6e4a`, secondary outline, radius 10px
-- [ ] Shared input styles: border `#d9dee2`, radius 10–12px, 16px text on mobile
-- [ ] Shared card style: white, border `#e3e6e8`, radius 14–16px
-- [ ] Shared chip/badge styles
-- [ ] Favicon replaced (see README "Favicon")
+- [x] Lexend font loaded site-wide (400/500/600/700) and set as the body font
+- [x] Design tokens (colours, radii, shadows from README "Design tokens") added as CSS variables / Tailwind theme — no hard-coded old colours left
+- [x] Page background `#f6f7f5`, ink `#1d2329`, muted `#5d6670`
+- [x] Shared button styles: primary green `#3f6e4a`, secondary outline, radius 10px
+- [x] Shared input styles: border `#d9dee2`, radius 10–12px, 16px text on mobile
+- [x] Shared card style: white, border `#e3e6e8`, radius 14–16px
+- [x] Shared chip/badge styles
+- [x] Favicon replaced (see README "Favicon")
 
 ## 1. Header + footer (all pages)
 - [ ] Desktop header: logo · Karte · Sludinājumi · Kā tas darbojas · LV/EN · Ieiet + "Izveidot profilu" (logged out) / Ziņas + avatar pill (logged in)
@@ -52,7 +52,16 @@ Work through this list **in order**. After each item: open the page in the brows
 - [ ] Two-panel card (desktop), single column (mobile), Ieiet/Reģistrēties toggle
 - [ ] Existing auth logic unchanged
 
-## 7. Final pass
+## 7. User dashboard
+- [ ] Sidebar (desktop) / pill nav + tab bar (mobile)
+- [ ] Pārskats: profile card, stats, verification card, listings preview, empty state
+- [ ] Mani sludinājumi: filter, rows, Rediģēt / Paslēpt / Dzēst with confirm
+- [ ] Add/edit listing form with real categories, subcategories, badges
+- [ ] Uzņēmuma profils edit form + map location
+- [ ] Konts: password, verification status, delete profile
+- [ ] Existing dashboard logic unchanged
+
+## 8. Final pass
 - [ ] Every page checked at 1440px, 1024px, 768px and 390px widths
 - [ ] No old styles/components left on any page (search the codebase for old colour values and old class names)
 - [ ] LV and EN both work
