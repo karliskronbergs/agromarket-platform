@@ -467,17 +467,17 @@ export function MapView({
   );
 
   return (
-    <div className="flex flex-col sm:h-[calc(100dvh-44px)]">
-      <div className="sticky top-14 z-30 sm:static">{filterBar}</div>
+    <div className="flex h-[calc(100dvh-56px-76px)] flex-col overflow-hidden sm:h-[calc(100dvh-44px)]">
+      {filterBar}
 
-      <div className="relative flex flex-1 flex-col sm:flex-row sm:overflow-hidden">
-        {/* Map pane: fixed-height box above the list on mobile, side pane on desktop */}
-        <div className="relative isolate h-[42vh] min-h-[260px] flex-shrink-0 bg-[#e8ece6] sm:order-2 sm:h-auto sm:flex-1">
+      <div className="relative flex flex-1 flex-col overflow-hidden sm:flex-row">
+        {/* Map pane: fixed-height box that never scrolls on mobile, side pane on desktop */}
+        <div className="relative isolate h-[38vh] min-h-[220px] flex-shrink-0 bg-[#e8ece6] sm:order-2 sm:h-auto sm:flex-1">
           <div ref={mapContainerRef} className="absolute inset-0" />
         </div>
 
-        {/* List pane: normal scrolling flow below the map on mobile, side column on desktop */}
-        <div className="flex flex-col gap-2.5 bg-[#f6f7f5] p-4 pb-24 sm:order-1 sm:w-[440px] sm:flex-shrink-0 sm:overflow-y-auto sm:border-r sm:border-[#e3e6e8] sm:pb-4">
+        {/* List pane: scrolls independently in the remaining space below the map on mobile, side column on desktop */}
+        <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-[#f6f7f5] p-4 pb-24 sm:order-1 sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4">
           <div className="px-1 pb-1 text-[13px] text-[#5d6670]">{resultLabel}</div>
           {points.length === 0 ? (
             <EmptyState
