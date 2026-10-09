@@ -315,25 +315,39 @@ export default async function Home({
             </h2>
             <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
               {topCategories.map((c) => (
-                <Link
+                <div
                   key={c.id}
-                  href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}
                   className="flex flex-col overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(29,35,41,0.08)]"
                 >
-                  <div
-                    style={STRIPE_BG}
-                    className="flex h-[120px] items-center justify-center font-mono text-[11px] text-[#7a8279]"
-                  >
-                    {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
-                      `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
-                  </div>
-                  <div className="flex items-center justify-between gap-2 px-4 py-3.5">
-                    <span className="text-[15px] font-medium text-[#1d2329]">
-                      {locale === "lv" ? c.name_lv : c.name_en}
-                    </span>
-                    <span className="text-[#3f6e4a]">→</span>
-                  </div>
-                </Link>
+                  <Link href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}>
+                    <div
+                      style={STRIPE_BG}
+                      className="flex h-[120px] items-center justify-center font-mono text-[11px] text-[#7a8279]"
+                    >
+                      {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
+                        `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
+                    </div>
+                    <div className="flex items-center justify-between gap-2 px-4 py-3.5">
+                      <span className="text-[15px] font-medium text-[#1d2329]">
+                        {locale === "lv" ? c.name_lv : c.name_en}
+                      </span>
+                      <span className="text-[#3f6e4a]">→</span>
+                    </div>
+                  </Link>
+                  {c.children.length > 0 && (
+                    <div className="flex flex-col gap-1 px-4 pb-3.5">
+                      {c.children.slice(0, 3).map((sub) => (
+                        <Link
+                          key={sub.id}
+                          href={{ pathname: "/map", query: { mode: "profiles", category: sub.id } }}
+                          className="truncate text-[13px] text-[#5d6670] hover:text-[#2f5538]"
+                        >
+                          {locale === "lv" ? sub.name_lv : sub.name_en}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </section>

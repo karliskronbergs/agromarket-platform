@@ -19,13 +19,13 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] New footer (hidden on map page)
 
 ## 2. Home
-- [ ] Hero: H1, lead text, search card with Uzņēmumi/Pārdod/Pērk tabs → opens map with filters
-- [ ] "Populāri" category chips
-- [ ] Map preview card (desktop right column / mobile card)
-- [ ] "Kā tas darbojas" — 3 steps
-- [ ] "Pārlūko pēc nozares" category cards (with subcategory links)
-- [ ] "Jaunākie sludinājumi" cards
-- [ ] Blue CTA band
+- [x] Hero: H1, lead text, search card with Uzņēmumi/Pārdod/Pērk tabs → opens map with filters
+- [x] "Populāri" category chips
+- [x] Map preview card (desktop right column / mobile card)
+- [x] "Kā tas darbojas" — 3 steps
+- [x] "Pārlūko pēc nozares" category cards (with subcategory links)
+- [x] "Jaunākie sludinājumi" cards
+- [x] Blue CTA band
 
 ## 3. Map / listings
 - [ ] Filter bar: segmented mode, search, category chips + subcategory row, "Filtri" for any extra existing filters
