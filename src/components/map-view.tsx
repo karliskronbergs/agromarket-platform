@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "@/i18n/navigation";
-import type { Map as LeafletMap, Marker } from "leaflet";
+import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { IconPin, IconCheck, IconShield } from "@/components/icons";
+import { IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
@@ -28,6 +29,7 @@ export type MapPoint = {
   id: string;
   title: string;
   subtitle: string;
+  price?: string;
   lat: number;
   lng: number;
   href: string;
@@ -40,20 +42,15 @@ export type MapPoint = {
 
 type Category = CategoryRow & { slug?: string };
 
-const MODE_COLORS: Record<MapMode, string> = {
-  profiles: "#3f6b3f",
-  sell: "#d9713a",
-  buy: "#2f6690",
-};
-
+const PIN = "#3f6e4a";
+const PIN_SELECTED = "#3b5166";
 const LATVIA_CENTER: [number, number] = [56.9, 24.6];
 
-function escapeHtml(input: string) {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+function initialsFor(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
 }
 
 export function MapView({
@@ -114,6 +111,14 @@ export function MapView({
     sortAgeDesc: string;
     searchPlaceholderProfiles: string;
     searchPlaceholderListings: string;
+    resultLabel: string;
+    noResultsTitle: string;
+    noResultsBody: string;
+    tapPointHint: string;
+    toggleShowMap: string;
+    toggleShowList: string;
+    addListingCta: string;
+    verifiedShort: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -122,9 +127,12 @@ export function MapView({
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
-  const markersRef = useRef<Record<string, Marker>>({});
+  const markersRef = useRef<Record<string, CircleMarker>>({});
+  const prevPointIdsRef = useRef<string>("");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
   function navigate(query: Record<string, string>) {
     startTransition(() => {
@@ -150,7 +158,10 @@ export function MapView({
       if (cancelled || !mapContainerRef.current) return;
 
       if (!leafletMapRef.current) {
-        leafletMapRef.current = L.map(mapContainerRef.current).setView(LATVIA_CENTER, 7);
+        leafletMapRef.current = L.map(mapContainerRef.current, { zoomControl: true }).setView(
+          LATVIA_CENTER,
+          7,
+        );
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19,
@@ -162,62 +173,49 @@ export function MapView({
       Object.values(markersRef.current).forEach((marker) => marker.remove());
       markersRef.current = {};
 
-      const icon = L.divIcon({
-        className: "",
-        html: `<span style="display:block;width:16px;height:16px;border-radius:50%;background:${MODE_COLORS[mode]};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.4)"></span>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-        popupAnchor: [0, -8],
-      });
-
       points.forEach((point) => {
-        const marker = L.marker([point.lat, point.lng], { icon }).addTo(map);
-        const verifiedBadgeHtml =
-          mode === "profiles" && point.verified
-            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#2563eb;border:2px solid white;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M7.5 12.5l3 3 6-6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
-            : "";
-        const adminBadgeHtml =
-          mode === "profiles" && point.adminBadge
-            ? `<span style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#dc2626;display:flex;align-items:center;justify-content:center;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`
-            : "";
-        const imageHtml = point.imageUrl
-          ? `<div style="position:relative;flex-shrink:0;">
-              <img src="${escapeHtml(point.imageUrl)}" style="width:44px;height:44px;border-radius:${
-                mode === "profiles" ? "50%" : "8px"
-              };object-fit:cover;display:block;" />
-              ${verifiedBadgeHtml}
-              ${adminBadgeHtml}
-            </div>`
-          : "";
-        const badgeHtml = point.badge
-          ? `<div style="display:inline-block;margin-top:3px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e7efe1;color:#3f6b3f;">${escapeHtml(point.badge)}</div>`
-          : "";
-        marker.bindPopup(
-          `<a href="${point.href}" style="display:flex;gap:10px;align-items:flex-start;min-width:170px;font-family:'Work Sans',sans-serif;color:inherit;text-decoration:none;">
-            ${imageHtml}
-            <div style="min-width:0;">
-              <div style="font-weight:600;font-size:13px;color:#2b2a24;">${escapeHtml(point.title)}</div>
-              ${badgeHtml}
-              <div style="font-size:12px;color:#7a7566;margin-top:3px;">${escapeHtml(point.subtitle)}</div>
-            </div>
-          </a>`,
-          { minWidth: 200 },
-        );
+        const marker = L.circleMarker([point.lat, point.lng], {
+          radius: 8,
+          color: "#fff",
+          weight: 3,
+          fillColor: PIN,
+          fillOpacity: 1,
+        }).addTo(map);
+        marker.bindTooltip(point.title, { direction: "top", offset: [0, -8] });
+        marker.on("click", () => setSelected(point.id));
         markersRef.current[point.id] = marker;
       });
 
-      if (points.length > 0) {
-        const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
-        map.fitBounds(bounds.pad(0.2), { maxZoom: 12 });
-      } else {
-        map.setView(LATVIA_CENTER, 7);
+      const ids = points
+        .map((p) => p.id)
+        .sort()
+        .join(",");
+      if (ids !== prevPointIdsRef.current) {
+        if (points.length > 1) {
+          const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
+          map.fitBounds(bounds.pad(0.2), { maxZoom: 12 });
+        } else if (points.length === 1) {
+          map.setView([points[0].lat, points[0].lng], 11);
+        } else {
+          map.setView(LATVIA_CENTER, 7);
+        }
+        prevPointIdsRef.current = ids;
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [points, mode]);
+  }, [points]);
+
+  // Re-style markers (radius/color) when selection changes, without re-fitting bounds.
+  useEffect(() => {
+    for (const [id, marker] of Object.entries(markersRef.current)) {
+      const isSel = id === selected;
+      marker.setStyle({ radius: isSel ? 11 : 8, fillColor: isSel ? PIN_SELECTED : PIN });
+      if (isSel) marker.bringToFront();
+    }
+  }, [selected]);
 
   useEffect(() => {
     return () => {
@@ -226,106 +224,121 @@ export function MapView({
     };
   }, []);
 
-  function focus(point: MapPoint) {
-    const map = leafletMapRef.current;
-    const marker = markersRef.current[point.id];
-    if (map && marker) {
-      map.setView([point.lat, point.lng], 14);
-      marker.openPopup();
-    }
+  const selectedPoint = points.find((p) => p.id === selected) ?? null;
+  const resultLabel = labels.resultLabel;
+
+  function clearFilters() {
+    navigate({ mode });
   }
 
-  return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex flex-col gap-3 border-b border-[#e7e2d8] bg-white px-6 py-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1 rounded-full bg-[#f1efe6] p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)]">
-              {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => {
-                    const query: Record<string, string> = { mode: m };
-                    if (selectedCategory) query.category = selectedCategory;
-                    navigate(query);
-                  }}
-                  className="rounded-full px-4 py-1.5 text-sm font-semibold text-[#55503f] transition-all hover:bg-white/70"
-                  style={
-                    mode === m
-                      ? {
-                          background: MODE_COLORS[m],
-                          color: "white",
-                          boxShadow:
-                            "0 3px 6px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.35) inset, 0 -2px 3px rgba(0,0,0,0.2) inset",
-                        }
-                      : {
-                          background: "rgba(255,255,255,0.55)",
-                          boxShadow:
-                            "0 1px 2px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.6) inset, 0 -1px 1px rgba(0,0,0,0.05) inset",
-                        }
-                  }
-                >
-                  {labels[m]}
-                </button>
-              ))}
-            </div>
-            <Spinner
-              className={`h-4 w-4 text-[#3f6b3f] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
-            />
+  function applyFilterQuery(extra: Record<string, string>) {
+    const query: Record<string, string> = { mode, ...extra };
+    if (selectedCategory) query.category = selectedCategory;
+    if (sort) query.sort = sort;
+    navigate(query);
+  }
+
+  const filterBar = (
+    <div className="flex-shrink-0 border-b border-[#e3e6e8] bg-white">
+      <div className="mx-auto flex max-w-[1648px] flex-col gap-3 px-4 py-3 sm:gap-3.5 sm:px-6 sm:py-4">
+        <div className="flex items-center gap-3">
+          <div className="grid flex-shrink-0 grid-cols-3 gap-0.5 rounded-xl bg-[#f0f2f0] p-1 sm:flex sm:gap-0.5">
+            {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  const query: Record<string, string> = { mode: m };
+                  if (selectedCategory) query.category = selectedCategory;
+                  navigate(query);
+                }}
+                className={`rounded-[9px] px-2 py-2 text-sm font-medium transition sm:px-4 ${
+                  mode === m ? "bg-white text-[#1d2329] shadow-sm" : "text-[#5d6670]"
+                }`}
+              >
+                {labels[m]}
+              </button>
+            ))}
           </div>
+          <Spinner
+            className={`hidden h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity sm:block ${isPending ? "opacity-100" : "opacity-0"}`}
+          />
+          {!hasSpecificFilters && (
+            <div className="hidden sm:block sm:flex-1">
+              <MapSearchBar
+                value={search}
+                placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
+                onSearch={(q) => {
+                  const query: Record<string, string> = { mode };
+                  if (selectedCategory) query.category = selectedCategory;
+                  if (q) query.q = q;
+                  navigate(query);
+                }}
+              />
+            </div>
+          )}
           {mode !== "profiles" && (
-            <SortMenu
-              value={sort}
-              showAgeSort={!!animalGroup}
-              labels={labels}
-              onChange={(newSort) => {
+            <div className="ml-auto hidden items-center gap-2 sm:flex">
+              <SortMenu
+                value={sort}
+                showAgeSort={!!animalGroup}
+                labels={labels}
+                onChange={(newSort) => {
+                  const query: Record<string, string> = { mode };
+                  if (selectedCategory) query.category = selectedCategory;
+                  if (animalGroup) {
+                    if (livestockFilters.breed) query.breed = livestockFilters.breed;
+                    if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
+                    if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
+                    if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
+                    if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
+                    if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
+                    if (livestockFilters.organic) query.organic = livestockFilters.organic;
+                  } else if (isEquipment) {
+                    if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
+                    if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
+                    if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
+                  } else if (isMachinery) {
+                    if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
+                    if (machineryFilters.model) query.model = machineryFilters.model;
+                    if (machineryFilters.condition) query.condition = machineryFilters.condition;
+                    if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
+                    if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
+                  } else if (isSeeds) {
+                    if (seedsFilters.title) query.title = seedsFilters.title;
+                    if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
+                    if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
+                    if (seedsFilters.organic) query.organic = seedsFilters.organic;
+                  }
+                  if (newSort) query.sort = newSort;
+                  navigate(query);
+                }}
+              />
+              <Link
+                href={`/${locale}/dashboard/listings/new`}
+                className="flex-shrink-0 whitespace-nowrap rounded-[10px] bg-[#3f6e4a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
+              >
+                {labels.addListingCta}
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {!hasSpecificFilters && (
+          <div className="sm:hidden">
+            <MapSearchBar
+              value={search}
+              placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
+              onSearch={(q) => {
                 const query: Record<string, string> = { mode };
                 if (selectedCategory) query.category = selectedCategory;
-                if (animalGroup) {
-                  if (livestockFilters.breed) query.breed = livestockFilters.breed;
-                  if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
-                  if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
-                  if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
-                  if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
-                  if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
-                  if (livestockFilters.organic) query.organic = livestockFilters.organic;
-                } else if (isEquipment) {
-                  if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
-                  if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
-                  if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
-                } else if (isMachinery) {
-                  if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
-                  if (machineryFilters.model) query.model = machineryFilters.model;
-                  if (machineryFilters.condition) query.condition = machineryFilters.condition;
-                  if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
-                  if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
-                } else if (isSeeds) {
-                  if (seedsFilters.title) query.title = seedsFilters.title;
-                  if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
-                  if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
-                  if (seedsFilters.organic) query.organic = seedsFilters.organic;
-                }
-                if (newSort) query.sort = newSort;
+                if (q) query.q = q;
                 navigate(query);
               }}
             />
-          )}
-        </div>
-        {!hasSpecificFilters && (
-          <MapSearchBar
-            value={search}
-            placeholder={
-              mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings
-            }
-            onSearch={(q) => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (q) query.q = q;
-              navigate(query);
-            }}
-          />
+          </div>
         )}
+
         <CategoryFilterBar
           categories={categories}
           selectedCategory={selectedCategory}
@@ -337,6 +350,7 @@ export function MapView({
             navigate(query);
           }}
         />
+
         {animalGroup && (
           <LivestockFilterPanel
             key={selectedCategory}
@@ -344,25 +358,18 @@ export function MapView({
             locale={locale}
             filters={livestockFilters}
             labels={labels}
-            onApply={(filters) => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (filters.breed) query.breed = filters.breed;
-              if (filters.ageMin) query.ageMin = filters.ageMin;
-              if (filters.ageMax) query.ageMax = filters.ageMax;
-              if (filters.quantityMin) query.quantityMin = filters.quantityMin;
-              if (filters.priceMin) query.priceMin = filters.priceMin;
-              if (filters.priceMax) query.priceMax = filters.priceMax;
-              if (filters.organic) query.organic = filters.organic;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
-            onClear={() => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.breed ? { breed: f.breed } : {}),
+                ...(f.ageMin ? { ageMin: f.ageMin } : {}),
+                ...(f.ageMax ? { ageMax: f.ageMax } : {}),
+                ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                ...(f.organic ? { organic: f.organic } : {}),
+              })
+            }
+            onClear={clearFilters}
           />
         )}
         {isEquipment && (
@@ -371,21 +378,14 @@ export function MapView({
             locale={locale}
             filters={equipmentFilters}
             labels={labels}
-            onApply={(filters) => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (filters.condition) query.condition = filters.condition;
-              if (filters.priceMin) query.priceMin = filters.priceMin;
-              if (filters.priceMax) query.priceMax = filters.priceMax;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
-            onClear={() => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.condition ? { condition: f.condition } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              })
+            }
+            onClear={clearFilters}
           />
         )}
         {isMachinery && (
@@ -394,23 +394,16 @@ export function MapView({
             locale={locale}
             filters={machineryFilters}
             labels={labels}
-            onApply={(filters) => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (filters.manufacturer) query.manufacturer = filters.manufacturer;
-              if (filters.model) query.model = filters.model;
-              if (filters.condition) query.condition = filters.condition;
-              if (filters.priceMin) query.priceMin = filters.priceMin;
-              if (filters.priceMax) query.priceMax = filters.priceMax;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
-            onClear={() => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
+                ...(f.model ? { model: f.model } : {}),
+                ...(f.condition ? { condition: f.condition } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              })
+            }
+            onClear={clearFilters}
           />
         )}
         {isSeeds && (
@@ -418,102 +411,247 @@ export function MapView({
             key={selectedCategory}
             filters={seedsFilters}
             labels={labels}
-            onApply={(filters) => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (filters.title) query.title = filters.title;
-              if (filters.priceMin) query.priceMin = filters.priceMin;
-              if (filters.priceMax) query.priceMax = filters.priceMax;
-              if (filters.organic) query.organic = filters.organic;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
-            onClear={() => {
-              const query: Record<string, string> = { mode };
-              if (selectedCategory) query.category = selectedCategory;
-              if (sort) query.sort = sort;
-              navigate(query);
-            }}
+            onApply={(f) =>
+              applyFilterQuery({
+                ...(f.title ? { title: f.title } : {}),
+                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                ...(f.organic ? { organic: f.organic } : {}),
+              })
+            }
+            onClear={clearFilters}
           />
         )}
       </div>
+    </div>
+  );
 
-      <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
+  return (
+    <div className="flex h-[calc(100dvh-56px)] flex-col overflow-hidden sm:h-[calc(100dvh-44px)]">
+      {filterBar}
+
+      <div className="relative flex flex-1 overflow-hidden">
+        {/* List pane */}
         <div
-          className={`order-2 max-h-56 w-full overflow-y-auto border-t border-[#e7e2d8] bg-[#faf8f3] p-4 transition-opacity sm:order-1 sm:max-h-none sm:w-80 sm:min-w-80 sm:border-t-0 sm:border-r ${
-            isPending ? "opacity-50" : "opacity-100"
+          className={`absolute inset-0 z-10 flex flex-col gap-2.5 overflow-y-auto bg-[#f6f7f5] p-4 pb-24 sm:static sm:z-auto sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4 ${
+            mobileView === "map" ? "hidden sm:flex" : "flex"
           }`}
         >
-          {points.length === 0 && <p className="text-sm text-[#7a7566]">{labels.empty}</p>}
-          {points.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => focus(p)}
-              className={`mb-3 flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm shadow-sm transition ${
-                mode === "profiles" && p.adminBadge
-                  ? "border-red-200 bg-red-50 hover:border-red-400"
-                  : "border-[#e7e2d8] bg-white hover:border-[#3f6b3f]"
-              }`}
-            >
-              {mode === "profiles" ? (
-                <div className="relative h-10 w-10 flex-shrink-0">
-                  <div
-                    className={`h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#3f6b3f]"}`}
-                  >
-                    {p.imageUrl ? (
-                      <Image src={p.imageUrl} alt="" fill sizes="40px" className="object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
-                        {p.title.slice(0, 1).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  {p.verified && (
-                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
-                  )}
-                  {p.adminBadge && (
-                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600" />
-                  )}
-                </div>
-              ) : (
-                <div
-                  className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-lg"
-                  style={{
-                    background: p.imageUrl ? undefined : `linear-gradient(135deg, ${MODE_COLORS[mode]}, #7b8496)`,
-                  }}
-                >
-                  {p.imageUrl && (
-                    <Image src={p.imageUrl} alt="" fill sizes="44px" className="object-cover" />
-                  )}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="truncate font-semibold text-[#2b2a24]">{p.title}</span>
-                </div>
-                {p.badge && (
-                  <span className="mt-1 inline-block rounded-full bg-[#e7efe1] px-2 py-0.5 text-xs font-semibold text-[#3f6b3f]">
-                    {p.badge}
-                  </span>
-                )}
-                {p.subtitle && (
-                  <div className="mt-1 flex items-center gap-1 text-xs text-[#7a7566]">
-                    {mode === "profiles" && <IconPin className="h-3 w-3 flex-shrink-0" />}
-                    <span className="truncate">{p.subtitle}</span>
-                  </div>
-                )}
-                {p.attributes && p.attributes.length > 0 && (
-                  <div className="mt-1.5">
-                    <AttributeIconRow attributes={p.attributes} locale={locale} />
-                  </div>
-                )}
-              </div>
-            </button>
-          ))}
+          <div className="px-1 pb-1 text-[13px] text-[#5d6670]">{resultLabel}</div>
+          {points.length === 0 ? (
+            <EmptyState
+              title={labels.noResultsTitle}
+              body={labels.noResultsBody}
+              clearLabel={labels.clearFilters}
+              onClear={clearFilters}
+            />
+          ) : (
+            points.map((p) => (
+              <ResultCard
+                key={p.id}
+                p={p}
+                mode={mode}
+                selected={selected}
+                onHover={setSelected}
+                locale={locale}
+                verifiedLabel={labels.verifiedShort}
+              />
+            ))
+          )}
         </div>
-        <div ref={mapContainerRef} className="order-1 min-h-64 flex-1 sm:order-2" />
+
+        {/* Map pane (always mounted to avoid Leaflet sizing issues when hidden) */}
+        <div
+          className={`absolute inset-0 bg-[#e8ece6] transition-opacity sm:relative sm:flex-1 sm:opacity-100 ${
+            mobileView === "list" ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
+        >
+          <div ref={mapContainerRef} className="absolute inset-0" />
+
+          {/* Mobile-only selection surface */}
+          <div className="sm:hidden">
+            {selectedPoint ? (
+              <Link
+                href={selectedPoint.href}
+                className="absolute inset-x-3 bottom-[76px] z-[600] flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+              >
+                <div
+                  style={{
+                    backgroundImage:
+                      !selectedPoint.imageUrl && mode !== "profiles"
+                        ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
+                        : undefined,
+                  }}
+                  className={`relative h-14 w-14 flex-shrink-0 overflow-hidden ${mode === "profiles" ? "rounded-full bg-[#e4eaf0]" : "rounded-[10px]"}`}
+                >
+                  {selectedPoint.imageUrl ? (
+                    <Image src={selectedPoint.imageUrl} alt="" fill sizes="56px" className="object-cover" />
+                  ) : mode === "profiles" ? (
+                    <div className="flex h-full w-full items-center justify-center font-semibold text-[#3b5166]">
+                      {initialsFor(selectedPoint.title)}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[15px] font-semibold leading-[1.25] text-[#1d2329]">
+                    {selectedPoint.title}
+                  </div>
+                  <div className="truncate text-[13px] text-[#5d6670]">{selectedPoint.subtitle}</div>
+                </div>
+                <span className="text-lg text-[#3f6e4a]">→</span>
+              </Link>
+            ) : (
+              <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)]">
+                {resultLabel} · {labels.tapPointHint}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile-only floating controls */}
+        <button
+          type="button"
+          onClick={() => setMobileView((v) => (v === "list" ? "map" : "list"))}
+          className="absolute bottom-4 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1d2329] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+        >
+          {mobileView === "list" ? labels.toggleShowMap : labels.toggleShowList}
+        </button>
+        {mode !== "profiles" && (
+          <Link
+            href={`/${locale}/dashboard/listings/new`}
+            className="absolute bottom-4 right-4 z-[700] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+          >
+            +
+          </Link>
+        )}
       </div>
     </div>
+  );
+}
+
+function EmptyState({
+  title,
+  body,
+  clearLabel,
+  onClear,
+}: {
+  title: string;
+  body: string;
+  clearLabel: string;
+  onClear: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-3 px-4 py-9 text-center text-[#5d6670]">
+      <div className="text-base font-medium text-[#1d2329]">{title}</div>
+      <div className="text-sm">{body}</div>
+      <button
+        type="button"
+        onClick={onClear}
+        className="rounded-[10px] border border-[#d9dee2] bg-white px-4 py-2.5 text-sm text-[#1d2329]"
+      >
+        {clearLabel}
+      </button>
+    </div>
+  );
+}
+
+function ResultCard({
+  p,
+  mode,
+  selected,
+  onHover,
+  locale,
+  verifiedLabel,
+}: {
+  p: MapPoint;
+  mode: MapMode;
+  selected: string | null;
+  onHover: (id: string) => void;
+  locale: string;
+  verifiedLabel: string;
+}) {
+  const isSel = p.id === selected;
+  return (
+    <Link
+      href={p.href}
+      onMouseEnter={() => onHover(p.id)}
+      className="flex gap-3.5 rounded-2xl border p-3.5 transition sm:p-3.5"
+      style={{
+        borderColor: isSel ? "#3f6e4a" : "#e3e6e8",
+        background: isSel ? "#f3f7f3" : "#fff",
+      }}
+    >
+      {mode === "profiles" ? (
+        <div className="relative h-12 w-12 flex-shrink-0">
+          <div className="relative h-full w-full overflow-hidden rounded-full bg-[#e4eaf0]">
+            {p.imageUrl ? (
+              <Image src={p.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[15px] font-semibold text-[#3b5166]">
+                {initialsFor(p.title)}
+              </div>
+            )}
+          </div>
+          {(p.verified || p.adminBadge) && (
+            <span
+              className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white"
+              style={{ background: p.adminBadge ? "#dc2626" : "#3f6e4a" }}
+            >
+              {p.adminBadge ? (
+                <IconShield className="h-2.5 w-2.5 text-white" />
+              ) : (
+                <IconCheck className="h-2.5 w-2.5 text-white" />
+              )}
+            </span>
+          )}
+        </div>
+      ) : (
+        <div
+          style={{
+            backgroundImage: p.imageUrl
+              ? undefined
+              : "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)",
+          }}
+          className="relative h-[92px] w-[92px] flex-shrink-0 overflow-hidden rounded-[10px]"
+        >
+          {p.imageUrl && <Image src={p.imageUrl} alt="" fill sizes="92px" className="object-cover" />}
+        </div>
+      )}
+      <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+        {mode === "profiles" ? (
+          <>
+            <div className="flex items-center gap-1.5">
+              <span className="truncate text-[15px] font-semibold text-[#1d2329]">{p.title}</span>
+              {p.verified && (
+                <span
+                  title={verifiedLabel}
+                  className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#3f6e4a] text-white"
+                >
+                  <IconCheck className="h-2.5 w-2.5" />
+                </span>
+              )}
+            </div>
+            {p.badge && (
+              <span className="self-start rounded-md bg-[#eef3ee] px-2.5 py-[3px] text-xs font-medium text-[#2f5538]">
+                {p.badge}
+              </span>
+            )}
+            {p.subtitle && <div className="truncate text-[13px] text-[#5d6670]">{p.subtitle}</div>}
+          </>
+        ) : (
+          <>
+            <div className="truncate text-xs text-[#5d6670]">{p.badge ?? ""}</div>
+            <div className="line-clamp-2 text-[15px] font-medium leading-[1.3] text-[#1d2329]">{p.title}</div>
+            {p.price && <div className="text-base font-semibold text-[#1d2329]">{p.price}</div>}
+            <div className="mt-auto truncate text-xs text-[#5d6670]">{p.subtitle}</div>
+          </>
+        )}
+        {p.attributes && p.attributes.length > 0 && (
+          <div className="mt-0.5">
+            <AttributeIconRow attributes={p.attributes} locale={locale} />
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

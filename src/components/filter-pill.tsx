@@ -6,7 +6,7 @@ import { IconChevronDown, IconCheckmark } from "@/components/icons";
 
 export function optionClass(active: boolean) {
   return `rounded-lg px-3 py-2 text-left text-sm transition ${
-    active ? "bg-[#f1efe6] font-medium text-[#2b2a24]" : "text-[#55503f] hover:bg-[#faf8f3]"
+    active ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f6f7f5]"
   }`;
 }
 
@@ -26,15 +26,15 @@ export function CheckboxPill({
       aria-pressed={checked}
       className={`flex flex-shrink-0 snap-start items-center gap-2.5 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition-all ${
         checked
-          ? "border-[#3f6b3f] bg-[#eaf4e8] text-[#2f5233]"
-          : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]/50 hover:bg-[#faf8f3]"
+          ? "border-[#3f6e4a] bg-[#eef3ee] text-[#2f5538]"
+          : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]/50 hover:bg-[#f6f7f5]"
       }`}
     >
       <span
         className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all ${
           checked
-            ? "border-[#3f6b3f] bg-gradient-to-br from-[#57975a] to-[#2f5233] shadow-[0_1px_3px_rgba(47,82,51,0.5)]"
-            : "border-[#c9c3b3] bg-white"
+            ? "border-[#3f6e4a] bg-[#3f6e4a] shadow-[0_1px_3px_rgba(63,110,74,0.5)]"
+            : "border-[#d9dee2] bg-white"
         }`}
       >
         <IconCheckmark
@@ -49,7 +49,7 @@ export function CheckboxPill({
 }
 
 export const filterFieldClass =
-  "w-full rounded-lg border border-[#e7e2d8] bg-white px-3 py-2 text-sm text-[#2b2a24] outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15";
+  "w-full rounded-lg border border-[#d9dee2] bg-white px-3 py-2 text-sm text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
 
 export function FilterPill({
   label,
@@ -126,13 +126,13 @@ export function FilterPill({
           icon
             ? `relative flex h-9 w-9 flex-shrink-0 snap-start items-center justify-center rounded-full border transition ${
                 active
-                  ? "border-[#3f6b3f] bg-[#f1efe6] text-[#3f6b3f]"
-                  : "border-[#e7e2d8] bg-white text-[#7a7566] hover:border-[#3f6b3f]/50 hover:text-[#3f6b3f]"
+                  ? "border-[#3f6e4a] bg-[#eef3ee] text-[#3f6e4a]"
+                  : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]/50 hover:text-[#3f6e4a]"
               }`
             : `flex flex-shrink-0 snap-start items-center gap-1 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition ${
                 active
-                  ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
-                  : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+                  ? "border-[#3f6e4a] bg-[#eef3ee] text-[#1d2329]"
+                  : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]"
               }`
         }
       >
@@ -140,7 +140,7 @@ export function FilterPill({
           <>
             {icon}
             {active && (
-              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#3f6b3f]" />
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#3f6e4a]" />
             )}
           </>
         ) : (
@@ -163,7 +163,7 @@ export function FilterPill({
               maxHeight: position.maxHeight,
               zIndex: 1100,
             }}
-            className="overflow-y-auto overscroll-contain rounded-xl border border-[#e7e2d8] bg-white p-3 shadow-lg"
+            className="overflow-y-auto overscroll-contain rounded-xl border border-[#e3e6e8] bg-white p-3 shadow-lg"
           >
             {children(close)}
           </div>,

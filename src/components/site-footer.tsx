@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+﻿import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -16,7 +16,21 @@ export async function SiteFooter() {
 
   return (
     <footer className="bg-[#2f4254] text-[#d6dee6]">
-      <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-4 py-11 pb-7 sm:px-6">
+      {/* Mobile: simplified -- links + copyright only */}
+      <div className="flex flex-col gap-2.5 px-4 pb-7 pt-6 text-[13px] sm:hidden">
+        <div className="flex flex-wrap gap-4">
+          <Link href="/privacy" className="transition hover:text-white">
+            {t("privacyPolicy")}
+          </Link>
+          <Link href="/terms" className="transition hover:text-white">
+            {t("terms")}
+          </Link>
+        </div>
+        <span>{t("rights", { year: new Date().getFullYear() })}</span>
+      </div>
+
+      {/* Desktop: full footer */}
+      <div className="mx-auto hidden max-w-[1328px] flex-col gap-8 px-4 py-11 pb-7 sm:flex sm:px-6">
         <div className="flex flex-wrap justify-between gap-8">
           <div className="flex max-w-[340px] flex-col gap-3">
             {logoUrl ? (

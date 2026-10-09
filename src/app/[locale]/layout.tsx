@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FooterGate } from "@/components/footer-gate";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 import "../globals.css";
 
 const lexend = Lexend({
@@ -65,6 +66,7 @@ export default async function LocaleLayout({
           <FooterGate>
             <SiteFooter />
           </FooterGate>
+          <MobileTabBar />
         </NextIntlClientProvider>
         <Analytics />
       </body>

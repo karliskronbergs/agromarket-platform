@@ -26,7 +26,7 @@ export function AttributeBadges({
         return (
           <span
             key={i}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#e7e2d8] bg-[#f1efe6] px-2.5 py-1 text-xs font-medium text-[#3f6b3f]"
+            className="inline-flex items-center gap-1.5 rounded-full border border-[#e3e6e8] bg-[#eef3ee] px-2.5 py-1 text-xs font-medium text-[#2f5538]"
           >
             <Icon className="h-3.5 w-3.5 flex-shrink-0" />
             {locale === "lv" ? a.name_lv : a.name_en}
@@ -54,7 +54,7 @@ export function AttributeIconRow({
           <span
             key={i}
             title={locale === "lv" ? a.name_lv : a.name_en}
-            className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#e7efe1] text-[#3f6b3f]"
+            className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#eef3ee] text-[#2f5538]"
           >
             <Icon className="h-3 w-3" />
           </span>

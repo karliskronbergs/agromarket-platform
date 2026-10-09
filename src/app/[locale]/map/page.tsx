@@ -2,9 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
 import { getAttributesByProfileIds } from "@/lib/attributes";
-import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
-import { conditionLabel } from "@/lib/equipment";
-import { priceUnitSuffix } from "@/lib/format";
+import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
 export const dynamic = "force-dynamic";
@@ -53,6 +51,7 @@ export default async function MapPage({
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
 
   const tListing = await getTranslations("Listing");
+  const tProfile = await getTranslations("Profile");
   const t = await getTranslations("Map");
   const supabase = await createClient();
 
@@ -128,7 +127,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, lat, lng, profiles!inner(id, lat, lng), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, lat, lng, created_at, profiles!inner(id, lat, lng, address), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -174,22 +173,18 @@ export default async function MapPage({
         const firstImage = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
         const lat = (l.lat as number | null) ?? profile?.lat ?? null;
         const lng = (l.lng as number | null) ?? profile?.lng ?? null;
-        const animalGroup = getAnimalGroupForCategory(categories ?? [], l.category_id as string | null);
         const priceText =
           l.price != null
             ? `€${l.price}${priceUnitSuffix(l.price_unit, locale)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
             : "";
-        const breedText =
-          animalGroup && l.breed ? breedLabel(animalGroup, l.breed as string, locale) : "";
-        const conditionText = l.condition ? conditionLabel(l.condition as string, locale) : "";
-        const manufacturerModelText = [l.manufacturer, l.model].filter(Boolean).join(" ");
-        const organicText = l.organic_certified ? t("organicCertified") : "";
+        const locationAndDate = [profile?.address, formatRelativeDays(l.created_at as string, locale)]
+          .filter(Boolean)
+          .join(" · ");
         return {
           id: l.id as string,
           title: l.title as string,
-          subtitle: [manufacturerModelText || breedText || conditionText || organicText, priceText]
-            .filter(Boolean)
-            .join(" · "),
+          subtitle: locationAndDate,
+          price: priceText,
           lat,
           lng,
           href: `/${locale}/listings/${l.id}`,
@@ -259,6 +254,17 @@ export default async function MapPage({
         searchPlaceholderProfiles: t("searchPlaceholderProfiles"),
         searchPlaceholderListings: t("searchPlaceholderListings"),
         empty: t("empty"),
+        resultLabel:
+          mode === "profiles"
+            ? t("resultCountProfiles", { count: points.length })
+            : t("resultCountListings", { count: points.length }),
+        noResultsTitle: t("noResultsTitle"),
+        noResultsBody: t("noResultsBody"),
+        tapPointHint: t("tapPointHint"),
+        toggleShowMap: t("toggleShowMap"),
+        toggleShowList: t("toggleShowList"),
+        addListingCta: t("addListingCta"),
+        verifiedShort: tProfile("verifiedShort"),
       }}
     />
   );

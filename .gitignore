@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# visual QA screenshots (scripts/shot*.js write here)
+/scratch-shots/

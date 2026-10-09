@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconSearch, IconClose } from "@/components/icons";
+import { IconClose } from "@/components/icons";
 
 export function MapSearchBar({
   value,
@@ -20,15 +20,14 @@ export function MapSearchBar({
         e.preventDefault();
         onSearch(draft.trim());
       }}
-      className="relative w-full sm:max-w-sm"
+      className="relative w-full flex-1 sm:max-w-[520px]"
     >
-      <IconSearch className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7a7566]" />
       <input
         type="text"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-full border border-[#e7e2d8] bg-white py-3 pl-11 pr-10 text-sm text-[#2b2a24] shadow-sm outline-none transition focus:border-[#3f6b3f] focus:ring-2 focus:ring-[#3f6b3f]/15"
+        className="w-full rounded-xl border border-[#d9dee2] bg-white px-4 py-[11px] text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]"
       />
       {draft && (
         <button
@@ -37,7 +36,7 @@ export function MapSearchBar({
             setDraft("");
             onSearch("");
           }}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#7a7566] transition hover:text-[#2b2a24]"
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8a929a] transition hover:text-[#1d2329]"
           aria-label="Clear"
         >
           <IconClose className="h-4 w-4" />

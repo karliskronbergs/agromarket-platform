@@ -1,10 +1,10 @@
-import { getTranslations } from "next-intl/server";
+﻿import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/auth/actions";
-import { MobileNav } from "@/components/mobile-nav";
+import { MobileBackButton, MobileLoginCta } from "@/components/mobile-header-extras";
 
 function initialsFor(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -85,9 +85,38 @@ export async function SiteHeader({ locale }: { locale: string }) {
     </Link>
   ));
 
+  const mobileLangLinks = routing.locales.map((l) => (
+    <Link
+      key={l}
+      href="/"
+      locale={l}
+      className={`px-2 py-[5px] ${l === locale ? "bg-white text-[#3b5166]" : "text-white"}`}
+    >
+      {l.toUpperCase()}
+    </Link>
+  ));
+
   return (
     <header className="sticky top-0 z-[2000] bg-[#3b5166] shadow-[0_1px_0_rgba(0,0,0,0.08)]">
-      <div className="mx-auto flex min-h-11 max-w-[1280px] flex-wrap items-center gap-5 px-4 py-2.5 sm:px-6">
+      {/* Mobile row */}
+      <div className="flex h-14 items-center gap-2.5 px-4 sm:hidden">
+        <MobileBackButton />
+        <Link href="/" className="flex flex-shrink-0 items-center">
+          {logoUrl ? (
+            <Image src={logoUrl} alt="lauks24.lv" width={120} height={26} className="h-[26px] w-auto" priority />
+          ) : (
+            <span className="font-sans text-base font-bold text-white">lauks24.lv</span>
+          )}
+        </Link>
+        <div className="flex-1" />
+        <div className="flex flex-shrink-0 items-center overflow-hidden rounded-lg border border-white/30 text-[13px] font-semibold">
+          {mobileLangLinks}
+        </div>
+        <MobileLoginCta loggedIn={!!user} label={t("signIn")} />
+      </div>
+
+      {/* Desktop row */}
+      <div className="mx-auto hidden min-h-11 max-w-[1328px] flex-wrap items-center gap-5 px-4 py-2.5 sm:flex sm:px-6">
         <Link href="/" className="flex items-center">
           {logoUrl ? (
             <Image
@@ -103,12 +132,12 @@ export async function SiteHeader({ locale }: { locale: string }) {
           )}
         </Link>
 
-        <nav className="hidden flex-1 items-center gap-1 sm:flex">{navLinks}</nav>
+        <nav className="flex flex-1 items-center gap-1">{navLinks}</nav>
 
-        <div className="hidden items-center gap-1.5 text-sm sm:flex">{langLinks}</div>
+        <div className="flex items-center gap-1.5 text-sm">{langLinks}</div>
 
         {user ? (
-          <div className="hidden items-center gap-2 sm:flex">
+          <div className="flex items-center gap-2">
             <Link href="/dashboard/messages" className={`relative inline-block ${navItemClass}`}>
               {t("messages")}
               {unreadCount > 0 && (
@@ -133,7 +162,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
             </form>
           </div>
         ) : (
-          <div className="hidden items-center gap-2 sm:flex">
+          <div className="flex items-center gap-2">
             <Link href="/auth/login" className={navItemClass}>
               {t("signIn")}
             </Link>
@@ -145,54 +174,6 @@ export async function SiteHeader({ locale }: { locale: string }) {
             </Link>
           </div>
         )}
-
-        <MobileNav>
-          {navLinks}
-          {user ? (
-            <>
-              <Link href="/dashboard/messages" className="relative inline-block text-[#2b2a24]">
-                {t("messages")}
-                {unreadCount > 0 && (
-                  <span className="absolute -right-3 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </Link>
-              <Link href="/dashboard" className="text-[#2b2a24]">
-                {t("myProfile")}
-              </Link>
-              <form action={boundSignOut}>
-                <button type="submit" className="cursor-pointer text-[#2b2a24]">
-                  {t("signOut")}
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login" className="text-[#2b2a24]">
-                {t("signIn")}
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="w-fit rounded-lg bg-[#3b5166] px-4 py-2 text-white"
-              >
-                {t("createProfile")}
-              </Link>
-            </>
-          )}
-          <span className="flex items-center gap-3 border-t border-[#e7e2d8] pt-4">
-            {routing.locales.map((l) => (
-              <Link
-                key={l}
-                href="/"
-                locale={l}
-                className={l === locale ? "font-semibold text-[#2b2a24]" : "text-[#7a7566]"}
-              >
-                {tLang(l)}
-              </Link>
-            ))}
-          </span>
-        </MobileNav>
       </div>
     </header>
   );

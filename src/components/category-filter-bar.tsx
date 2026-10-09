@@ -18,7 +18,7 @@ function Panel({
   const label = (c: CategoryRow) => (locale === "lv" ? c.name_lv : c.name_en);
 
   return (
-    <div className="max-h-72 w-60 overflow-y-auto overscroll-contain rounded-xl border border-[#e7e2d8] bg-white p-1.5 shadow-lg">
+    <div className="max-h-72 w-60 overflow-y-auto overscroll-contain rounded-xl border border-[#e3e6e8] bg-white p-1.5 shadow-lg">
       {node.children.map((child) => {
         const isActive = activePath.some((n) => n.id === child.id);
         return (
@@ -27,11 +27,11 @@ function Panel({
             type="button"
             onClick={() => onPick(child)}
             className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
-              isActive ? "bg-[#f1efe6] font-medium text-[#2b2a24]" : "text-[#55503f] hover:bg-[#faf8f3]"
+              isActive ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f6f7f5]"
             }`}
           >
             <span>{label(child)}</span>
-            {child.children.length > 0 && <span className="text-[#7a7566]">›</span>}
+            {child.children.length > 0 && <span className="text-[#8a929a]">›</span>}
           </button>
         );
       })}
@@ -92,10 +92,10 @@ function RootMenu({
       <button
         type="button"
         onClick={() => onSelect(root.id)}
-        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+        className={`flex-shrink-0 whitespace-nowrap rounded-full border px-3.5 py-[7px] text-sm transition ${
           selectedCategory === root.id
-            ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+            ? "border-[#3f6e4a] bg-[#3f6e4a] text-white"
+            : "border-[#e3e6e8] bg-white text-[#1d2329] hover:border-[#3f6e4a]"
         }`}
       >
         {label(root)}
@@ -138,10 +138,10 @@ function RootMenu({
         ref={buttonRef}
         type="button"
         onClick={toggle}
-        className={`flex-shrink-0 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+        className={`flex-shrink-0 whitespace-nowrap rounded-full border px-3.5 py-[7px] text-sm transition ${
           isActiveRoot
-            ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+            ? "border-[#3f6e4a] bg-[#3f6e4a] text-white"
+            : "border-[#e3e6e8] bg-white text-[#1d2329] hover:border-[#3f6e4a]"
         }`}
       >
         {label(root)}
@@ -196,10 +196,10 @@ export function CategoryFilterBar({
       <button
         type="button"
         onClick={() => onSelect(null)}
-        className={`flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+        className={`flex-shrink-0 snap-start whitespace-nowrap rounded-full border px-3.5 py-[7px] text-sm transition ${
           !selectedCategory
-            ? "border-[#3f6b3f] bg-[#f1efe6] text-[#2b2a24]"
-            : "border-[#e7e2d8] bg-white text-[#55503f] hover:border-[#3f6b3f]"
+            ? "border-[#3f6e4a] bg-[#3f6e4a] text-white"
+            : "border-[#e3e6e8] bg-white text-[#1d2329] hover:border-[#3f6e4a]"
         }`}
       >
         {allLabel}
