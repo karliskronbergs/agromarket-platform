@@ -116,12 +116,12 @@ export async function saveListing(
         .from("listings")
         .update(payload)
         .eq("id", listingId)
-        .select("id")
+        .select("id, status")
         .single()
     : await supabase
         .from("listings")
         .insert({ ...payload, status: "pending", is_paid: false })
-        .select("id")
+        .select("id, status")
         .single();
 
   if (error || !listing) {
@@ -181,7 +181,14 @@ export async function saveListing(
     // list instead, where the pending status is visible.
     redirect(`/${locale}/dashboard/listings`);
   }
-  redirect(`/${locale}/listings/${listing.id}`);
+
+  // Only active listings have a public page -- an edited listing that's
+  // pending/removed/expired would 404 there, so send the seller back to
+  // their list instead.
+  if (listing.status === "active") {
+    redirect(`/${locale}/listings/${listing.id}`);
+  }
+  redirect(`/${locale}/dashboard/listings`);
 }
 
 export async function deleteListing(locale: string, listingId: string) {

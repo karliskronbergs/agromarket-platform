@@ -22,9 +22,17 @@ export function ImageUploader({ existingImages }: { existingImages: ExistingImag
 
   useEffect(() => {
     if (!fileInputRef.current) return;
-    const dt = new DataTransfer();
-    newImages.forEach((img) => dt.items.add(img.file));
-    fileInputRef.current.files = dt.files;
+    try {
+      const dt = new DataTransfer();
+      for (const img of newImages) {
+        if (img.file instanceof File) dt.items.add(img.file);
+      }
+      fileInputRef.current.files = dt.files;
+    } catch {
+      // Keep the preview grid working even if the browser rejects one of
+      // the files here -- losing the native input's FileList just means
+      // that image won't be attached to the form submission.
+    }
   }, [newImages]);
 
   useEffect(() => {
