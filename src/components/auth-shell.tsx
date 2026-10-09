@@ -35,9 +35,9 @@ export async function AuthShell({
     }`;
 
   return (
-    <div className="flex flex-1 flex-col items-center px-4 py-6 sm:px-6 sm:py-12">
-      <div className="w-full max-w-[1040px] overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white sm:rounded-[24px] sm:[grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))] sm:grid">
-        <div className="flex flex-col gap-[18px] p-5 sm:p-10">
+    <div className="flex flex-1 flex-col items-center px-4 pb-8 pt-6 sm:px-6 sm:py-12">
+      <div className="w-full max-w-[1040px] overflow-hidden sm:rounded-[24px] sm:border sm:border-[#e3e6e8] sm:bg-white sm:[grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))] sm:grid">
+        <div className="flex flex-col gap-[18px] sm:p-10">
           <div className="grid grid-cols-2 gap-0.5 self-start rounded-xl bg-[#e9ebe8] p-1 sm:flex sm:w-fit sm:gap-0.5 sm:bg-[#f0f2f0]">
             <Link href="/auth/login" className={tabClass(mode === "login")}>
               {t("signInCta")}

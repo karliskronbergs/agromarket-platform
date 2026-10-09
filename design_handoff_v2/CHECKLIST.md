@@ -49,8 +49,8 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Mobile: fixed bottom action bar
 
 ## 6. Sign up / Log in
-- [ ] Two-panel card (desktop), single column (mobile), Ieiet/Reģistrēties toggle
-- [ ] Existing auth logic unchanged
+- [x] Two-panel card (desktop), single column (mobile), Ieiet/Reģistrēties toggle
+- [x] Existing auth logic unchanged
 
 ## 7. User dashboard
 - [ ] Sidebar (desktop) / pill nav + tab bar (mobile)
