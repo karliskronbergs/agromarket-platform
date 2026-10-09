@@ -21,7 +21,7 @@ export async function MessageSellerButton({
     return (
       <Link
         href="/auth/login"
-        className="w-fit rounded-full border border-[#3f6b3f] px-5 py-2.5 text-sm font-semibold text-[#3f6b3f]"
+        className="w-fit rounded-[10px] border border-[#d9dee2] px-5 py-3 text-[15px] font-medium text-[#1d2329]"
       >
         {t("loginToMessage")}
       </Link>
@@ -34,7 +34,7 @@ export async function MessageSellerButton({
     <form action={boundStart}>
       <button
         type="submit"
-        className="w-fit rounded-full bg-[#3f6b3f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#2f5233]"
+        className="w-fit rounded-[10px] bg-[#3f6e4a] px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-[#355d3e]"
       >
         {t("messageSeller")}
       </button>

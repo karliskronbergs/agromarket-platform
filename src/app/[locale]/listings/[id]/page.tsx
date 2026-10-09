@@ -324,11 +324,13 @@ export default async function ListingDetailPage({
 
           {listing.lat != null && listing.lng != null && (
             <div className="overflow-hidden rounded-xl border border-[#e7e2d8] bg-white">
-              <MiniMap
-                lat={listing.lat}
-                lng={listing.lng}
-                color={listing.listing_type === "sell" ? "#d9713a" : "#2f6690"}
-              />
+              <div className="h-40">
+                <MiniMap
+                  lat={listing.lat}
+                  lng={listing.lng}
+                  color={listing.listing_type === "sell" ? "#d9713a" : "#2f6690"}
+                />
+              </div>
               <a
                 href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
                 target="_blank"

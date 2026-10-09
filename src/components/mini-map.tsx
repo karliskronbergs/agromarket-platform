@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 export function MiniMap({
   lat,
   lng,
-  color = "#3f6b3f",
+  color = "#3f6e4a",
 }: {
   lat: number;
   lng: number;
@@ -52,5 +52,5 @@ export function MiniMap({
     };
   }, [lat, lng, color]);
 
-  return <div ref={containerRef} className="h-40 w-full rounded-xl" />;
+  return <div ref={containerRef} className="h-full w-full" />;
 }
