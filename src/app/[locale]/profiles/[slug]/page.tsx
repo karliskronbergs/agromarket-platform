@@ -177,8 +177,12 @@ export default async function PublicProfilePage({
           <Link href="/map" className="text-[#3f6e4a]">
             {tNav("map")}
           </Link>
-          <span>/</span>
-          <span>{primaryCategoryName}</span>
+          {primaryCategoryName && (
+            <>
+              <span>/</span>
+              <span>{primaryCategoryName}</span>
+            </>
+          )}
           <span>/</span>
           <span className="text-[#1d2329]">{profile.business_name}</span>
         </div>

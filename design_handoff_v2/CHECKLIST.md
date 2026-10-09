@@ -36,10 +36,10 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Empty state
 
 ## 4. Company profile
-- [ ] Header card: cover, avatar, name, Pārbaudīts, badges, actions
-- [ ] Tabs: Sludinājumi / Par saimniecību
-- [ ] Contacts card (phone hidden until click) + mini map
-- [ ] Mobile: fixed bottom action bar (Zvanīt / Rakstīt ziņu)
+- [x] Header card: cover, avatar, name, Pārbaudīts, badges, actions
+- [x] Tabs: Sludinājumi / Par saimniecību
+- [x] Contacts card (phone hidden until click) + mini map
+- [x] Mobile: fixed bottom action bar (Zvanīt / Rakstīt ziņu)
 
 ## 5. Listing detail
 - [ ] Gallery + thumbnails (mobile: tap/swipe + dots)
