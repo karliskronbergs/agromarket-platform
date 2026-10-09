@@ -107,7 +107,7 @@ export default async function TermsPage({
         <LegalSection title="11. Kontakti">
           <p>
             Jautājumu gadījumā raksti mums uz{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
               {CONTACT_EMAIL}
             </a>
             .
@@ -207,7 +207,7 @@ export default async function TermsPage({
       <LegalSection title="11. Contact">
         <p>
           If you have questions, contact us at{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
             {CONTACT_EMAIL}
           </a>
           .

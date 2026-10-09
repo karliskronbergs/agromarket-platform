@@ -30,7 +30,7 @@ export function PasswordInput({
         type="button"
         tabIndex={-1}
         onClick={() => setShow((s) => !s)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7a7566]"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a929a]"
       >
         {show ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
       </button>

@@ -20,7 +20,7 @@ export function ReportForm({
   });
 
   if (state.success) {
-    return <p className="text-sm text-[#3f6b3f]">{t("thanks")}</p>;
+    return <p className="text-sm text-[#3f6e4a]">{t("thanks")}</p>;
   }
 
   return (
@@ -30,13 +30,13 @@ export function ReportForm({
         required
         rows={5}
         placeholder={t("reasonLabel")}
-        className="rounded-lg border border-[#e7e2d8] px-3 py-2 text-sm"
+        className="rounded-[10px] border border-[#d9dee2] px-3.5 py-3 text-[15px] outline-none transition focus:border-[#3f6e4a]"
       />
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded-full bg-[#3f6b3f] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#2f5233] disabled:opacity-60"
+        className="w-fit rounded-[10px] bg-[#3f6e4a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#355d3e] disabled:opacity-60"
       >
         {t("submit")}
       </button>

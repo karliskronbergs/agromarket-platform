@@ -22,7 +22,7 @@ export default async function PrivacyPolicyPage({
             Šo tīmekļa vietni uztur lauks24.lv (turpmāk — &quot;mēs&quot;). Jautājumu vai
             pieprasījumu gadījumā par šo privātuma politiku vai savu datu apstrādi, raksti mums
             uz{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
               {CONTACT_EMAIL}
             </a>
             .
@@ -116,7 +116,7 @@ export default async function PrivacyPolicyPage({
             datiem, tos labot, dzēst, ierobežot to apstrādi, iebilst pret apstrādi un saņemt datus
             strukturētā formātā. Lai to izdarītu, vari izmantot sava konta iestatījumus vai
             sazināties ar mums uz{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
               {CONTACT_EMAIL}
             </a>
             . Ja uzskati, ka tavu datu apstrāde pārkāpj VDAR, tev ir tiesības iesniegt sūdzību
@@ -140,7 +140,7 @@ export default async function PrivacyPolicyPage({
         <p>
           This website is operated by lauks24.lv (&quot;we&quot;). For any question or request
           about this policy or your data, contact us at{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
             {CONTACT_EMAIL}
           </a>
           .
@@ -227,7 +227,7 @@ export default async function PrivacyPolicyPage({
           correct, delete, restrict, or object to the processing of your data, and to receive it
           in a portable format. You can exercise most of these through your account settings, or
           by contacting us at{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6b3f] underline">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#3f6e4a] underline">
             {CONTACT_EMAIL}
           </a>
           . If you believe our processing violates the GDPR, you have the right to lodge a

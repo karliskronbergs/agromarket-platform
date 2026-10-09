@@ -138,7 +138,7 @@ export function LivestockFilterPanel({
                 onApply({ ...filters, ageMin: ageMin || undefined, ageMax: ageMax || undefined });
                 close();
               }}
-              className="rounded-full bg-[#3f6b3f] py-2 text-sm font-semibold text-white transition hover:bg-[#2f5233]"
+              className="rounded-[10px] bg-[#3f6e4a] py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
             >
               {labels.apply}
             </button>
@@ -163,7 +163,7 @@ export function LivestockFilterPanel({
                 onApply({ ...filters, quantityMin: quantityMin || undefined });
                 close();
               }}
-              className="rounded-full bg-[#3f6b3f] py-2 text-sm font-semibold text-white transition hover:bg-[#2f5233]"
+              className="rounded-[10px] bg-[#3f6e4a] py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
             >
               {labels.apply}
             </button>
@@ -200,7 +200,7 @@ export function LivestockFilterPanel({
                 onApply({ ...filters, priceMin: priceMin || undefined, priceMax: priceMax || undefined });
                 close();
               }}
-              className="rounded-full bg-[#3f6b3f] py-2 text-sm font-semibold text-white transition hover:bg-[#2f5233]"
+              className="rounded-[10px] bg-[#3f6e4a] py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
             >
               {labels.apply}
             </button>
@@ -218,7 +218,7 @@ export function LivestockFilterPanel({
         <button
           type="button"
           onClick={onClear}
-          className="flex flex-shrink-0 snap-start items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-[#7a7566] transition hover:text-[#2b2a24]"
+          className="flex flex-shrink-0 snap-start items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-[#8a929a] transition hover:text-[#1d2329]"
         >
           <IconClose className="h-3.5 w-3.5" />
           {labels.clearFilters}

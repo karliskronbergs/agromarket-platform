@@ -12,7 +12,7 @@ export default async function ReportPage({
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-16">
-      <h1 className="font-sans text-xl font-semibold text-[#2b2a24]">{t("title")}</h1>
+      <h1 className="text-xl font-semibold text-[#1d2329]">{t("title")}</h1>
       <ReportForm locale={locale} targetType={targetType} targetId={id} />
     </div>
   );

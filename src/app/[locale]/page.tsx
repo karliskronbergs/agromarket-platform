@@ -15,12 +15,21 @@ const STRIPE_BG = {
     "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 10px, #e4e7e1 10px, #e4e7e1 20px)",
 };
 
-const CATEGORY_PLACEHOLDER: Record<string, string> = {
-  lopkopiba: "foto: liellopi ganībās",
-  "lauksaimnicibas-tehnika": "foto: traktors",
-  "seklas-un-graudi": "foto: graudu lauks",
-  mezsaimnieciba: "foto: mežs / kokmateriāli",
-  dazadi: "foto: saimniecības produkcija",
+const CATEGORY_PLACEHOLDER: Record<string, Record<string, string>> = {
+  lv: {
+    lopkopiba: "foto: liellopi ganībās",
+    "lauksaimnicibas-tehnika": "foto: traktors",
+    "seklas-un-graudi": "foto: graudu lauks",
+    mezsaimnieciba: "foto: mežs / kokmateriāli",
+    dazadi: "foto: saimniecības produkcija",
+  },
+  en: {
+    lopkopiba: "photo: cattle grazing",
+    "lauksaimnicibas-tehnika": "photo: tractor",
+    "seklas-un-graudi": "photo: grain field",
+    mezsaimnieciba: "photo: forest / timber",
+    dazadi: "photo: farm produce",
+  },
 };
 
 export default async function Home({
@@ -115,7 +124,8 @@ export default async function Home({
                     style={STRIPE_BG}
                     className="flex h-[84px] items-center justify-center p-1.5 text-center font-mono text-[10px] text-[#7a8279]"
                   >
-                    {CATEGORY_PLACEHOLDER[c.slug ?? ""] ?? `foto: ${locale === "lv" ? c.name_lv : c.name_en}`}
+                    {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
+                      `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
                   </div>
                   <div className="px-3 py-2.5 text-sm font-medium leading-tight text-[#1d2329]">
                     {locale === "lv" ? c.name_lv : c.name_en}
@@ -314,7 +324,8 @@ export default async function Home({
                     style={STRIPE_BG}
                     className="flex h-[120px] items-center justify-center font-mono text-[11px] text-[#7a8279]"
                   >
-                    {CATEGORY_PLACEHOLDER[c.slug ?? ""] ?? `foto: ${locale === "lv" ? c.name_lv : c.name_en}`}
+                    {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
+                      `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
                   </div>
                   <div className="flex items-center justify-between gap-2 px-4 py-3.5">
                     <span className="text-[15px] font-medium text-[#1d2329]">
