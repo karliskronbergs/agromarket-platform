@@ -5,8 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageSellerButton } from "@/components/message-seller-button";
+import { MobileActionBar } from "@/components/mobile-action-bar";
 import { MiniMap } from "@/components/mini-map";
-import { IconPin, IconPhone, IconCheck, IconShield, IconLeaf } from "@/components/icons";
+import { IconCheck, IconShield, IconLeaf } from "@/components/icons";
 import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
 import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
 import { conditionLabel } from "@/lib/equipment";
@@ -16,6 +17,15 @@ import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badg
 import { getAttributesByProfileIds } from "@/lib/attributes";
 
 export const dynamic = "force-dynamic";
+
+const STRIPE_BG = {
+  backgroundImage:
+    "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)",
+};
+
+function initialsFor(name: string): string {
+  return name.slice(0, 1).toUpperCase();
+}
 
 export async function generateMetadata({
   params,
@@ -44,6 +54,7 @@ export default async function ListingDetailPage({
 }) {
   const { locale, id } = await params;
   const t = await getTranslations("Listing");
+  const tNav = await getTranslations("Nav");
   const tReport = await getTranslations("Report");
   const supabase = await createClient();
 
@@ -87,271 +98,376 @@ export default async function ListingDetailPage({
   const animalGroup = getAnimalGroupForCategory(allCategories ?? [], listing.category_id);
   const breedText = animalGroup && listing.breed ? breedLabel(animalGroup, listing.breed, locale) : null;
   const conditionText = listing.condition ? conditionLabel(listing.condition, locale) : null;
+  const isSell = listing.listing_type === "sell";
+  const priceText =
+    listing.price != null
+      ? `€${listing.price}${priceUnitSuffix(listing.price_unit, locale)}${listing.price_plus_vat ? ` ${t("plusVat")}` : ""}`
+      : null;
 
   let activeListingsCount = 0;
   let sellerAttributes: AttributeInfo[] = [];
+  let similar: {
+    id: string;
+    title: string;
+    price: number | null;
+    price_unit: string | null;
+    listing_images: { url: string }[];
+    profiles: { address: string | null } | { address: string | null }[] | null;
+  }[] = [];
   if (profile) {
-    const [{ count }, attributesByProfile] = await Promise.all([
+    const [{ count }, attributesByProfile, { data: similarData }] = await Promise.all([
       supabase
         .from("listings")
         .select("id", { count: "exact", head: true })
         .eq("profile_id", profile.id)
         .eq("status", "active"),
       getAttributesByProfileIds(supabase, [profile.id]),
+      listing.category_id
+        ? supabase
+            .from("listings")
+            .select("id, title, price, price_unit, listing_images(url, sort_order), profiles(address)")
+            .eq("category_id", listing.category_id)
+            .eq("status", "active")
+            .neq("id", listing.id)
+            .gt("expires_at", new Date().toISOString())
+            .limit(3)
+        : Promise.resolve({ data: [] }),
     ]);
     activeListingsCount = count ?? 0;
     sellerAttributes = attributesByProfile.get(profile.id) ?? [];
+    similar = similarData ?? [];
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-6 sm:px-6">
+    <div className="pb-24 sm:pb-0">
       <ViewTracker listingId={listing.id} />
-      {isAdmin && (listing.status !== "active" || rawProfile?.status !== "active") && (
-        <div className="mb-4 rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
-          {t("adminPreviewNote")} ({listing.status}
-          {rawProfile?.status !== "active" ? `, ${rawProfile?.status}` : ""})
-        </div>
-      )}
-      <div className="mb-4 text-xs text-[#7a7566]">
-        <Link href={{ pathname: "/map", query: { mode: listing.listing_type } }} className="hover:text-[#3f6b3f]">
-          {t("myListings")}
-        </Link>
-        {categoryLabel && <> &rsaquo; {categoryLabel}</>} &rsaquo;{" "}
-        <span className="font-medium text-[#2b2a24]">{listing.title}</span>
-      </div>
-
-      <div className="flex flex-col gap-6 sm:flex-row">
-        <div className="min-w-0 flex-1">
-          <Gallery images={(images ?? []).map((img) => img.url)} title={listing.title} />
-
-          <h1 className="mt-5 font-sans text-xl font-bold text-[#2b2a24] sm:text-2xl">
-            {listing.title}
-          </h1>
-
-          <div className="mt-2 flex items-center gap-2">
-            <span
-              className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                listing.listing_type === "sell"
-                  ? "bg-[#fbe6da] text-[#d9713a]"
-                  : "bg-[#dde8ef] text-[#2f6690]"
-              }`}
-            >
-              {listing.listing_type === "sell" ? t("sell") : t("buy")}
-            </span>
-            {categoryLabel && (
-              <span className="rounded-full bg-[#e7efe1] px-2.5 py-1 text-xs font-semibold text-[#3f6b3f]">
-                {categoryLabel}
-              </span>
-            )}
-            {listing.organic_certified && (
-              <span className="flex items-center gap-1 rounded-full bg-gradient-to-br from-[#eaf4e8] to-[#dcedd8] px-2.5 py-1 text-xs font-semibold text-[#2f5233]">
-                <IconLeaf className="h-3 w-3" />
-                {t("organicCertified")}
-              </span>
-            )}
+      <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6">
+        {isAdmin && (listing.status !== "active" || rawProfile?.status !== "active") && (
+          <div className="rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
+            {t("adminPreviewNote")} ({listing.status}
+            {rawProfile?.status !== "active" ? `, ${rawProfile?.status}` : ""})
           </div>
+        )}
 
-          {listing.price != null && (
-            <div className="mt-3 flex items-baseline gap-1.5 font-sans text-2xl font-bold text-[#d9713a] sm:text-3xl">
-              €{listing.price}
-              {priceUnitSuffix(listing.price_unit, locale)}
-              {listing.price_plus_vat && (
-                <span className="text-sm font-semibold text-[#7a7566]">{t("plusVat")}</span>
-              )}
-            </div>
-          )}
-
-          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[#7a7566]">
-            {profile?.address && (
-              <span className="flex items-center gap-1">
-                <IconPin className="h-3.5 w-3.5" />
-                {profile.address}
-              </span>
-            )}
-            <span>{formatRelativeDays(listing.created_at, locale)}</span>
-          </div>
-
-          {listing.description && (
-            <>
-              <h2 className="mb-2 mt-6 font-sans text-base font-semibold text-[#2b2a24]">
-                {t("description")}
-              </h2>
-              <p className="max-w-xl text-sm leading-relaxed text-[#55503f]">
-                {listing.description}
-              </p>
-            </>
-          )}
-
-          <h2 className="mb-2 mt-6 font-sans text-base font-semibold text-[#2b2a24]">
-            {t("details")}
-          </h2>
-          <table className="w-full max-w-lg border-collapse text-sm">
-            <tbody>
-              <tr className="border-b border-[#f0ede4]">
-                <td className="py-2.5 pr-4 text-[#7a7566]">{t("type")}</td>
-                <td className="py-2.5 font-medium text-[#2b2a24]">
-                  {listing.listing_type === "sell" ? t("sell") : t("buy")}
-                </td>
-              </tr>
-              {categoryLabel && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("category")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{categoryLabel}</td>
-                </tr>
-              )}
-              {breedText && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("breed")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{breedText}</td>
-                </tr>
-              )}
-              {listing.manufacturer && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("manufacturer")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{listing.manufacturer}</td>
-                </tr>
-              )}
-              {listing.model && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("model")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{listing.model}</td>
-                </tr>
-              )}
-              {listing.age_months != null && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("ageMonths")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">
-                    {listing.age_months} {t("ageMonthsShort")}
-                  </td>
-                </tr>
-              )}
-              {listing.quantity != null && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("quantity")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">
-                    {listing.quantity} {t("quantityAvailable")}
-                  </td>
-                </tr>
-              )}
-              {conditionText && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("condition")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{conditionText}</td>
-                </tr>
-              )}
-              {profile?.address && (
-                <tr className="border-b border-[#f0ede4]">
-                  <td className="py-2.5 pr-4 text-[#7a7566]">{t("location")}</td>
-                  <td className="py-2.5 font-medium text-[#2b2a24]">{profile.address}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="hidden flex-wrap gap-2 text-sm text-[#5d6670] sm:flex">
+          <Link href={{ pathname: "/map", query: { mode: listing.listing_type } }} className="text-[#3f6e4a]">
+            {tNav("listings")}
+          </Link>
+          <span>/</span>
+          <span>{categoryLabel}</span>
+          <span>/</span>
+          <span className="text-[#1d2329]">{listing.title}</span>
         </div>
 
-        <div className="flex w-full flex-col gap-4 sm:w-80 sm:flex-shrink-0">
-          {profile && (
-            <div className="rounded-xl border border-[#e7e2d8] bg-white p-4">
-              <div className="mb-2.5 flex items-center gap-3">
-                <div className="relative h-11 w-11 flex-shrink-0">
-                  <div
-                    className={`h-full w-full overflow-hidden rounded-full ${
-                      profile.avatar_url ? "bg-white" : "bg-[#3f6b3f]"
-                    }`}
-                  >
-                    {profile.avatar_url ? (
-                      <Image src={profile.avatar_url} alt="" fill sizes="44px" className="object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center font-sans text-sm font-bold text-white">
-                        {profile.business_name.slice(0, 1).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  {profile.verified && (
-                    <IconCheck className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-[#2563eb] ring-2 ring-white" />
-                  )}
-                  {profile.admin_badge && (
-                    <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full text-red-600" />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate font-semibold text-[#2b2a24]">
-                      {profile.business_name}
-                    </span>
-                  </div>
-                  {categoryLabel && (
-                    <div className="text-xs text-[#7a7566]">{categoryLabel}</div>
-                  )}
-                </div>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+          <div className="min-w-0 flex-1 sm:flex sm:flex-col sm:gap-5">
+            <Gallery images={(images ?? []).map((img) => img.url)} title={listing.title} />
+
+            {/* Mobile: title/price/meta block right under the gallery */}
+            <div className="flex flex-col gap-2.5 border-b border-[#e3e6e8] py-4 sm:hidden">
+              <TypeAndCategoryRow isSell={isSell} categoryLabel={categoryLabel} organic={!!listing.organic_certified} t={t} />
+              <h1 className="m-0 text-balance text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#1d2329]">
+                {listing.title}
+              </h1>
+              {priceText && (
+                <div className="text-[26px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
+              )}
+              <div className="text-[13px] text-[#5d6670]">
+                {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
               </div>
+            </div>
 
-              {sellerAttributes.length > 0 && (
-                <div className="mb-3">
-                  <AttributeBadges attributes={sellerAttributes} locale={locale} />
-                </div>
-              )}
-
+            {/* Mobile: seller card right after the top info block */}
+            {profile && (
               <Link
                 href={`/profiles/${profile.slug}`}
-                className="mb-3 block text-xs font-semibold text-[#3f6b3f]"
+                className="flex items-center gap-3 rounded-2xl border border-[#e3e6e8] bg-white p-3.5 sm:hidden"
               >
-                {t("seller")} &middot; {activeListingsCount} {t("activeListings")}
+                <SellerAvatar profile={profile} size={46} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-[15px] font-semibold text-[#1d2329]">{profile.business_name}</span>
+                    {profile.verified && <VerifiedDot />}
+                  </div>
+                  {categoryLabel && <div className="mt-0.5 text-[13px] text-[#5d6670]">{categoryLabel}</div>}
+                </div>
+                <span className="text-lg text-[#3f6e4a]">→</span>
               </Link>
+            )}
 
-              <div className="mb-3 h-px bg-[#e7e2d8]" />
+            <div className="flex flex-col gap-5 rounded-2xl border border-[#e3e6e8] bg-white p-4 sm:p-6">
+              {listing.description && (
+                <div>
+                  <h2 className="m-0 mb-2.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("description")}</h2>
+                  <p className="m-0 text-pretty text-[15px] leading-[1.6] text-[#1d2329] sm:text-base sm:leading-[1.65]">
+                    {listing.description}
+                  </p>
+                </div>
+              )}
 
-              <div className="flex flex-col gap-2">
-                <MessageSellerButton
-                  locale={locale}
-                  viewerUserId={viewer?.id ?? null}
-                  sellerUserId={profile.user_id}
-                  listingId={listing.id}
-                />
-                {profile.phone && (
+              <div>
+                <h2 className="m-0 mb-1.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("details")}</h2>
+                <div className="grid grid-cols-1 sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] sm:gap-x-6">
+                  <DetailRow label={t("type")} value={isSell ? t("sell") : t("buy")} />
+                  {categoryLabel && <DetailRow label={t("category")} value={categoryLabel} />}
+                  {breedText && <DetailRow label={t("breed")} value={breedText} />}
+                  {listing.manufacturer && <DetailRow label={t("manufacturer")} value={listing.manufacturer} />}
+                  {listing.model && <DetailRow label={t("model")} value={listing.model} />}
+                  {listing.age_months != null && (
+                    <DetailRow label={t("ageMonths")} value={`${listing.age_months} ${t("ageMonthsShort")}`} />
+                  )}
+                  {listing.quantity != null && (
+                    <DetailRow label={t("quantity")} value={`${listing.quantity} ${t("quantityAvailable")}`} />
+                  )}
+                  {conditionText && <DetailRow label={t("condition")} value={conditionText} />}
+                  {profile?.address && <DetailRow label={t("location")} value={profile.address} />}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-[#f0f2f0] p-3.5 text-[13px] leading-[1.5] text-[#4a535b] sm:rounded-2xl sm:p-4">
+              {t("safetyTip")}
+            </div>
+
+            {similar.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="m-0 text-lg font-semibold text-[#1d2329] sm:text-2xl">{t("similarListings")}</h2>
+                <div className="flex flex-col gap-2.5 sm:hidden">
+                  {similar.map((l) => (
+                    <SimilarRow key={l.id} listing={l} locale={locale} thumbSize={72} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop sticky sidebar */}
+          <div className="hidden w-full flex-col gap-3.5 sm:sticky sm:top-[88px] sm:flex sm:w-full sm:max-w-[400px] sm:flex-1">
+            <div className="flex flex-col gap-3.5 rounded-[18px] border border-[#e3e6e8] bg-white p-6">
+              <TypeAndCategoryRow isSell={isSell} categoryLabel={categoryLabel} organic={!!listing.organic_certified} t={t} />
+              <h1 className="m-0 text-balance text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-[#1d2329]">
+                {listing.title}
+              </h1>
+              {priceText && (
+                <div className="text-[30px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
+              )}
+              <div className="text-sm text-[#5d6670]">
+                {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
+              </div>
+              <div className="mt-1 flex flex-col gap-2">
+                {profile && (
+                  <MessageSellerButton
+                    locale={locale}
+                    viewerUserId={viewer?.id ?? null}
+                    sellerUserId={profile.user_id}
+                    listingId={listing.id}
+                  />
+                )}
+                {profile?.phone && (
                   <a
                     href={`tel:${profile.phone}`}
-                    className="flex items-center justify-center gap-2 rounded-lg border-[1.5px] border-[#3f6b3f] px-4 py-2.5 text-sm font-semibold text-[#3f6b3f]"
+                    className="flex items-center justify-center rounded-[10px] border border-[#d9dee2] px-4 py-3.5 text-base font-medium text-[#1d2329] transition hover:border-[#3f6e4a]"
                   >
-                    <IconPhone className="h-4 w-4" />
                     {t("callSeller")}
                   </a>
                 )}
               </div>
             </div>
-          )}
 
-
-          {listing.lat != null && listing.lng != null && (
-            <div className="overflow-hidden rounded-xl border border-[#e7e2d8] bg-white">
-              <div className="h-40">
-                <MiniMap
-                  lat={listing.lat}
-                  lng={listing.lng}
-                  color={listing.listing_type === "sell" ? "#d9713a" : "#2f6690"}
-                />
-              </div>
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-3.5 py-2.5 text-sm font-semibold text-[#3f6b3f]"
+            {profile && (
+              <Link
+                href={`/profiles/${profile.slug}`}
+                className="flex items-center gap-3.5 rounded-[18px] border border-[#e3e6e8] bg-white p-[18px] transition hover:border-[#3f6e4a]"
               >
-                {t("getDirections")} &rarr;
-              </a>
-            </div>
-          )}
+                <SellerAvatar profile={profile} size={52} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="truncate text-[15px] font-semibold text-[#1d2329]">{profile.business_name}</span>
+                    {profile.verified && <VerifiedDot />}
+                  </div>
+                  {categoryLabel && <div className="mt-0.5 text-[13px] text-[#5d6670]">{categoryLabel}</div>}
+                </div>
+                <span className="flex-shrink-0 text-sm font-medium text-[#3f6e4a]">{t("viewProfile")}</span>
+              </Link>
+            )}
 
-          {viewer && (
-            <Link
-              href={`/report/listing/${listing.id}`}
-              className="w-fit text-xs text-[#7a7566] underline"
-            >
-              {tReport("reportLink")}
-            </Link>
-          )}
+            {sellerAttributes.length > 0 && (
+              <div className="rounded-[18px] border border-[#e3e6e8] bg-white p-[18px]">
+                <AttributeBadges attributes={sellerAttributes} locale={locale} />
+              </div>
+            )}
+
+            {listing.lat != null && listing.lng != null && (
+              <div className="overflow-hidden rounded-[18px] border border-[#e3e6e8] bg-[#e8ece6]">
+                <div className="h-[200px]">
+                  <MiniMap
+                    lat={listing.lat}
+                    lng={listing.lng}
+                    color={isSell ? "#3f6e4a" : "#3b5166"}
+                  />
+                </div>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-3 text-sm font-semibold text-[#3f6e4a]"
+                >
+                  {t("getDirections")} &rarr;
+                </a>
+              </div>
+            )}
+
+            {activeListingsCount > 1 && (
+              <div className="text-sm text-[#5d6670]">
+                {activeListingsCount} {t("activeListings")}
+              </div>
+            )}
+
+            {viewer && (
+              <Link href={`/report/listing/${listing.id}`} className="w-fit text-xs text-[#8a929a] underline">
+                {tReport("reportLink")}
+              </Link>
+            )}
+          </div>
         </div>
+
+        {similar.length > 0 && (
+          <div className="hidden grid-cols-1 gap-4 [grid-template-columns:repeat(auto-fill,minmax(250px,1fr))] sm:grid">
+            {similar.map((l) => (
+              <SimilarRow key={l.id} listing={l} locale={locale} thumbSize={80} />
+            ))}
+          </div>
+        )}
       </div>
+
+      {profile && (
+        <MobileActionBar
+          phone={profile.phone}
+          phoneLabel={t("callSeller")}
+          message={
+            <MessageSellerButton
+              locale={locale}
+              viewerUserId={viewer?.id ?? null}
+              sellerUserId={profile.user_id}
+              listingId={listing.id}
+            />
+          }
+        />
+      )}
     </div>
+  );
+}
+
+function TypeAndCategoryRow({
+  isSell,
+  categoryLabel,
+  organic,
+  t,
+}: {
+  isSell: boolean;
+  categoryLabel: string | null;
+  organic: boolean;
+  t: Awaited<ReturnType<typeof getTranslations>>;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span
+        className="rounded-full px-2.5 py-1 text-xs font-semibold"
+        style={isSell ? { background: "#e6efe6", color: "#2f5538" } : { background: "#f5ecd9", color: "#7a5516" }}
+      >
+        {isSell ? t("sell") : t("buy")}
+      </span>
+      {categoryLabel && <span className="text-[13px] text-[#5d6670]">{categoryLabel}</span>}
+      {organic && (
+        <span className="flex items-center gap-1 rounded-full bg-[#eef3ee] px-2.5 py-1 text-xs font-semibold text-[#2f5538]">
+          <IconLeaf className="h-3 w-3" />
+          {t("organicCertified")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-[#eef0f1] py-3 text-[15px]">
+      <span className="text-[#5d6670]">{label}</span>
+      <span className="text-right font-medium text-[#1d2329]">{value}</span>
+    </div>
+  );
+}
+
+function VerifiedDot() {
+  return (
+    <span className="flex h-[15px] w-[15px] flex-shrink-0 items-center justify-center rounded-full bg-[#3f6e4a] text-white">
+      <IconCheck className="h-2 w-2" />
+    </span>
+  );
+}
+
+type SellerLite = {
+  avatar_url: string | null;
+  business_name: string;
+  verified: boolean | null;
+  admin_badge: boolean | null;
+};
+
+function SellerAvatar({ profile, size }: { profile: SellerLite; size: number }) {
+  return (
+    <div className="relative flex-shrink-0 overflow-hidden rounded-full bg-[#e4eaf0]" style={{ width: size, height: size }}>
+      {profile.avatar_url ? (
+        <Image src={profile.avatar_url} alt="" fill sizes={`${size}px`} className="object-cover" />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center font-semibold text-[#3b5166]">
+          {initialsFor(profile.business_name)}
+        </div>
+      )}
+      {profile.admin_badge && (
+        <IconShield className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-white text-red-600" />
+      )}
+    </div>
+  );
+}
+
+function SimilarRow({
+  listing,
+  locale,
+  thumbSize,
+}: {
+  listing: {
+    id: string;
+    title: string;
+    price: number | null;
+    price_unit: string | null;
+    listing_images: { url: string }[];
+    profiles: { address: string | null } | { address: string | null }[] | null;
+  };
+  locale: string;
+  thumbSize: number;
+}) {
+  const thumb = listing.listing_images?.[0]?.url;
+  const p = Array.isArray(listing.profiles) ? listing.profiles[0] : listing.profiles;
+  return (
+    <Link
+      href={`/listings/${listing.id}`}
+      className="flex gap-3 rounded-2xl border border-[#e3e6e8] bg-white p-2.5 transition hover:shadow-[0_8px_20px_rgba(29,35,41,0.08)]"
+    >
+      <div
+        style={{ ...(!thumb ? STRIPE_BG : {}), width: thumbSize, height: thumbSize }}
+        className="relative flex-shrink-0 overflow-hidden rounded-[10px]"
+      >
+        {thumb && <Image src={thumb} alt="" fill sizes={`${thumbSize}px`} className="object-cover" />}
+      </div>
+      <div className="flex min-w-0 flex-col justify-center gap-1">
+        <div className="line-clamp-2 text-[15px] font-medium leading-[1.3] text-[#1d2329]">{listing.title}</div>
+        {listing.price != null && (
+          <div className="text-[15px] font-semibold text-[#1d2329]">
+            €{listing.price}
+            <span className="ml-1 text-xs font-normal text-[#5d6670]">{priceUnitSuffix(listing.price_unit, locale)}</span>
+          </div>
+        )}
+        {p?.address && <div className="truncate text-xs text-[#5d6670]">{p.address}</div>}
+      </div>
+    </Link>
   );
 }
