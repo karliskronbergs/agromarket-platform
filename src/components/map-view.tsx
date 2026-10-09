@@ -8,6 +8,7 @@ import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IconCheck, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
+import { FiltriButton } from "@/components/filtri-button";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
 import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
@@ -58,6 +59,7 @@ export function MapView({
   points,
   categories,
   selectedCategory,
+  selectedSubcategory,
   locale,
   labels,
   livestockFilters,
@@ -71,6 +73,7 @@ export function MapView({
   points: MapPoint[];
   categories: Category[];
   selectedCategory?: string;
+  selectedSubcategory?: string;
   locale: string;
   sort?: string;
   search?: string;
@@ -79,6 +82,8 @@ export function MapView({
     sell: string;
     buy: string;
     all: string;
+    allSubcategories: string;
+    filtri: string;
     back: string;
     empty: string;
     filterBreed: string;
@@ -140,15 +145,29 @@ export function MapView({
     });
   }
 
-  const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, selectedCategory) : null;
+  // The most specific category id currently in effect -- a selected
+  // subcategory wins over the top-level category it belongs to.
+  const effectiveCategoryId = selectedSubcategory || selectedCategory;
+
+  const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, effectiveCategoryId) : null;
   const isEquipment =
-    mode !== "profiles" && !!selectedCategory && getEquipmentCategoryIds(categories).has(selectedCategory);
+    mode !== "profiles" && !!effectiveCategoryId && getEquipmentCategoryIds(categories).has(effectiveCategoryId);
   const isMachinery =
-    mode !== "profiles" && !!selectedCategory && getMachineryCategoryIds(categories).has(selectedCategory);
+    mode !== "profiles" && !!effectiveCategoryId && getMachineryCategoryIds(categories).has(effectiveCategoryId);
   const isSeeds =
-    (mode !== "profiles" && !!selectedCategory && getSeedsCategoryIds(categories).has(selectedCategory)) ||
-    (mode !== "profiles" && !!selectedCategory && getFeedCategoryIds(categories).has(selectedCategory));
+    (mode !== "profiles" && !!effectiveCategoryId && getSeedsCategoryIds(categories).has(effectiveCategoryId)) ||
+    (mode !== "profiles" && !!effectiveCategoryId && getFeedCategoryIds(categories).has(effectiveCategoryId));
   const hasSpecificFilters = !!animalGroup || isEquipment || isMachinery || isSeeds;
+
+  const specificFilterCount = animalGroup
+    ? Object.values(livestockFilters).filter(Boolean).length
+    : isEquipment
+      ? Object.values(equipmentFilters).filter(Boolean).length
+      : isMachinery
+        ? Object.values(machineryFilters).filter(Boolean).length
+        : isSeeds
+          ? Object.values(seedsFilters).filter(Boolean).length
+          : 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -227,13 +246,30 @@ export function MapView({
   const selectedPoint = points.find((p) => p.id === selected) ?? null;
   const resultLabel = labels.resultLabel;
 
-  function clearFilters() {
+  function categoryQuery(): Record<string, string> {
+    const query: Record<string, string> = {};
+    if (selectedCategory) query.category = selectedCategory;
+    if (selectedSubcategory) query.subcategory = selectedSubcategory;
+    return query;
+  }
+
+  // Full reset: used by the empty state ("Notīrīt filtrus" there clears the
+  // whole search, including category/subcategory, matching the prototype).
+  function clearAllFilters() {
     navigate({ mode });
   }
 
+  // Clears just the current category's specific fields (breed/condition/...),
+  // keeping mode/category/subcategory/sort -- used by each filter panel's
+  // own "Notīrīt filtrus" and by the Filtri button.
+  function clearSpecificFilters() {
+    const query: Record<string, string> = { mode, ...categoryQuery() };
+    if (sort) query.sort = sort;
+    navigate(query);
+  }
+
   function applyFilterQuery(extra: Record<string, string>) {
-    const query: Record<string, string> = { mode, ...extra };
-    if (selectedCategory) query.category = selectedCategory;
+    const query: Record<string, string> = { mode, ...categoryQuery(), ...extra };
     if (sort) query.sort = sort;
     navigate(query);
   }
@@ -247,11 +283,7 @@ export function MapView({
               <button
                 key={m}
                 type="button"
-                onClick={() => {
-                  const query: Record<string, string> = { mode: m };
-                  if (selectedCategory) query.category = selectedCategory;
-                  navigate(query);
-                }}
+                onClick={() => navigate({ mode: m, ...categoryQuery() })}
                 className={`rounded-[9px] px-2 py-2 text-sm font-medium transition sm:px-4 ${
                   mode === m ? "bg-white text-[#1d2329] shadow-sm" : "text-[#5d6670]"
                 }`}
@@ -269,8 +301,7 @@ export function MapView({
                 value={search}
                 placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
                 onSearch={(q) => {
-                  const query: Record<string, string> = { mode };
-                  if (selectedCategory) query.category = selectedCategory;
+                  const query: Record<string, string> = { mode, ...categoryQuery() };
                   if (q) query.q = q;
                   navigate(query);
                 }}
@@ -284,8 +315,7 @@ export function MapView({
                 showAgeSort={!!animalGroup}
                 labels={labels}
                 onChange={(newSort) => {
-                  const query: Record<string, string> = { mode };
-                  if (selectedCategory) query.category = selectedCategory;
+                  const query: Record<string, string> = { mode, ...categoryQuery() };
                   if (animalGroup) {
                     if (livestockFilters.breed) query.breed = livestockFilters.breed;
                     if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
@@ -330,8 +360,7 @@ export function MapView({
               value={search}
               placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
               onSearch={(q) => {
-                const query: Record<string, string> = { mode };
-                if (selectedCategory) query.category = selectedCategory;
+                const query: Record<string, string> = { mode, ...categoryQuery() };
                 if (q) query.q = q;
                 navigate(query);
               }}
@@ -342,86 +371,99 @@ export function MapView({
         <CategoryFilterBar
           categories={categories}
           selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
           locale={locale}
           allLabel={labels.all}
-          onSelect={(id) => {
+          allSubcategoryLabel={labels.allSubcategories}
+          onSelect={(categoryId, subcategoryId) => {
             const query: Record<string, string> = { mode };
-            if (id) query.category = id;
+            if (categoryId) query.category = categoryId;
+            if (subcategoryId) query.subcategory = subcategoryId;
             navigate(query);
           }}
+          trailing={
+            hasSpecificFilters ? (
+              <FiltriButton
+                label={labels.filtri}
+                count={specificFilterCount}
+                clearLabel={labels.clearFilters}
+                onClear={clearSpecificFilters}
+              >
+                {animalGroup && (
+                  <LivestockFilterPanel
+                    key={effectiveCategoryId}
+                    animalGroup={animalGroup}
+                    locale={locale}
+                    filters={livestockFilters}
+                    labels={labels}
+                    onApply={(f) =>
+                      applyFilterQuery({
+                        ...(f.breed ? { breed: f.breed } : {}),
+                        ...(f.ageMin ? { ageMin: f.ageMin } : {}),
+                        ...(f.ageMax ? { ageMax: f.ageMax } : {}),
+                        ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
+                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                        ...(f.organic ? { organic: f.organic } : {}),
+                      })
+                    }
+                    onClear={clearSpecificFilters}
+                  />
+                )}
+                {isEquipment && (
+                  <EquipmentFilterPanel
+                    key={effectiveCategoryId}
+                    locale={locale}
+                    filters={equipmentFilters}
+                    labels={labels}
+                    onApply={(f) =>
+                      applyFilterQuery({
+                        ...(f.condition ? { condition: f.condition } : {}),
+                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                      })
+                    }
+                    onClear={clearSpecificFilters}
+                  />
+                )}
+                {isMachinery && (
+                  <MachineryFilterPanel
+                    key={effectiveCategoryId}
+                    locale={locale}
+                    filters={machineryFilters}
+                    labels={labels}
+                    onApply={(f) =>
+                      applyFilterQuery({
+                        ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
+                        ...(f.model ? { model: f.model } : {}),
+                        ...(f.condition ? { condition: f.condition } : {}),
+                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                      })
+                    }
+                    onClear={clearSpecificFilters}
+                  />
+                )}
+                {isSeeds && (
+                  <SeedsFilterPanel
+                    key={effectiveCategoryId}
+                    filters={seedsFilters}
+                    labels={labels}
+                    onApply={(f) =>
+                      applyFilterQuery({
+                        ...(f.title ? { title: f.title } : {}),
+                        ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+                        ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+                        ...(f.organic ? { organic: f.organic } : {}),
+                      })
+                    }
+                    onClear={clearSpecificFilters}
+                  />
+                )}
+              </FiltriButton>
+            ) : undefined
+          }
         />
-
-        {animalGroup && (
-          <LivestockFilterPanel
-            key={selectedCategory}
-            animalGroup={animalGroup}
-            locale={locale}
-            filters={livestockFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.breed ? { breed: f.breed } : {}),
-                ...(f.ageMin ? { ageMin: f.ageMin } : {}),
-                ...(f.ageMax ? { ageMax: f.ageMax } : {}),
-                ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                ...(f.organic ? { organic: f.organic } : {}),
-              })
-            }
-            onClear={clearFilters}
-          />
-        )}
-        {isEquipment && (
-          <EquipmentFilterPanel
-            key={selectedCategory}
-            locale={locale}
-            filters={equipmentFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.condition ? { condition: f.condition } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-              })
-            }
-            onClear={clearFilters}
-          />
-        )}
-        {isMachinery && (
-          <MachineryFilterPanel
-            key={selectedCategory}
-            locale={locale}
-            filters={machineryFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
-                ...(f.model ? { model: f.model } : {}),
-                ...(f.condition ? { condition: f.condition } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-              })
-            }
-            onClear={clearFilters}
-          />
-        )}
-        {isSeeds && (
-          <SeedsFilterPanel
-            key={selectedCategory}
-            filters={seedsFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.title ? { title: f.title } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                ...(f.organic ? { organic: f.organic } : {}),
-              })
-            }
-            onClear={clearFilters}
-          />
-        )}
       </div>
     </div>
   );
@@ -443,7 +485,7 @@ export function MapView({
               title={labels.noResultsTitle}
               body={labels.noResultsBody}
               clearLabel={labels.clearFilters}
-              onClear={clearFilters}
+              onClear={clearAllFilters}
             />
           ) : (
             points.map((p) => (

@@ -28,12 +28,12 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Blue CTA band
 
 ## 3. Map / listings
-- [ ] Filter bar: segmented mode, search, category chips + subcategory row, "Filtri" for any extra existing filters
-- [ ] ALL existing filters still work and stay in the URL
-- [ ] Desktop: list left + map right, hover/marker sync
-- [ ] Mobile: list ⇄ map toggle pill, selected-item card, + FAB
-- [ ] Profile rows and listing rows restyled, badges shown
-- [ ] Empty state
+- [x] Filter bar: segmented mode, search, category chips + subcategory row, "Filtri" for any extra existing filters
+- [x] ALL existing filters still work and stay in the URL
+- [x] Desktop: list left + map right, hover/marker sync
+- [x] Mobile: list ⇄ map toggle pill, selected-item card, + FAB
+- [x] Profile rows and listing rows restyled, badges shown
+- [x] Empty state
 
 ## 4. Company profile
 - [ ] Header card: cover, avatar, name, Pārbaudīts, badges, actions

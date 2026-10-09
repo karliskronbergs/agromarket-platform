@@ -15,6 +15,7 @@ export default async function MapPage({
   searchParams: Promise<{
     mode?: string;
     category?: string;
+    subcategory?: string;
     breed?: string;
     ageMin?: string;
     ageMax?: string;
@@ -34,6 +35,7 @@ export default async function MapPage({
   const {
     mode: rawMode,
     category,
+    subcategory,
     breed,
     ageMin,
     ageMax,
@@ -62,7 +64,8 @@ export default async function MapPage({
     .order("name_lv");
 
   let points: MapPoint[] = [];
-  const categoryIds = category ? getSelfAndDescendantIds(categories ?? [], category) : null;
+  const effectiveCategoryId = subcategory || category;
+  const categoryIds = effectiveCategoryId ? getSelfAndDescendantIds(categories ?? [], effectiveCategoryId) : null;
 
   if (mode === "profiles") {
     let profilesQuery = categoryIds
@@ -202,6 +205,7 @@ export default async function MapPage({
       points={points}
       categories={categories ?? []}
       selectedCategory={category}
+      selectedSubcategory={subcategory}
       locale={locale}
       sort={sort}
       search={q}
@@ -222,6 +226,8 @@ export default async function MapPage({
         sell: t("modeSell"),
         buy: t("modeBuy"),
         all: t("allCategories"),
+        allSubcategories: t("allSubcategories"),
+        filtri: t("filtri"),
         back: t("back"),
         filterBreed: t("filterBreed"),
         anyBreed: t("anyBreed"),

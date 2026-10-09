@@ -98,6 +98,7 @@ export function FilterPill({
     function onClickOutside(e: MouseEvent) {
       const target = e.target as Node;
       if (buttonRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      if (target instanceof Element && target.closest("[data-popover-panel]")) return;
       close();
     }
     function onScroll(e: Event) {
@@ -163,6 +164,7 @@ export function FilterPill({
               maxHeight: position.maxHeight,
               zIndex: 1100,
             }}
+            data-popover-panel
             className="overflow-y-auto overscroll-contain rounded-xl border border-[#e3e6e8] bg-white p-3 shadow-lg"
           >
             {children(close)}
