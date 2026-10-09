@@ -134,9 +134,11 @@ export function MapView({
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Record<string, CircleMarker>>({});
   const prevPointIdsRef = useRef<string>("");
+  const selectedRef = useRef<string | null>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<string | null>(null);
+  const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
   function navigate(query: Record<string, string>) {
@@ -185,6 +187,17 @@ export function MapView({
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19,
         }).addTo(leafletMapRef.current);
+
+        // Keep the mobile selected-marker popup anchored to its marker as the
+        // map pans/zooms, instead of recomputing only on selection change.
+        leafletMapRef.current.on("move zoom", () => {
+          const m = leafletMapRef.current;
+          const id = selectedRef.current;
+          const marker = id ? markersRef.current[id] : null;
+          if (!m || !marker) return;
+          const pt = m.latLngToContainerPoint(marker.getLatLng());
+          setPopupPos({ x: pt.x, y: pt.y });
+        });
       }
 
       const map = leafletMapRef.current;
@@ -229,10 +242,20 @@ export function MapView({
 
   // Re-style markers (radius/color) when selection changes, without re-fitting bounds.
   useEffect(() => {
+    selectedRef.current = selected;
     for (const [id, marker] of Object.entries(markersRef.current)) {
       const isSel = id === selected;
       marker.setStyle({ radius: isSel ? 11 : 8, fillColor: isSel ? PIN_SELECTED : PIN });
       if (isSel) marker.bringToFront();
+    }
+
+    const map = leafletMapRef.current;
+    const marker = selected ? markersRef.current[selected] : null;
+    if (map && marker) {
+      const pt = map.latLngToContainerPoint(marker.getLatLng());
+      setPopupPos({ x: pt.x, y: pt.y });
+    } else {
+      setPopupPos(null);
     }
   }, [selected]);
 
@@ -512,10 +535,17 @@ export function MapView({
 
           {/* Mobile-only selection surface */}
           <div className="sm:hidden">
-            {selectedPoint ? (
+            {selectedPoint && popupPos ? (
               <Link
                 href={selectedPoint.href}
-                className="absolute inset-x-3 bottom-[76px] z-[600] flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+                style={{
+                  left: Math.min(
+                    Math.max(popupPos.x, 123),
+                    (mapContainerRef.current?.clientWidth ?? 390) - 123,
+                  ),
+                  top: Math.max(popupPos.y - 18, 8),
+                }}
+                className="absolute z-[600] flex w-[230px] -translate-x-1/2 -translate-y-full items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
               >
                 <div
                   style={{
