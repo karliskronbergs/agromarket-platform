@@ -80,7 +80,7 @@ export function ProfileMediaEditor({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarPreview} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-sans text-2xl font-bold text-white">
+              <div className="flex h-full w-full items-center justify-center text-2xl font-semibold text-white">
                 {(businessName || "?").slice(0, 1).toUpperCase()}
               </div>
             )}

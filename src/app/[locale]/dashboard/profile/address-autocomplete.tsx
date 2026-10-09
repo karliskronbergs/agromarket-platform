@@ -63,7 +63,7 @@ export function AddressAutocomplete({
         className={className}
       />
       {open && (
-        <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[#e7e2d8] bg-white shadow-lg">
+        <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-[#e3e6e8] bg-white shadow-lg">
           {suggestions.map((s) => (
             <button
               key={s}
@@ -72,7 +72,7 @@ export function AddressAutocomplete({
                 setValue(s);
                 setOpen(false);
               }}
-              className="block w-full px-3 py-2 text-left text-sm hover:bg-[#faf8f3]"
+              className="block w-full px-3 py-2 text-left text-sm hover:bg-[#f6f7f5]"
             >
               {s}
             </button>

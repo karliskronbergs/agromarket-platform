@@ -44,12 +44,12 @@ export default async function ConversationPage({
     .order("created_at", { ascending: true });
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 sm:px-6 sm:py-8">
+    <div className="flex flex-col gap-4">
       <div>
-        <Link href="/dashboard/messages" className="text-sm text-[#7a7566] hover:text-[#3f6b3f]">
+        <Link href="/dashboard/messages" className="text-sm text-[#5d6670] hover:text-[#3f6e4a]">
           &larr; {t("inbox")}
         </Link>
-        <h1 className="font-sans text-xl font-semibold text-[#2b2a24]">
+        <h1 className="m-0 mt-1 text-xl font-semibold tracking-[-0.01em] text-[#1d2329]">
           {otherProfile?.business_name ?? t("unknownUser")}
         </h1>
       </div>

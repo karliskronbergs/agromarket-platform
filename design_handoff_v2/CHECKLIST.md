@@ -62,7 +62,7 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Existing dashboard logic unchanged
 
 ## 8. Final pass
-- [ ] Every page checked at 1440px, 1024px, 768px and 390px widths
-- [ ] No old styles/components left on any page (search the codebase for old colour values and old class names)
-- [ ] LV and EN both work
-- [ ] Logged-in and logged-out states both checked
+- [x] Every page checked at 1440px, 1024px, 768px and 390px widths
+- [x] No old styles/components left on any page (search the codebase for old colour values and old class names)
+- [x] LV and EN both work
+- [x] Logged-in and logged-out states both checked
