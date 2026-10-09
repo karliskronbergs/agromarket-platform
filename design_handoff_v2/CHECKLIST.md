@@ -13,10 +13,10 @@ Work through this list **in order**. After each item: open the page in the brows
 - [x] Favicon replaced (see README "Favicon")
 
 ## 1. Header + footer (all pages)
-- [ ] Desktop header: logo · Karte · Sludinājumi · Kā tas darbojas · LV/EN · Ieiet + "Izveidot profilu" (logged out) / Ziņas + avatar pill (logged in)
-- [ ] Mobile header: logo · LV/EN · Ieiet; back arrow on detail pages
-- [ ] Mobile bottom tab bar on Home + Map
-- [ ] New footer (hidden on map page)
+- [x] Desktop header: logo · Karte · Sludinājumi · Kā tas darbojas · LV/EN · Ieiet + "Izveidot profilu" (logged out) / Ziņas + avatar pill (logged in)
+- [x] Mobile header: logo · LV/EN · Ieiet; back arrow on detail pages
+- [x] Mobile bottom tab bar on Home + Map
+- [x] New footer (hidden on map page)
 
 ## 2. Home
 - [ ] Hero: H1, lead text, search card with Uzņēmumi/Pārdod/Pērk tabs → opens map with filters
