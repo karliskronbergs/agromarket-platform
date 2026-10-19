@@ -20,6 +20,11 @@
     "privacyPolicy": "Privātuma politika",
     "terms": "Lietošanas noteikumi"
   },
+  "NotFound": {
+    "title": "Šī lapa nav atrasta",
+    "body": "Iespējams, saite ir novecojusi vai lapa ir pārvietota.",
+    "cta": "Uz sākumu"
+  },
   "Home": {
     "title": "Atrodi lauksaimniecības uzņēmumus sev tuvumā",
     "subtitle": "Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem.",

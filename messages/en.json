@@ -20,6 +20,11 @@
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service"
   },
+  "NotFound": {
+    "title": "This page isn't here",
+    "body": "The link may be outdated, or the page may have moved.",
+    "cta": "Back to home"
+  },
   "Home": {
     "title": "Find farming businesses near you",
     "subtitle": "Profiles, listings, and direct messaging in one place — for Latvia's farming community.",
