@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { buildCategoryTree, findCategoryPath, type CategoryNode, type CategoryRow } from "@/lib/categories";
+import { CATEGORY_ICONS } from "@/components/icons";
 
 const chipClass = (active: boolean) =>
-  `flex-shrink-0 snap-start rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+  `flex flex-shrink-0 snap-start items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
     active
       ? "border-[#3f6e4a] bg-[#eef3ee] text-[#1d2329]"
       : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]"
@@ -72,6 +73,7 @@ function RootMenu({
   const panelRef = useRef<HTMLDivElement>(null);
   const effectiveId = selectedSubcategory || selectedCategory;
   const isActiveRoot = findCategoryPath([root], effectiveId).length > 0;
+  const CategoryIcon = CATEGORY_ICONS[root.slug ?? ""];
 
   function close() {
     setOpen(false);
@@ -104,6 +106,7 @@ function RootMenu({
   if (root.children.length === 0) {
     return (
       <button type="button" onClick={() => onSelect(root.id, null)} className={chipClass(selectedCategory === root.id)}>
+        {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
         {label(root)}
       </button>
     );
@@ -144,6 +147,7 @@ function RootMenu({
   return (
     <>
       <button ref={buttonRef} type="button" onClick={toggle} className={chipClass(isActiveRoot)}>
+        {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
         {label(root)}
       </button>
       {open &&

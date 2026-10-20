@@ -1,7 +1,7 @@
 "use client";
 
 import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
-import { IconChevronDown, IconCheck } from "@/components/icons";
+import { IconChevronDown, IconCheck, CATEGORY_ICONS } from "@/components/icons";
 
 function hasSelectedDescendant(
   node: CategoryNode<CategoryRow>,
@@ -51,9 +51,14 @@ export function CategoryFieldTree({
       );
     }
 
+    const CategoryIcon = depth === 0 ? CATEGORY_ICONS[node.slug ?? ""] : undefined;
+
     const headerContent =
       leafOnly ? (
-        <span className="text-sm font-semibold text-[#1d2329]">{label(node)}</span>
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#1d2329]">
+          {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
+          {label(node)}
+        </span>
       ) : (
         <label
           className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#d9dee2] bg-white px-3 py-1.5 text-sm transition has-checked:border-[#3f6e4a] has-checked:bg-[#eef3ee] has-checked:text-[#2f5538]"
@@ -66,6 +71,7 @@ export function CategoryFieldTree({
             defaultChecked={isSelected(node.id)}
             className="sr-only"
           />
+          {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
           {label(node)}
         </label>
       );

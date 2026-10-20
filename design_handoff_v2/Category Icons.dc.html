@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — nozaru ikonas</title>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f6f7f5;font-family:'Lexend',system-ui,sans-serif;color:#1d2329}a{color:#3f6e4a}a:hover{color:#2f5538}</style>
+</helmet>
+<section style="padding:56px 64px 80px;display:flex;flex-direction:column;gap:48px;width:1280px;box-sizing:content-box">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h1 style="margin:0;font-size:30px;font-weight:600">Nozaru ikonas</h1>
+    <p style="margin:0;font-size:16px;color:#5d6670">Līniju ikonas, 24 px režģis, līnija 1,75 px, noapaļoti gali.</p>
+  </div>
+
+  <div style="display:flex;gap:16px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+      <div style="flex:1;background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:28px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:20px">
+        <img src="{{ c.src }}" alt="" style="width:96px;height:96px;display:block">
+        <div style="display:flex;align-items:flex-end;gap:18px">
+          <img src="{{ c.src }}" alt="" style="width:32px;height:32px">
+          <img src="{{ c.src }}" alt="" style="width:24px;height:24px">
+          <img src="{{ c.src }}" alt="" style="width:18px;height:18px">
+        </div>
+        <span style="font-size:14px;font-weight:500">{{ c.name }}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-size:32px;font-weight:600;letter-spacing:-.01em">Pārlūko pēc nozares</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:transform .15s,border-color .15s" style-hover="transform:translateY(-2px);border-color:#3f6e4a">
+          <div style="width:48px;height:48px;border-radius:12px;background:#eef3ee;display:flex;align-items:center;justify-content:center"><img src="{{ c.src }}" alt="" style="width:26px;height:26px"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+            <span style="font-size:17px;font-weight:600;line-height:1.3">{{ c.name }}</span><span style="color:#3f6e4a;font-size:18px;line-height:1.2">→</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ c.subs }}" as="s" hint-placeholder-count="3">
+              <span style="font-size:14px;color:#5d6670;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="margin:0;font-size:20px;font-weight:600">Kartes filtros</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="padding:7px 14px;border-radius:999px;font-size:14px;border:1px solid #3f6e4a;background:#3f6e4a;color:#fff">Visas kategorijas</div>
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:7px;padding:7px 14px 7px 11px;border-radius:999px;font-size:14px;border:1px solid #e3e6e8;background:#fff"><img src="{{ c.src }}" alt="" style="width:18px;height:18px">{{ c.name }}</div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  cats = [
+    { name: 'Lopkopība', src: 'icons/lopkopiba.svg', subs: ['Dzīvnieki', 'Fermu aprīkojums un iekārtas', 'Barība'] },
+    { name: 'Lauksaimniecības tehnika', src: 'icons/tehnika.svg', subs: ['Augsnes apstrāde', 'Graudu pirmapstrādes tehnika', 'Kravu transportēšanas tehnika'] },
+    { name: 'Sēklas un graudi', src: 'icons/seklas.svg', subs: ['Graudaugi', 'Krustzieži', 'Nektāraugi'] },
+    { name: 'Mežsaimniecība', src: 'icons/mezsaimnieciba.svg', subs: [] },
+    { name: 'Dažādi', src: 'icons/dazadi.svg', subs: [] }
+  ];
+  renderVals() { return { cats: this.cats }; }
+}
+</script>
+</body>
+</html>

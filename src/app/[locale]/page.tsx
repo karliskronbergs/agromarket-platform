@@ -6,30 +6,13 @@ import { buildCategoryTree, type CategoryRow } from "@/lib/categories";
 import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 import { ATTRIBUTE_ICONS } from "@/components/attribute-badges";
-import { IconStar } from "@/components/icons";
+import { IconStar, CATEGORY_ICONS } from "@/components/icons";
 import { HeroSearch } from "@/components/hero-search";
 import { HomeMapPreview } from "@/components/home-map-preview";
 
 const STRIPE_BG = {
   backgroundImage:
     "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 10px, #e4e7e1 10px, #e4e7e1 20px)",
-};
-
-const CATEGORY_PLACEHOLDER: Record<string, Record<string, string>> = {
-  lv: {
-    lopkopiba: "foto: liellopi ganībās",
-    "lauksaimnicibas-tehnika": "foto: traktors",
-    "seklas-un-graudi": "foto: graudu lauks",
-    mezsaimnieciba: "foto: mežs / kokmateriāli",
-    dazadi: "foto: saimniecības produkcija",
-  },
-  en: {
-    lopkopiba: "photo: cattle grazing",
-    "lauksaimnicibas-tehnika": "photo: tractor",
-    "seklas-un-graudi": "photo: grain field",
-    mezsaimnieciba: "photo: forest / timber",
-    dazadi: "photo: farm produce",
-  },
 };
 
 export default async function Home({
@@ -132,24 +115,25 @@ export default async function Home({
           <section className="flex flex-col gap-3 pt-7">
             <h2 className="m-0 px-4 text-lg font-semibold text-[#1d2329]">{t("industriesLabel")}</h2>
             <div className="flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {topCategories.map((c) => (
-                <Link
-                  key={c.id}
-                  href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}
-                  className="flex-shrink-0 basis-[132px] overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white"
-                >
-                  <div
-                    style={STRIPE_BG}
-                    className="flex h-[84px] items-center justify-center p-1.5 text-center font-mono text-[10px] text-[#7a8279]"
+              {topCategories.map((c) => {
+                const CategoryIcon = CATEGORY_ICONS[c.slug ?? ""];
+                return (
+                  <Link
+                    key={c.id}
+                    href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}
+                    className="flex-shrink-0 basis-[132px] overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white"
                   >
-                    {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
-                      `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
-                  </div>
-                  <div className="px-3 py-2.5 text-sm font-medium leading-tight text-[#1d2329]">
-                    {locale === "lv" ? c.name_lv : c.name_en}
-                  </div>
-                </Link>
-              ))}
+                    <div className="flex h-[84px] items-center justify-center bg-[#f6f7f5]">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3ee]">
+                        {CategoryIcon && <CategoryIcon className="h-[26px] w-[26px] text-[#3f6e4a]" />}
+                      </div>
+                    </div>
+                    <div className="px-3 py-2.5 text-sm font-medium leading-tight text-[#1d2329]">
+                      {locale === "lv" ? c.name_lv : c.name_en}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}
@@ -314,41 +298,40 @@ export default async function Home({
               {t("browseByIndustry")}
             </h2>
             <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
-              {topCategories.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex flex-col overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(29,35,41,0.08)]"
-                >
-                  <Link href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}>
-                    <div
-                      style={STRIPE_BG}
-                      className="flex h-[120px] items-center justify-center font-mono text-[11px] text-[#7a8279]"
-                    >
-                      {CATEGORY_PLACEHOLDER[locale]?.[c.slug ?? ""] ??
-                        `${locale === "lv" ? "foto" : "photo"}: ${locale === "lv" ? c.name_lv : c.name_en}`}
-                    </div>
-                    <div className="flex items-center justify-between gap-2 px-4 py-3.5">
-                      <span className="text-[15px] font-medium text-[#1d2329]">
-                        {locale === "lv" ? c.name_lv : c.name_en}
-                      </span>
-                      <span className="text-[#3f6e4a]">→</span>
-                    </div>
-                  </Link>
-                  {c.children.length > 0 && (
-                    <div className="flex flex-col gap-1 px-4 pb-3.5">
-                      {c.children.slice(0, 3).map((sub) => (
-                        <Link
-                          key={sub.id}
-                          href={{ pathname: "/map", query: { mode: "profiles", category: sub.id } }}
-                          className="truncate text-[13px] text-[#5d6670] hover:text-[#2f5538]"
-                        >
-                          {locale === "lv" ? sub.name_lv : sub.name_en}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {topCategories.map((c) => {
+                const CategoryIcon = CATEGORY_ICONS[c.slug ?? ""];
+                return (
+                  <div
+                    key={c.id}
+                    className="flex flex-col gap-3.5 rounded-2xl border border-[#e3e6e8] bg-white p-5 transition hover:-translate-y-0.5 hover:border-[#3f6e4a] hover:shadow-[0_10px_24px_rgba(29,35,41,0.08)]"
+                  >
+                    <Link href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }} className="flex flex-col gap-3.5">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#eef3ee]">
+                        {CategoryIcon && <CategoryIcon className="h-[26px] w-[26px] text-[#3f6e4a]" />}
+                      </div>
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-[17px] font-semibold leading-[1.3] text-[#1d2329]">
+                          {locale === "lv" ? c.name_lv : c.name_en}
+                        </span>
+                        <span className="text-lg leading-tight text-[#3f6e4a]">→</span>
+                      </div>
+                    </Link>
+                    {c.children.length > 0 && (
+                      <div className="flex flex-col gap-1.5">
+                        {c.children.slice(0, 3).map((sub) => (
+                          <Link
+                            key={sub.id}
+                            href={{ pathname: "/map", query: { mode: "profiles", category: sub.id } }}
+                            className="truncate text-sm text-[#5d6670] hover:text-[#2f5538]"
+                          >
+                            {locale === "lv" ? sub.name_lv : sub.name_en}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}

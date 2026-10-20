@@ -152,6 +152,12 @@ Keep ALL existing dashboard logic (auth, verification request, profile delete, l
 - **Konts:** E-pasts, Parole ("Mainīt paroli"), Verifikācija status; separate red-bordered "Dzēst profilu" card with confirm modal.
 - Toast: dark `#1d2329` pill, bottom centre, 2.4s.
 
+## Category icons — `icons/`
+Line icons (24×24 grid, 1.75 stroke, round caps) for the 5 categories: lopkopiba, tehnika, seklas, mezsaimnieciba, dazadi. Each file comes in two versions: green `#3f6e4a` and `-currentColor` (inherits the text colour, so use this one in code). Preview: `Category Icons.dc.html`.
+- **"Pārlūko pēc nozares" cards:** replace the photo area with an icon tile: 48×48, radius 12, bg `#eef3ee`, icon 26px. Order inside the card: tile → title row with → → subcategory list (14px `#5d6670`, max 3 lines, truncated with ellipsis). Card: white, border `#e3e6e8`, radius 16, padding 20, gap 14. On hover the border turns `#3f6e4a` and the card lifts 2px.
+- Use the same icons (18px) in the map page category chips, before the label, and in the category select of the listing form.
+- If the category list changes, ask for new icons. Don't use emoji or random icon-library icons in their place.
+
 ## Copy
 All UI copy is Latvian and lives in the prototype files. The key new strings are the hero H1, the lead paragraph, the "Kā tas darbojas" cards, the CTA band text, and the empty states. Add EN equivalents to the existing i18n files.
 

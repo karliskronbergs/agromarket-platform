@@ -310,3 +310,76 @@ export function IconTrash({ className }: IconProps) {
     </svg>
   );
 }
+
+// Category icons — design_handoff_v2/icons/*-currentColor.svg, 24x24 grid, 1.75 stroke.
+export function IconCategoryLopkopiba({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M8 8.5h8l.8 5.5a4.8 4.8 0 0 1-9.6 0z" />
+      <path d="M8 8.5C6 8.5 4.5 7 4.5 5" />
+      <path d="M16 8.5c2 0 3.5-1.5 3.5-3.5" />
+      <path d="M8.2 10.5 5 11.6" />
+      <path d="M15.8 10.5 19 11.6" />
+      <circle cx="10" cy="12" r=".6" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="12" r=".6" fill="currentColor" stroke="none" />
+      <path d="M9.3 16.3c1.6-.9 3.8-.9 5.4 0" />
+    </svg>
+  );
+}
+
+export function IconCategoryTehnika({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="7.5" cy="16" r="4" />
+      <circle cx="7.5" cy="16" r="1" />
+      <circle cx="18" cy="17.5" r="2.5" />
+      <path d="M4.5 12.4V5h6.5l1.4 6h7.1a1 1 0 0 1 1 1v3.2" />
+      <path d="M11.5 16.5h4" />
+      <path d="M16 11V7.5" />
+      <path d="M7 7.5h2.6l.8 3.5H7z" />
+    </svg>
+  );
+}
+
+export function IconCategorySeklas({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 21V7.5" />
+      <path d="M12 7.5c-1.3-1.1-1.3-3.4 0-4.5 1.3 1.1 1.3 3.4 0 4.5z" />
+      <path d="M12 10.5c-2.4 0-4-1.4-4-3.8 2.4 0 4 1.4 4 3.8z" />
+      <path d="M12 10.5c2.4 0 4-1.4 4-3.8-2.4 0-4 1.4-4 3.8z" />
+      <path d="M12 14.5c-2.4 0-4-1.4-4-3.8 2.4 0 4 1.4 4 3.8z" />
+      <path d="M12 14.5c2.4 0 4-1.4 4-3.8-2.4 0-4 1.4-4 3.8z" />
+      <path d="M12 18.5c-2.4 0-4-1.4-4-3.8 2.4 0 4 1.4 4 3.8z" />
+      <path d="M12 18.5c2.4 0 4-1.4 4-3.8-2.4 0-4 1.4-4 3.8z" />
+    </svg>
+  );
+}
+
+export function IconCategoryMezsaimnieciba({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 3 7 9h2.5L6 14h3l-3.5 5h13L15 14h3l-3.5-5H17z" />
+      <path d="M12 19v2.5" />
+    </svg>
+  );
+}
+
+export function IconCategoryDazadi({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="4" y="4" width="7" height="7" rx="2" />
+      <circle cx="16.5" cy="7.5" r="3.5" />
+      <rect x="4" y="13" width="7" height="7" rx="2" />
+      <rect x="13" y="13" width="7" height="7" rx="2" />
+    </svg>
+  );
+}
+
+export const CATEGORY_ICONS: Record<string, typeof IconCategoryLopkopiba> = {
+  lopkopiba: IconCategoryLopkopiba,
+  "lauksaimnicibas-tehnika": IconCategoryTehnika,
+  "seklas-un-graudi": IconCategorySeklas,
+  mezsaimnieciba: IconCategoryMezsaimnieciba,
+  dazadi: IconCategoryDazadi,
+};
