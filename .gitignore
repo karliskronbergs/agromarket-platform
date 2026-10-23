@@ -43,3 +43,6 @@ next-env.d.ts
 
 # visual QA screenshots (scripts/shot*.js write here)
 /scratch-shots/
+
+# Supabase CLI local cache/link state
+/supabase/.temp/

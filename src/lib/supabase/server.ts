@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// See src/lib/supabase/client.ts for why this is conditional.
+const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -8,6 +11,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: cookieDomain ? { domain: cookieDomain } : undefined,
       cookies: {
         getAll() {
           return cookieStore.getAll();
