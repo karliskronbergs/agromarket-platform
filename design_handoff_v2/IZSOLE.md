@@ -100,7 +100,7 @@ Name/company and phone (prefilled from the account), a checkbox to agree to the 
 - [x] Header/nav replaced (sidebar removed), mobile header with nav pills, no bottom bar
 - [x] Auction list: filter, cards with dates, progress, countdown, country chip, LIVE style
 - [x] Auction page: hero, stats, tabs, lot filters/sort, lot grid with status borders
-- [ ] Lot drawer (desktop) / full screen (mobile), gallery, tiles, bid form + confirm, mobile bid sheet
+- [x] Lot drawer (desktop) / full screen (mobile), gallery, tiles, bid form + confirm, mobile bid sheet
 - [ ] Registration modal wired to the existing flow
 - [ ] Manas izsoles: bids, watchlist, registrations
 - [ ] Country field + flags
