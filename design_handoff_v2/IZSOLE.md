@@ -98,7 +98,7 @@ Name/company and phone (prefilled from the account), a checkbox to agree to the 
 
 ## Checklist
 - [x] Header/nav replaced (sidebar removed), mobile header with nav pills, no bottom bar
-- [ ] Auction list: filter, cards with dates, progress, countdown, country chip, LIVE style
+- [x] Auction list: filter, cards with dates, progress, countdown, country chip, LIVE style
 - [ ] Auction page: hero, stats, tabs, lot filters/sort, lot grid with status borders
 - [ ] Lot drawer (desktop) / full screen (mobile), gallery, tiles, bid form + confirm, mobile bid sheet
 - [ ] Registration modal wired to the existing flow
