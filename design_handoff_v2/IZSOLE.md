@@ -17,8 +17,8 @@ This is the auction subdomain of lauks24.lv. The working functionality already e
 - Upcoming badge "Gaidāma": bg `#f0f2f0`, text `#4a535b`. Ended "Noslēgusies": bg `#eceeeb`, text `#5d6670`.
 
 ## Global
-- **Desktop header** (`#3b5166`, sticky): logo + "Izsoles" pill · nav Izsoles / Manas izsoles / Kā tas darbojas · "lauks24.lv ↗" · LV/EN · account pill. This replaces the old left sidebar. "Pieteikties izsolei" becomes a per-auction button, and "Izsoles noteikumi" moves to the footer and the registration modal.
-- **Mobile header:** logo + "Izsoles" pill, LV/EN, avatar; below them, a horizontally scrolling row of nav pills. **No bottom tab bar.**
+- **Desktop header** (`#3b5166`, sticky): logo │ "Izsoles" lockup: a 1px divider (24px tall, white 35%) then "Izsoles" in 19px/500 white, gap 14px. **The whole lockup is the link to the auction list**, so there is no separate "Izsoles" nav item · nav Manas izsoles / Kā tas darbojas · "lauks24.lv ↗" · LV/EN · account pill. This replaces the old left sidebar. "Pieteikties izsolei" becomes a per-auction button, and "Izsoles noteikumi" moves to the footer and the registration modal.
+- **Mobile header:** logo │ "Izsoles" lockup (divider 20px, text 17px/500), LV/EN, avatar; below them, a row of nav pills (Manas izsoles, Kā tas darbojas). Tapping the logo or "Izsoles" opens the auction list. **No bottom tab bar.**
 - **Footer** (desktop): © · Izsoles noteikumi · Privātuma politika · lauks24.lv ↗.
 
 ## Screens
