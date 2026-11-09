@@ -124,6 +124,12 @@
     "website": "Website",
     "address": "Address",
     "addressHint": "Used to place your profile on the map.",
+    "country": "Country",
+    "countryNames": {
+      "LV": "Latvia",
+      "LT": "Lithuania",
+      "EE": "Estonia"
+    },
     "categories": "Specialties",
     "attributes": "Badges",
     "changeAvatar": "Change logo",

@@ -42,6 +42,7 @@ export function ProfileForm({
     contactEmail: string;
     website: string;
     address: string;
+    country: string;
     avatarUrl: string;
     coverUrl: string;
   };
@@ -79,6 +80,13 @@ export function ProfileForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label={t("address")} hint={t("addressHint")}>
             <AddressAutocomplete id="address" name="address" defaultValue={initial?.address} className={inputClass} />
+          </Field>
+          <Field label={t("country")}>
+            <select name="country" defaultValue={initial?.country ?? "LV"} className={inputClass}>
+              <option value="LV">{t("countryNames.LV")}</option>
+              <option value="LT">{t("countryNames.LT")}</option>
+              <option value="EE">{t("countryNames.EE")}</option>
+            </select>
           </Field>
           <Field label={t("phone")}>
             <input name="phone" defaultValue={initial?.phone} className={inputClass} />

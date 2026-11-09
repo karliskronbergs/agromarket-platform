@@ -16,6 +16,7 @@ const profileSchema = z.object({
   contactEmail: z.string().max(200).optional(),
   website: z.string().max(200).optional(),
   address: z.string().min(3, "Address is required.").max(200),
+  country: z.enum(["LV", "LT", "EE"]).default("LV"),
   categoryIds: z.array(z.string().uuid()),
   attributeIds: z.array(z.string().uuid()).optional(),
 });
@@ -64,6 +65,7 @@ export async function saveProfile(
     contactEmail: formData.get("contactEmail") || undefined,
     website: formData.get("website") || undefined,
     address: formData.get("address"),
+    country: formData.get("country") || undefined,
     categoryIds: formData.getAll("categoryIds").map(String),
     attributeIds: formData.getAll("attributeIds").map(String),
   });
@@ -163,6 +165,7 @@ export async function saveProfile(
         contact_email: parsed.data.contactEmail ?? null,
         website: parsed.data.website ?? null,
         address: parsed.data.address,
+        country: parsed.data.country,
         lat: geo?.lat ?? null,
         lng: geo?.lng ?? null,
         ...(avatarUrl ? { avatar_url: avatarUrl } : {}),

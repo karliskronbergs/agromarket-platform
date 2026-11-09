@@ -26,7 +26,7 @@ export default async function ProfilePage({
     supabase
       .from("profiles")
       .select(
-        "id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, lat, lng, slug",
+        "id, business_name, description, phone, contact_email, website, address, country, avatar_url, cover_url, lat, lng, slug",
       )
       .eq("user_id", user!.id)
       .maybeSingle(),
@@ -76,6 +76,7 @@ export default async function ProfilePage({
                   contactEmail: profile.contact_email ?? "",
                   website: profile.website ?? "",
                   address: profile.address ?? "",
+                  country: profile.country ?? "LV",
                   avatarUrl: profile.avatar_url ?? "",
                   coverUrl: profile.cover_url ?? "",
                 }

@@ -103,6 +103,6 @@ Name/company and phone (prefilled from the account), a checkbox to agree to the 
 - [x] Lot drawer (desktop) / full screen (mobile), gallery, tiles, bid form + confirm, mobile bid sheet
 - [x] Registration modal wired to the existing flow
 - [x] Manas izsoles: bids, watchlist, registrations
-- [ ] Country field + flags
+- [x] Country field + flags
 - [ ] Real-time price updates
 - [ ] Screenshot comparison at 1440px and 390px against `Izsole.dc.html` (see VERIFY.md)

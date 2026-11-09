@@ -124,6 +124,12 @@
     "website": "Tīmekļa vietne",
     "address": "Adrese",
     "addressHint": "Izmanto, lai novietotu tavu profilu kartē.",
+    "country": "Valsts",
+    "countryNames": {
+      "LV": "Latvija",
+      "LT": "Lietuva",
+      "EE": "Igaunija"
+    },
     "categories": "Specializācijas",
     "attributes": "Nozīmītes",
     "changeAvatar": "Mainīt logo",
