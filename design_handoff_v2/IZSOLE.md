@@ -43,7 +43,7 @@ This is the auction subdomain of lauks24.lv. The working functionality already e
   - H1
   - the seller row: avatar, name, then flag · country · region · "Profils lauks24.lv ↗"
   - a grey countdown box with the "Pieteikties izsolei" button, or "✓ Tu esi pieteicies"
-- **Stat tiles:** Lotes · Soļa lielums · Sākums · Noslēgšanās (4 columns, 2×2 on mobile).
+- No stats/facts row: lot count, step and dates live in the Informācija tab only.
 - **Tabs:** Lotes / Informācija.
 - **Lotes tab:**
   - Filter chips: Visas lotes / ☆ Vērotās / Mani solījumi, each with a count. Sort select: lot number / price ascending / price descending.
@@ -99,7 +99,7 @@ Name/company and phone (prefilled from the account), a checkbox to agree to the 
 ## Checklist
 - [x] Header/nav replaced (sidebar removed), mobile header with nav pills, no bottom bar
 - [x] Auction list: filter, cards with dates, progress, countdown, country chip, LIVE style
-- [x] Auction page: hero, stats, tabs, lot filters/sort, lot grid with status borders
+- [x] Auction page: hero, tabs, lot filters/sort, lot grid with status borders (no stats row -- lot count/step/dates live in Informācija only)
 - [x] Lot drawer (desktop) / full screen (mobile), gallery, tiles, bid form + confirm, mobile bid sheet
 - [x] Registration modal wired to the existing flow
 - [x] Manas izsoles: bids, watchlist, registrations
