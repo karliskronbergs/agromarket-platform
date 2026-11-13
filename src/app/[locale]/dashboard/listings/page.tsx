@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DeleteButton } from "./delete-button";
 import { ReactivateButton } from "./reactivate-button";
 import { HideButton } from "./hide-button";
+import { AutoRenewCheckbox } from "./auto-renew-checkbox";
 import { DashboardToast } from "@/components/dashboard-toast";
 import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 
@@ -50,7 +51,7 @@ export default async function ListingsPage({
   const { data: listings } = await supabase
     .from("listings")
     .select(
-      "id, title, listing_type, price, price_unit, price_plus_vat, status, expires_at, created_at, categories(name_lv, name_en), listing_images(url, sort_order)",
+      "id, title, listing_type, price, price_unit, price_plus_vat, status, expires_at, created_at, auto_renew, categories(name_lv, name_en), listing_images(url, sort_order)",
     )
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
@@ -198,6 +199,9 @@ export default async function ListingsPage({
                   </Link>
                   {l.active && <HideButton locale={locale} listingId={l.id} />}
                   {l.expired && <ReactivateButton locale={locale} listingId={l.id} />}
+                  {l.status !== "removed" && (
+                    <AutoRenewCheckbox locale={locale} listingId={l.id} initialChecked={l.auto_renew} />
+                  )}
                   <DeleteButton locale={locale} listingId={l.id} title={l.title} />
                 </div>
               </div>

@@ -223,6 +223,18 @@ export async function reactivateListing(locale: string, listingId: string) {
   redirect(`/${locale}/dashboard/listings?toast=listingShown`);
 }
 
+export async function setAutoRenew(locale: string, listingId: string, enabled: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/${locale}/auth/login`);
+
+  await supabase.from("listings").update({ auto_renew: enabled }).eq("id", listingId);
+
+  revalidatePath(`/${locale}/dashboard/listings`);
+}
+
 // Hides a listing from public view without deleting it, by moving its
 // expiry into the past -- reuses the exact same active-but-expired
 // mechanism reactivateListing already undoes, instead of adding a new

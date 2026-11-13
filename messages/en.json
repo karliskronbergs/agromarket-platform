@@ -194,6 +194,7 @@
     "statusHiddenDashboard": "Hidden",
     "hideListing": "Hide",
     "showListing": "Activate",
+    "autoRenew": "Auto-renew",
     "hideConfirmTitle": "Hide this listing?",
     "hideConfirmText": "It won't be visible on the map or your public profile until you activate it again.",
     "hideConfirmCta": "Hide",

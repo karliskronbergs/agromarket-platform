@@ -13,11 +13,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Service role not configured" }, { status: 500 });
   }
 
+  const now = new Date();
+  const LISTING_LIFETIME_DAYS = 21;
+  const nextExpiry = new Date(now.getTime() + LISTING_LIFETIME_DAYS * 24 * 60 * 60 * 1000);
+
+  // Auto-renew opted-in listings before the notify query below runs, so a
+  // renewed listing's new (future) expires_at excludes it from that query
+  // naturally -- no separate "already renewed" bookkeeping needed.
+  const { data: renewed } = await supabase
+    .from("listings")
+    .update({ expires_at: nextExpiry.toISOString() })
+    .eq("status", "active")
+    .eq("auto_renew", true)
+    .lt("expires_at", now.toISOString())
+    .select("id");
+
   const { data: expired } = await supabase
     .from("listings")
     .select("id, title, profiles(user_id)")
     .eq("status", "active")
-    .lt("expires_at", new Date().toISOString())
+    .eq("auto_renew", false)
+    .lt("expires_at", now.toISOString())
     .is("expiry_notified_at", null);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
@@ -43,9 +59,9 @@ export async function GET(request: NextRequest) {
 
     await supabase
       .from("listings")
-      .update({ expiry_notified_at: new Date().toISOString() })
+      .update({ expiry_notified_at: now.toISOString() })
       .eq("id", listing.id);
   }
 
-  return NextResponse.json({ checked: expired?.length ?? 0, notified });
+  return NextResponse.json({ renewed: renewed?.length ?? 0, checked: expired?.length ?? 0, notified });
 }
