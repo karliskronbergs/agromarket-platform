@@ -116,12 +116,12 @@ export async function saveListing(
         .from("listings")
         .update(payload)
         .eq("id", listingId)
-        .select("id, status")
+        .select("id, status, expires_at")
         .single()
     : await supabase
         .from("listings")
         .insert({ ...payload, status: "pending", is_paid: false })
-        .select("id, status")
+        .select("id, status, expires_at")
         .single();
 
   if (error || !listing) {
@@ -182,10 +182,13 @@ export async function saveListing(
     redirect(`/${locale}/dashboard/listings?toast=listingPublished`);
   }
 
-  // Only active listings have a public page -- an edited listing that's
-  // pending/removed/expired would 404 there, so send the seller back to
-  // their list instead.
-  if (listing.status === "active") {
+  // Only active, not-yet-expired listings have a public page -- status
+  // alone isn't enough to tell: an expired listing is still "active" in
+  // the DB (expiry is a query-time expires_at comparison, not a status),
+  // and the public page 404s on it. An edited listing that's
+  // pending/removed/expired sends the seller back to their list instead.
+  const stillLive = listing.status === "active" && new Date(listing.expires_at) > new Date();
+  if (stillLive) {
     redirect(`/${locale}/listings/${listing.id}`);
   }
   redirect(`/${locale}/dashboard/listings?toast=listingSaved`);
