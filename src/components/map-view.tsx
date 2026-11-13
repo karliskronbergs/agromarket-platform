@@ -532,7 +532,13 @@ export function MapView({
                         ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
                         : undefined,
                   }}
-                  className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${mode === "profiles" ? "rounded-full bg-[#e4eaf0]" : "rounded-[10px]"}`}
+                  className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${
+                    mode === "profiles"
+                      ? selectedPoint.imageUrl
+                        ? "rounded-full bg-white"
+                        : "rounded-full bg-[#e4eaf0]"
+                      : "rounded-[10px]"
+                  }`}
                 >
                   {selectedPoint.imageUrl ? (
                     <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
@@ -633,7 +639,7 @@ function ResultCard({
     >
       {mode === "profiles" ? (
         <div className="relative h-12 w-12 flex-shrink-0">
-          <div className="relative h-full w-full overflow-hidden rounded-full bg-[#e4eaf0]">
+          <div className={`relative h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#e4eaf0]"}`}>
             {p.imageUrl ? (
               <Image src={p.imageUrl} alt="" fill sizes="48px" className="object-cover" />
             ) : (

@@ -99,7 +99,7 @@ export default async function DashboardPage({
       </div>
 
       <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-[#e3e6e8] bg-white p-5">
-        <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-[#e4eaf0]">
+        <div className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full ${profile.avatar_url ? "bg-white" : "bg-[#e4eaf0]"}`}>
           {profile.avatar_url ? (
             <Image src={profile.avatar_url} alt="" fill sizes="64px" className="object-cover" />
           ) : (

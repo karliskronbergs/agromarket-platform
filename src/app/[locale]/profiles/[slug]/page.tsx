@@ -199,7 +199,9 @@ export default async function PublicProfilePage({
             )}
           </div>
           <div className="flex flex-col gap-4 px-4 pb-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-6 sm:px-7 sm:pb-7">
-            <div className="relative -mt-[42px] h-[84px] w-[84px] flex-shrink-0 overflow-hidden rounded-full border-4 border-white bg-[#e4eaf0] sm:-mt-[52px] sm:h-[104px] sm:w-[104px]">
+            <div
+              className={`relative -mt-[42px] h-[84px] w-[84px] flex-shrink-0 overflow-hidden rounded-full border-4 border-white sm:-mt-[52px] sm:h-[104px] sm:w-[104px] ${profile.avatar_url ? "bg-white" : "bg-[#e4eaf0]"}`}
+            >
               {profile.avatar_url ? (
                 <Image src={profile.avatar_url} alt="" fill sizes="104px" className="object-cover" />
               ) : (

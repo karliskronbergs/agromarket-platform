@@ -60,7 +60,7 @@ export function DashboardShell({
         {/* Desktop sidebar */}
         <aside className="sticky top-24 hidden w-[232px] flex-shrink-0 flex-col gap-1 sm:flex">
           <div className="flex items-center gap-3 px-2 pb-[18px]">
-            <div className="relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-full bg-[#e4eaf0]">
+            <div className={`relative h-11 w-11 flex-shrink-0 overflow-hidden rounded-full ${avatarUrl ? "bg-white" : "bg-[#e4eaf0]"}`}>
               {avatarUrl ? (
                 <Image src={avatarUrl} alt="" fill sizes="44px" className="object-cover" />
               ) : (

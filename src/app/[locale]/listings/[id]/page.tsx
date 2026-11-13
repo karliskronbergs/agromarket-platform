@@ -412,7 +412,10 @@ type SellerLite = {
 
 function SellerAvatar({ profile, size }: { profile: SellerLite; size: number }) {
   return (
-    <div className="relative flex-shrink-0 overflow-hidden rounded-full bg-[#e4eaf0]" style={{ width: size, height: size }}>
+    <div
+      className={`relative flex-shrink-0 overflow-hidden rounded-full ${profile.avatar_url ? "bg-white" : "bg-[#e4eaf0]"}`}
+      style={{ width: size, height: size }}
+    >
       {profile.avatar_url ? (
         <Image src={profile.avatar_url} alt="" fill sizes={`${size}px`} className="object-cover" />
       ) : (
