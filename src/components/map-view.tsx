@@ -579,14 +579,14 @@ export function MapView({
         <button
           type="button"
           onClick={() => setMobileView((v) => (v === "list" ? "map" : "list"))}
-          className="absolute bottom-[92px] left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1d2329] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+          className="absolute bottom-4 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1d2329] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
         >
           {mobileView === "list" ? labels.toggleShowMap : labels.toggleShowList}
         </button>
         {mode !== "profiles" && (
           <Link
             href={`/${locale}/dashboard/listings/new`}
-            className="absolute bottom-[92px] right-4 z-[700] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+            className="absolute bottom-4 right-4 z-[700] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
           >
             +
           </Link>
