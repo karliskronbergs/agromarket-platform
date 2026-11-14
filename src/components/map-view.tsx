@@ -557,8 +557,15 @@ export function MapView({
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
-                  {selectedPoint.title}
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
+                    {selectedPoint.title}
+                  </span>
+                  {selectedPoint.reservation && (
+                    <span className="flex-shrink-0 rounded-full bg-[#f5ecd9] px-[7px] py-[1px] text-[10px] font-semibold text-[#7a5516]">
+                      {labels.reservation}
+                    </span>
+                  )}
                 </div>
                 {mode !== "profiles" && selectedPoint.price ? (
                   <div className="truncate text-[13px] font-semibold text-[#1d2329]">{selectedPoint.price}</div>

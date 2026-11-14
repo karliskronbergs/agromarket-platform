@@ -173,13 +173,15 @@ export default async function Home({
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-3">
                     <div className="line-clamp-2 text-sm font-medium leading-tight text-[#1d2329]">{l.title}</div>
-                    {l.price != null && (
+                    {l.price != null ? (
                       <div className="text-base font-semibold text-[#1d2329]">
                         €{l.price}
                         <span className="ml-1 text-xs font-normal text-[#5d6670]">
                           {priceUnitSuffix(l.price_unit, locale)}
                         </span>
                       </div>
+                    ) : (
+                      <div className="text-base font-semibold text-[#1d2329]">{tListing("priceOnRequest")}</div>
                     )}
                     <div className="mt-auto text-xs text-[#5d6670]">{profile?.address ?? ""}</div>
                   </div>
@@ -399,7 +401,7 @@ export default async function Home({
                     <div className="line-clamp-2 text-base font-medium leading-snug text-[#1d2329]">
                       {l.title}
                     </div>
-                    {l.price != null && (
+                    {l.price != null ? (
                       <div className="mt-0.5 text-lg font-semibold text-[#1d2329]">
                         €{l.price}
                         <span className="ml-1 text-[13px] font-normal text-[#5d6670]">
@@ -407,6 +409,8 @@ export default async function Home({
                           {l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}
                         </span>
                       </div>
+                    ) : (
+                      <div className="mt-0.5 text-lg font-semibold text-[#1d2329]">{tListing("priceOnRequest")}</div>
                     )}
                     <div className="mt-auto flex justify-between gap-2 border-t border-[#eef0f1] pt-2.5 text-[13px] text-[#5d6670]">
                       <span className="truncate">{profile?.address ?? ""}</span>

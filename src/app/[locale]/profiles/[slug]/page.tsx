@@ -116,7 +116,7 @@ export default async function PublicProfilePage({
               </div>
               <div className="flex flex-col gap-1 p-3.5">
                 <div className="line-clamp-2 text-[15px] font-medium text-[#1d2329]">{l.title}</div>
-                {l.price != null && (
+                {l.price != null ? (
                   <div className="text-base font-semibold text-[#1d2329]">
                     €{l.price}
                     <span className="ml-1 text-xs font-normal text-[#5d6670]">
@@ -124,6 +124,8 @@ export default async function PublicProfilePage({
                       {l.price_plus_vat ? ` ${t("plusVat")}` : ""}
                     </span>
                   </div>
+                ) : (
+                  <div className="text-base font-semibold text-[#1d2329]">{t("priceOnRequest")}</div>
                 )}
                 <div className="text-xs text-[#5d6670]">{formatRelativeDays(l.created_at, locale)}</div>
               </div>

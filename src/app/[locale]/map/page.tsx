@@ -179,7 +179,7 @@ export default async function MapPage({
         const priceText =
           l.price != null
             ? `€${l.price}${priceUnitSuffix(l.price_unit, locale)}${l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}`
-            : "";
+            : tListing("priceOnRequest");
         const locationAndDate = [profile?.address, formatRelativeDays(l.created_at as string, locale)]
           .filter(Boolean)
           .join(" · ");

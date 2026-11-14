@@ -102,7 +102,7 @@ export default async function ListingDetailPage({
   const priceText =
     listing.price != null
       ? `€${listing.price}${priceUnitSuffix(listing.price_unit, locale)}${listing.price_plus_vat ? ` ${t("plusVat")}` : ""}`
-      : null;
+      : t("priceOnRequest");
 
   let activeListingsCount = 0;
   let sellerAttributes: AttributeInfo[] = [];
@@ -176,6 +176,11 @@ export default async function ListingDetailPage({
               </h1>
               {priceText && (
                 <div className="text-[26px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
+              )}
+              {isSell && listing.availability === "reservation" && (
+                <span className="w-fit rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
+                  {t("availabilityReservation")}
+                </span>
               )}
               <div className="text-[13px] text-[#5d6670]">
                 {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
@@ -268,6 +273,11 @@ export default async function ListingDetailPage({
               </h1>
               {priceText && (
                 <div className="text-[30px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
+              )}
+              {isSell && listing.availability === "reservation" && (
+                <span className="w-fit rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
+                  {t("availabilityReservation")}
+                </span>
               )}
               <div className="text-sm text-[#5d6670]">
                 {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}

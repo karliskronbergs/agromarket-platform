@@ -318,6 +318,7 @@
     "deleteConfirm": "Delete this listing?",
     "seller": "Seller",
     "details": "Details",
+    "priceOnRequest": "Price negotiable",
     "availability": "Availability",
     "availabilityImmediate": "Available now",
     "availabilityReservation": "By reservation",
