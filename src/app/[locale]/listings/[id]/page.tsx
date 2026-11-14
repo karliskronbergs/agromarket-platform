@@ -209,7 +209,6 @@ export default async function ListingDetailPage({
               <div>
                 <h2 className="m-0 mb-1.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("details")}</h2>
                 <div className="grid grid-cols-1 sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] sm:gap-x-6">
-                  <DetailRow label={t("type")} value={isSell ? t("sell") : t("buy")} />
                   {categoryLabel && <DetailRow label={t("category")} value={categoryLabel} />}
                   {breedText && <DetailRow label={t("breed")} value={breedText} />}
                   {listing.manufacturer && <DetailRow label={t("manufacturer")} value={listing.manufacturer} />}
@@ -217,10 +216,10 @@ export default async function ListingDetailPage({
                   {listing.age_months != null && (
                     <DetailRow label={t("ageMonths")} value={`${listing.age_months} ${t("ageMonthsShort")}`} />
                   )}
+                  {conditionText && <DetailRow label={t("condition")} value={conditionText} />}
                   {listing.quantity != null && (
                     <DetailRow label={t("quantity")} value={`${listing.quantity} ${t("quantityAvailable")}`} />
                   )}
-                  {conditionText && <DetailRow label={t("condition")} value={conditionText} />}
                   {profile?.address && <DetailRow label={t("location")} value={profile.address} />}
                   <DetailRow label={t("postedLabel")} value={formatRelativeDays(listing.created_at, locale)} />
                   <DetailRow label={t("listingNumber")} value={listing.id.slice(0, 8).toUpperCase()} />
