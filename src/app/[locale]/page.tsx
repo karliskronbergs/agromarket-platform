@@ -10,6 +10,8 @@ import { IconStar, CATEGORY_ICONS } from "@/components/icons";
 import { HeroSearch } from "@/components/hero-search";
 import { HomeMapPreview } from "@/components/home-map-preview";
 
+export const dynamic = "force-dynamic";
+
 const STRIPE_BG = {
   backgroundImage:
     "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 10px, #e4e7e1 10px, #e4e7e1 20px)",
