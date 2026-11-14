@@ -192,7 +192,7 @@ export function CategoryFilterBar({
   const tree = buildCategoryTree(categories);
 
   return (
-    <div className="-mx-6 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
+    <div className="-mx-6 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-6 pb-1 scroll-pl-6 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 sm:scroll-pl-0 [&::-webkit-scrollbar]:hidden">
       <button type="button" onClick={() => onSelect(null, null)} className={chipClass(!selectedCategory)}>
         {allLabel}
       </button>
