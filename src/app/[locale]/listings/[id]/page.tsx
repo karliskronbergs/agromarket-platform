@@ -208,7 +208,7 @@ export default async function ListingDetailPage({
 
               <div>
                 <h2 className="m-0 mb-1.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("details")}</h2>
-                <div className="grid grid-cols-1 sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] sm:gap-x-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">
                   {categoryLabel && <DetailRow label={t("category")} value={categoryLabel} />}
                   {breedText && <DetailRow label={t("breed")} value={breedText} />}
                   {listing.manufacturer && <DetailRow label={t("manufacturer")} value={listing.manufacturer} />}
