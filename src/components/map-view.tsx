@@ -132,12 +132,14 @@ export function MapView({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Record<string, CircleMarker>>({});
+  const cardRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const prevPointIdsRef = useRef<string>("");
   const selectedRef = useRef<string | null>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<string | null>(null);
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
+  const [containerWidth, setContainerWidth] = useState(390);
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
   function navigate(query: Record<string, string>) {
@@ -186,6 +188,7 @@ export function MapView({
           if (!m || !marker) return;
           const pt = m.latLngToContainerPoint(marker.getLatLng());
           setPopupPos({ x: pt.x, y: pt.y });
+          if (mapContainerRef.current) setContainerWidth(mapContainerRef.current.clientWidth);
         });
       }
 
@@ -203,7 +206,10 @@ export function MapView({
           fillOpacity: 1,
         }).addTo(map);
         marker.bindTooltip(point.title, { direction: "top", offset: [0, -8] });
-        marker.on("click", () => setSelected(point.id));
+        marker.on("click", () => {
+          setSelected(point.id);
+          cardRefs.current[point.id]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
         markersRef.current[point.id] = marker;
       });
 
@@ -243,6 +249,7 @@ export function MapView({
     if (map && marker) {
       const pt = map.latLngToContainerPoint(marker.getLatLng());
       setPopupPos({ x: pt.x, y: pt.y });
+      if (mapContainerRef.current) setContainerWidth(mapContainerRef.current.clientWidth);
     } else {
       setPopupPos(null);
     }
@@ -498,6 +505,9 @@ export function MapView({
                 onHover={setSelected}
                 locale={locale}
                 verifiedLabel={labels.verifiedShort}
+                cardRef={(el) => {
+                  cardRefs.current[p.id] = el;
+                }}
               />
             ))
           )}
@@ -511,57 +521,59 @@ export function MapView({
         >
           <div ref={mapContainerRef} className="absolute inset-0" />
 
-          {/* Mobile-only selection surface */}
-          <div className="sm:hidden">
-            {selectedPoint && popupPos ? (
-              <Link
-                href={selectedPoint.href}
+          {/* Selected-marker card, shown on click at any screen size */}
+          {selectedPoint && popupPos && (
+            <Link
+              href={selectedPoint.href}
+              style={{
+                left: Math.min(Math.max(popupPos.x, 138), containerWidth - 138),
+                top: Math.max(popupPos.y - 18, 8),
+              }}
+              className="absolute z-[600] flex w-[276px] -translate-x-1/2 -translate-y-full items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+            >
+              <div
                 style={{
-                  left: Math.min(
-                    Math.max(popupPos.x, 138),
-                    (mapContainerRef.current?.clientWidth ?? 390) - 138,
-                  ),
-                  top: Math.max(popupPos.y - 18, 8),
+                  backgroundImage:
+                    !selectedPoint.imageUrl && mode !== "profiles"
+                      ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
+                      : undefined,
                 }}
-                className="absolute z-[600] flex w-[276px] -translate-x-1/2 -translate-y-full items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+                className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${
+                  mode === "profiles"
+                    ? selectedPoint.imageUrl
+                      ? "rounded-full bg-white"
+                      : "rounded-full bg-[#e4eaf0]"
+                    : "rounded-[10px]"
+                }`}
               >
-                <div
-                  style={{
-                    backgroundImage:
-                      !selectedPoint.imageUrl && mode !== "profiles"
-                        ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
-                        : undefined,
-                  }}
-                  className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${
-                    mode === "profiles"
-                      ? selectedPoint.imageUrl
-                        ? "rounded-full bg-white"
-                        : "rounded-full bg-[#e4eaf0]"
-                      : "rounded-[10px]"
-                  }`}
-                >
-                  {selectedPoint.imageUrl ? (
-                    <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
-                  ) : mode === "profiles" ? (
-                    <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
-                      {initialsFor(selectedPoint.title)}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
-                    {selectedPoint.title}
+                {selectedPoint.imageUrl ? (
+                  <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
+                ) : mode === "profiles" ? (
+                  <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
+                    {initialsFor(selectedPoint.title)}
                   </div>
-                  <div className="truncate text-[11px] text-[#5d6670]">{selectedPoint.subtitle}</div>
-                </div>
-                <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
-              </Link>
-            ) : (
-              <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)]">
-                {resultLabel} · {labels.tapPointHint}
+                ) : null}
               </div>
-            )}
-          </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
+                  {selectedPoint.title}
+                </div>
+                {mode !== "profiles" && selectedPoint.price ? (
+                  <div className="truncate text-[13px] font-semibold text-[#1d2329]">{selectedPoint.price}</div>
+                ) : (
+                  <div className="truncate text-[11px] text-[#5d6670]">{selectedPoint.subtitle}</div>
+                )}
+              </div>
+              <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
+            </Link>
+          )}
+
+          {/* Mobile-only tap hint, shown until a marker is selected */}
+          {!(selectedPoint && popupPos) && (
+            <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)] sm:hidden">
+              {resultLabel} · {labels.tapPointHint}
+            </div>
+          )}
         </div>
 
         {/* Mobile-only floating controls */}
@@ -618,6 +630,7 @@ function ResultCard({
   onHover,
   locale,
   verifiedLabel,
+  cardRef,
 }: {
   p: MapPoint;
   mode: MapMode;
@@ -625,10 +638,12 @@ function ResultCard({
   onHover: (id: string) => void;
   locale: string;
   verifiedLabel: string;
+  cardRef: (el: HTMLAnchorElement | null) => void;
 }) {
   const isSel = p.id === selected;
   return (
     <Link
+      ref={cardRef}
       href={p.href}
       onMouseEnter={() => onHover(p.id)}
       className="flex gap-3.5 rounded-2xl border p-3.5 transition sm:p-3.5"
