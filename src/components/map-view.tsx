@@ -205,7 +205,6 @@ export function MapView({
           fillColor: PIN,
           fillOpacity: 1,
         }).addTo(map);
-        marker.bindTooltip(point.title, { direction: "top", offset: [0, -8] });
         marker.on("click", () => {
           setSelected(point.id);
           cardRefs.current[point.id]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -515,7 +514,7 @@ export function MapView({
 
         {/* Map pane (always mounted to avoid Leaflet sizing issues when hidden) */}
         <div
-          className={`absolute inset-0 bg-[#e8ece6] transition-opacity sm:relative sm:flex-1 sm:opacity-100 ${
+          className={`absolute inset-0 bg-[#e8ece6] transition-opacity sm:relative sm:flex-1 sm:pointer-events-auto sm:opacity-100 ${
             mobileView === "list" ? "pointer-events-none opacity-0" : "opacity-100"
           }`}
         >
