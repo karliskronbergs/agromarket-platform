@@ -215,10 +215,12 @@ export default async function ListingDetailPage({
                 <h2 className="m-0 mb-1.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("details")}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">
                   {categoryLabel && <DetailRow label={t("category")} value={categoryLabel} />}
-                  <DetailRow
-                    label={t("availability")}
-                    value={listing.availability === "reservation" ? t("availabilityReservation") : t("availabilityImmediate")}
-                  />
+                  {isSell && (
+                    <DetailRow
+                      label={t("availability")}
+                      value={listing.availability === "reservation" ? t("availabilityReservation") : t("availabilityImmediate")}
+                    />
+                  )}
                   {breedText && <DetailRow label={t("breed")} value={breedText} />}
                   {listing.manufacturer && <DetailRow label={t("manufacturer")} value={listing.manufacturer} />}
                   {listing.model && <DetailRow label={t("model")} value={listing.model} />}

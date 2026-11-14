@@ -193,7 +193,7 @@ export default async function MapPage({
           href: `/${locale}/listings/${l.id}`,
           badge: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : undefined,
           imageUrl: firstImage?.url,
-          reservation: l.availability === "reservation",
+          reservation: mode === "sell" && l.availability === "reservation",
           attributes: profile?.id ? (attributesByProfile.get(profile.id) ?? []) : [],
         };
       })
