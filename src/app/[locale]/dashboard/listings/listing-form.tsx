@@ -50,6 +50,7 @@ export function ListingForm({
     manufacturer: string | null;
     model: string | null;
     organicCertified: boolean;
+    availability: "immediate" | "reservation";
   };
 }) {
   const t = useTranslations("Listing");
@@ -62,6 +63,9 @@ export function ListingForm({
   const [listingType, setListingType] = useState<"sell" | "buy">(initial?.listingType ?? "sell");
   const [negotiable, setNegotiable] = useState(!initial?.price);
   const [price, setPrice] = useState(initial?.price ?? "");
+  const [availability, setAvailability] = useState<"immediate" | "reservation">(
+    initial?.availability ?? "immediate",
+  );
 
   const weightUnitCategoryIds = useMemo(() => {
     const root = categories.find((c) => c.slug === WEIGHT_UNIT_CATEGORY_SLUG);
@@ -241,6 +245,33 @@ export function ListingForm({
             </Field>
           )}
         </div>
+
+        <Field label={t("availability")}>
+          <div className="flex w-fit gap-1 rounded-xl bg-[#f0f2f0] p-1">
+            {(
+              [
+                ["immediate", t("availabilityImmediate")],
+                ["reservation", t("availabilityReservation")],
+              ] as const
+            ).map(([value, label]) => (
+              <label
+                key={value}
+                className="cursor-pointer rounded-[9px] px-3.5 py-2 text-sm font-medium text-[#5d6670] transition has-checked:bg-white has-checked:text-[#1d2329]"
+              >
+                <input
+                  type="checkbox"
+                  name="availability"
+                  value={value}
+                  checked={availability === value}
+                  onChange={() => setAvailability(value)}
+                  className="sr-only"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </Field>
+
         <label className="-mt-2 flex w-fit cursor-pointer items-center gap-2.5 text-sm text-[#1d2329]">
           <input
             type="checkbox"

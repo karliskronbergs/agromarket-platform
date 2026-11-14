@@ -37,6 +37,7 @@ export type MapPoint = {
   badge?: string;
   verified?: boolean;
   adminBadge?: boolean;
+  reservation?: boolean;
   attributes?: AttributeInfo[];
 };
 
@@ -123,6 +124,7 @@ export function MapView({
     toggleShowList: string;
     addListingCta: string;
     verifiedShort: string;
+    reservation: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -504,6 +506,7 @@ export function MapView({
                 onHover={setSelected}
                 locale={locale}
                 verifiedLabel={labels.verifiedShort}
+                reservationLabel={labels.reservation}
                 cardRef={(el) => {
                   cardRefs.current[p.id] = el;
                 }}
@@ -629,6 +632,7 @@ function ResultCard({
   onHover,
   locale,
   verifiedLabel,
+  reservationLabel,
   cardRef,
 }: {
   p: MapPoint;
@@ -637,6 +641,7 @@ function ResultCard({
   onHover: (id: string) => void;
   locale: string;
   verifiedLabel: string;
+  reservationLabel: string;
   cardRef: (el: HTMLAnchorElement | null) => void;
 }) {
   const isSel = p.id === selected;
@@ -682,6 +687,11 @@ function ResultCard({
           className="relative h-[92px] w-[92px] flex-shrink-0 overflow-hidden rounded-[10px]"
         >
           {p.imageUrl && <Image src={p.imageUrl} alt="" fill sizes="92px" className="object-cover" />}
+          {p.reservation && (
+            <span className="absolute bottom-1 right-1 rounded-full bg-[#f5ecd9] px-[7px] py-[2px] text-[9px] font-semibold text-[#7a5516]">
+              {reservationLabel}
+            </span>
+          )}
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">

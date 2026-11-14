@@ -130,7 +130,7 @@ export default async function MapPage({
     let query = supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, lat, lng, created_at, profiles!inner(id, lat, lng, address), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, availability, category_id, lat, lng, created_at, profiles!inner(id, lat, lng, address), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .eq("listing_type", mode)
@@ -193,6 +193,7 @@ export default async function MapPage({
           href: `/${locale}/listings/${l.id}`,
           badge: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : undefined,
           imageUrl: firstImage?.url,
+          reservation: l.availability === "reservation",
           attributes: profile?.id ? (attributesByProfile.get(profile.id) ?? []) : [],
         };
       })
@@ -271,6 +272,7 @@ export default async function MapPage({
         toggleShowList: t("toggleShowList"),
         addListingCta: t("addListingCta"),
         verifiedShort: tProfile("verifiedShort"),
+        reservation: tListing("availabilityReservation"),
       }}
     />
   );

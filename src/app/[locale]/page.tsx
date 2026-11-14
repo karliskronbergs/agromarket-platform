@@ -43,7 +43,7 @@ export default async function Home({
     supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, listing_type, created_at, profiles(id, address), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, price, price_unit, price_plus_vat, listing_type, availability, created_at, profiles(id, address), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -165,6 +165,11 @@ export default async function Home({
                     >
                       {isSell ? tListing("sell") : tListing("buy")}
                     </span>
+                    {l.availability === "reservation" && (
+                      <span className="absolute bottom-2.5 right-2.5 rounded-full bg-[#f5ecd9] px-2.5 py-[3px] text-[11px] font-semibold text-[#7a5516]">
+                        {tListing("availabilityReservation")}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-3">
                     <div className="line-clamp-2 text-sm font-medium leading-tight text-[#1d2329]">{l.title}</div>
@@ -379,6 +384,11 @@ export default async function Home({
                         className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[#2f5538]"
                       >
                         <BadgeIcon className="h-3.5 w-3.5" />
+                      </span>
+                    )}
+                    {l.availability === "reservation" && (
+                      <span className="absolute bottom-3 right-3 rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
+                        {tListing("availabilityReservation")}
                       </span>
                     )}
                   </div>

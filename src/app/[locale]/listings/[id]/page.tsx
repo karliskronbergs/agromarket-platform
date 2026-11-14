@@ -70,7 +70,7 @@ export default async function ListingDetailPage({
   const listingQuery = supabase
     .from("listings")
     .select(
-      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone, status), categories(name_lv, name_en)",
+      "id, listing_type, title, description, price, price_unit, price_plus_vat, breed, age_months, quantity, condition, manufacturer, model, organic_certified, availability, category_id, status, lat, lng, created_at, profiles(id, user_id, business_name, slug, avatar_url, verified, admin_badge, address, phone, status), categories(name_lv, name_en)",
     )
     .eq("id", id);
 
@@ -165,7 +165,12 @@ export default async function ListingDetailPage({
 
             {/* Mobile: title/price/meta block right under the gallery */}
             <div className="flex flex-col gap-2.5 border-b border-[#e3e6e8] py-4 sm:hidden">
-              <TypeAndCategoryRow isSell={isSell} categoryLabel={categoryLabel} organic={!!listing.organic_certified} t={t} />
+              <TypeAndCategoryRow
+                isSell={isSell}
+                categoryLabel={categoryLabel}
+                organic={!!listing.organic_certified}
+                t={t}
+              />
               <h1 className="m-0 text-balance text-[22px] font-semibold leading-[1.25] tracking-[-0.01em] text-[#1d2329]">
                 {listing.title}
               </h1>
@@ -210,6 +215,10 @@ export default async function ListingDetailPage({
                 <h2 className="m-0 mb-1.5 text-lg font-semibold text-[#1d2329] sm:text-xl">{t("details")}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">
                   {categoryLabel && <DetailRow label={t("category")} value={categoryLabel} />}
+                  <DetailRow
+                    label={t("availability")}
+                    value={listing.availability === "reservation" ? t("availabilityReservation") : t("availabilityImmediate")}
+                  />
                   {breedText && <DetailRow label={t("breed")} value={breedText} />}
                   {listing.manufacturer && <DetailRow label={t("manufacturer")} value={listing.manufacturer} />}
                   {listing.model && <DetailRow label={t("model")} value={listing.model} />}
@@ -246,7 +255,12 @@ export default async function ListingDetailPage({
           {/* Desktop sticky sidebar */}
           <div className="hidden w-full flex-col gap-3.5 sm:sticky sm:top-[88px] sm:flex sm:w-full sm:max-w-[400px] sm:flex-1">
             <div className="flex flex-col gap-3.5 rounded-[18px] border border-[#e3e6e8] bg-white p-6">
-              <TypeAndCategoryRow isSell={isSell} categoryLabel={categoryLabel} organic={!!listing.organic_certified} t={t} />
+              <TypeAndCategoryRow
+                isSell={isSell}
+                categoryLabel={categoryLabel}
+                organic={!!listing.organic_certified}
+                t={t}
+              />
               <h1 className="m-0 text-balance text-[26px] font-semibold leading-[1.2] tracking-[-0.01em] text-[#1d2329]">
                 {listing.title}
               </h1>

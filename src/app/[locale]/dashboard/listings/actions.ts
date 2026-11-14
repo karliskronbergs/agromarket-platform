@@ -107,6 +107,7 @@ export async function saveListing(
     manufacturer: parsed.data.manufacturer ?? null,
     model: parsed.data.model ?? null,
     organic_certified: formData.get("organicCertified") === "on",
+    availability: formData.get("availability") === "reservation" ? "reservation" : "immediate",
     lat: profile.lat,
     lng: profile.lng,
   };
