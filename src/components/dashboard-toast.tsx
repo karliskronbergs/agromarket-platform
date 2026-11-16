@@ -34,7 +34,7 @@ export function DashboardToast({ messages }: { messages: Record<string, string> 
   if (!text) return null;
 
   return (
-    <div className="fixed bottom-24 left-1/2 z-[3100] -translate-x-1/2 whitespace-nowrap rounded-xl bg-[#1d2329] px-[18px] py-3 text-sm font-medium text-white shadow-[0_10px_24px_rgba(29,35,41,0.25)] sm:bottom-8">
+    <div className="fixed bottom-24 left-1/2 z-[3100] -translate-x-1/2 whitespace-nowrap rounded-xl bg-[rgba(29,35,41,0.86)] px-[18px] py-3 text-sm font-medium text-white shadow-[0_10px_24px_rgba(29,35,41,0.25)] backdrop-blur-[16px] backdrop-saturate-[1.8] sm:bottom-8">
       {text}
     </div>
   );

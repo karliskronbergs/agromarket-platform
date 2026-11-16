@@ -41,7 +41,7 @@ export default async function DashboardLayout({
   ];
 
   return (
-    <div className="flex flex-1 flex-col bg-[#f6f7f5]">
+    <div className="flex flex-1 flex-col bg-[#f5f6f4]">
       <DashboardShell
         locale={locale}
         name={profile?.business_name ?? user.email ?? ""}

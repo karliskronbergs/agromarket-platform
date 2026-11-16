@@ -83,7 +83,7 @@ export function CategoryFieldTree({
         open={hasSelectedDescendant(node, isSelected)}
         style={depth > 0 ? { marginLeft: 16 } : undefined}
       >
-        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 bg-[#f6f7f5] px-3.5 py-2.5">
+        <summary className="flex cursor-pointer select-none items-center justify-between gap-2 bg-[#f5f6f4] px-3.5 py-2.5">
           {headerContent}
           <IconChevronDown className="h-4 w-4 flex-shrink-0 text-[#5d6670] transition-transform group-open:rotate-180" />
         </summary>

@@ -1,5 +1,7 @@
 # Handoff: lauks24.lv redesign (Direction A, desktop + mobile)
 
+> **Update — read `FLUID.md` first.** The final design is the Apple-style "Fluid" version (`Lauks24 Fluid`, `Lauks24 Dashboard Fluid`, `Izsole Fluid`). This README's tokens, icons, badges, filters and logic notes still apply; the older A / Mobile / Dashboard / Izsole files are reference only.
+
 ## Overview
 A refresh of lauks24.lv, a Latvian marketplace for agriculture: company/farm profiles on a map, plus buy and sell listings. The goals are to make it clearer what the site is for, make it more user-friendly, and modernise it lightly. The existing header blue `#3b5166` and the existing logo stay the same.
 

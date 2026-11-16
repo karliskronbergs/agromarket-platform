@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — Mans profils (Fluid)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f6f4;color:#1d2329;font-family:'Lexend',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#3f6e4a;text-decoration:none}a:hover{color:#2f5538}
+input::placeholder,textarea::placeholder{color:#8a929a}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="min-height:100vh;display:flex;flex-direction:column;background:#f5f6f4">
+
+<header style="position:sticky;top:0;z-index:2000;background:rgba(59,81,102,.95);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);color:#fff;box-shadow:0 1px 0 rgba(20,26,32,.08)">
+  <div style="max-width:1232px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:24px">
+    <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:28px;display:block;cursor:pointer">
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex;gap:2px">
+        <div style="padding:8px 12px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .12s" style-hover="background:rgba(255,255,255,.12)" style-active="transform:scale(.96)">Karte</div>
+        <div style="padding:8px 12px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .12s" style-hover="background:rgba(255,255,255,.12)" style-active="transform:scale(.96)">Sludinājumi</div>
+        <div style="padding:8px 12px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .12s" style-hover="background:rgba(255,255,255,.12)" style-active="transform:scale(.96)">Kā tas darbojas</div>
+      </nav>
+    </sc-if>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:2px;font-size:14px"><span style="font-weight:600;padding:4px 6px">LV</span><span style="color:rgba(255,255,255,.65);padding:4px 6px;cursor:pointer">EN</span></div>
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:8px 12px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.12)">Ziņas</div>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:8px;padding:4px;border-radius:999px;background:rgba(255,255,255,.16);cursor:pointer">
+      <div style="width:30px;height:30px;border-radius:50%;background:#fff;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">AA</div>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;font-weight:500;padding-right:8px">Mans profils</span></sc-if>
+    </div>
+  </div>
+</header>
+
+<sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+  <div style="position:sticky;top:56px;z-index:1500;background:rgba(245,246,244,.86);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 rgba(20,26,32,.06);display:flex;gap:6px;overflow-x:auto;padding:10px 16px;scrollbar-width:none">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+      <div onClick="{{ n.go }}" style="flex:0 0 auto;white-space:nowrap;padding:8px 14px;border-radius:999px;font-size:14px;font-weight:{{ n.fw }};cursor:pointer;background:{{ n.pillBg }};color:{{ n.pillFg }};transition:transform .12s,background .2s" style-active="transform:scale(.95)">{{ n.label }}</div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<div style="flex:1;width:100%;max-width:1200px;margin:0 auto;padding:{{ pad }};box-sizing:border-box;display:flex;gap:36px;align-items:flex-start">
+
+  <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+    <aside style="flex:0 0 240px;position:sticky;top:88px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:12px;padding:4px 6px">
+        <div style="width:46px;height:46px;flex:0 0 46px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600">AA</div>
+        <div style="min-width:0"><div style="font-size:16px;font-weight:600;letter-spacing:-.01em">{{ name }}</div><div style="font-size:12px;color:#5d6670;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ email }}</div></div>
+      </div>
+      <div style="background:#fff;border-radius:18px;padding:6px;box-shadow:0 1px 2px rgba(20,26,32,.05);display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+          <div onClick="{{ n.go }}" style="display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:12px;font-size:15px;font-weight:{{ n.fw }};cursor:pointer;background:{{ n.sideBg }};color:{{ n.sideFg }};transition:background .2s,transform .12s" style-active="transform:scale(.98)">
+            <span>{{ n.label }}</span><span style="font-size:13px;color:{{ n.countFg }};font-variant-numeric:tabular-nums">{{ n.count }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="padding:8px 12px;font-size:15px;font-weight:500;color:#5d6670;cursor:pointer">Iziet</div>
+    </aside>
+  </sc-if>
+
+  <main ref="{{ pageRef }}" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+  <!-- OVERVIEW -->
+  <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <h1 style="margin:0;font-size:{{ h1 }};line-height:1.08;letter-spacing:-.03em;font-weight:600">Sveiks!</h1>
+        <div style="font-size:15px;color:#5d6670">{{ email }}</div>
+      </div>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ goNew }}" style="padding:12px 20px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.96)">+ Pievienot sludinājumu</div>
+      </sc-if>
+    </div>
+
+    <div style="background:#fff;border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+      <div style="width:64px;height:64px;flex:0 0 64px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">AA</div>
+      <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:20px;font-weight:600;letter-spacing:-.015em">{{ name }}</span>
+          <sc-if value="{{ verified }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:12px;font-weight:500"><span style="width:13px;height:13px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center">✓</span>Pārbaudīts</span></sc-if>
+        </div>
+        <div style="font-size:14px;color:#5d6670">{{ spec }} · {{ address }}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex:{{ actionsFlex }}">
+        <div onClick="{{ goProfile }}" style="flex:1;padding:11px 16px;border-radius:12px;background:#eef0ee;font-size:14px;font-weight:500;text-align:center;white-space:nowrap;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">Rediģēt profilu</div>
+        <div style="flex:1;padding:11px 16px;border-radius:12px;background:#eef0ee;font-size:14px;font-weight:500;text-align:center;white-space:nowrap;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">Publiskais profils ↗</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+      <div style="background:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:2px;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+        <span style="font-size:13px;color:#5d6670">Profila skatījumi</span><span style="font-size:34px;font-weight:600;letter-spacing:-.035em;font-variant-numeric:tabular-nums">{{ views }}</span>
+      </div>
+      <div onClick="{{ goListings }}" style="background:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:2px;cursor:pointer;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .14s ease-out" style-active="transform:scale(.97)">
+        <span style="font-size:13px;color:#5d6670">Aktīvie sludinājumi</span><span style="font-size:34px;font-weight:600;letter-spacing:-.035em;font-variant-numeric:tabular-nums">{{ activeCount }}</span>
+      </div>
+    </div>
+
+    <sc-if value="{{ showVerifyCard }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#eef3ee;border-radius:20px;padding:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:#3f6e4a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600">✓</div>
+        <div style="flex:1 1 220px;min-width:0">
+          <div style="font-size:16px;font-weight:600;margin-bottom:3px">{{ verifyTitle }}</div>
+          <div style="font-size:14px;line-height:1.5;color:#2f5538">{{ verifyText }}</div>
+        </div>
+        <sc-if value="{{ canRequestVerify }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ requestVerify }}" style="padding:11px 18px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">Pieprasīt verifikāciju</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px">
+      <h2 style="margin:0;font-size:22px;letter-spacing:-.02em;font-weight:600">Mani sludinājumi</h2>
+      <sc-if value="{{ hasListings }}" hint-placeholder-val="{{ true }}"><span onClick="{{ goListings }}" style="font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Visi ({{ totalCount }}) →</span></sc-if>
+    </div>
+    <sc-if value="{{ noListings }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border-radius:22px;padding:44px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+        <div style="font-size:19px;font-weight:600;letter-spacing:-.015em">Tev vēl nav neviena sludinājuma</div>
+        <div style="font-size:15px;color:#5d6670;max-width:420px;line-height:1.5">Publicē, ko pārdod vai meklē. Sludinājums parādīsies kartē un tavā publiskajā profilā.</div>
+        <div onClick="{{ goNew }}" style="margin-top:8px;padding:13px 22px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">+ Pievienot pirmo sludinājumu</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasListings }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+        <sc-for list="{{ previewRows }}" as="l" hint-placeholder-count="3">
+          <div onClick="{{ l.edit }}" style="display:flex;gap:14px;align-items:center;padding:12px 16px;cursor:pointer;transition:background .12s" style-active="background:#f3f4f2">
+            <div style="width:52px;height:52px;flex:0 0 52px;border-radius:12px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px)"></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding-bottom:12px;margin-bottom:-12px;border-bottom:1px solid #eef0f1">
+              <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#5d6670"><span style="width:7px;height:7px;border-radius:50%;background:{{ l.dot }}"></span>{{ l.stLabel }} · {{ l.price }} {{ l.unit }}</div>
+            </div>
+            <span style="font-size:18px;color:#b5bbc0">›</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <!-- LISTINGS -->
+  <sc-if value="{{ isListings }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <h1 style="margin:0;font-size:{{ h1 }};line-height:1.08;letter-spacing:-.03em;font-weight:600">Mani sludinājumi</h1>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <div onClick="{{ goNew }}" style="padding:12px 20px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.96)">+ Pievienot sludinājumu</div>
+      </sc-if>
+    </div>
+    <div style="position:relative;width:min(100%,360px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#e9ebe8">
+      <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ filterX }});transition:{{ segTransition }}"></div>
+      <sc-for list="{{ filterTabs }}" as="t" hint-placeholder-count="3">
+        <div onPointerDown="{{ t.set }}" style="position:relative;padding:9px 0;text-align:center;font-size:15px;font-weight:{{ t.fw }};color:{{ t.fg }};cursor:pointer;user-select:none">{{ t.label }} <span style="color:#8a929a;font-weight:400">{{ t.count }}</span></div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ listEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border-radius:22px;padding:40px 24px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+        <div style="font-size:17px;font-weight:600">{{ listEmptyText }}</div>
+        <div onClick="{{ goNew }}" style="padding:12px 20px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">+ Pievienot sludinājumu</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ showSwipeHint }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#5d6670;padding:0 4px">Pavelc sludinājumu pa kreisi, lai to paslēptu vai dzēstu.</div></sc-if>
+    </sc-if>
+    <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+      <sc-for list="{{ rows }}" as="l" hint-placeholder-count="3">
+        <div style="position:relative;overflow:hidden">
+          <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:0;right:0;bottom:0;display:flex">
+              <div onClick="{{ l.toggle }}" style="width:88px;display:flex;align-items:center;justify-content:center;background:#7a8590;color:#fff;font-size:14px;font-weight:600;cursor:pointer">{{ l.toggleLabel }}</div>
+              <div onClick="{{ l.del }}" style="width:88px;display:flex;align-items:center;justify-content:center;background:#d92d20;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Dzēst</div>
+            </div>
+          </sc-if>
+          <div data-row="{{ l.id }}" onPointerDown="{{ rowDown }}" onPointerMove="{{ rowMove }}" onPointerUp="{{ rowUp }}" onPointerCancel="{{ rowUp }}" onClick="{{ l.tap }}" style="position:relative;background:#fff;display:flex;gap:14px;align-items:center;padding:14px 16px;touch-action:pan-y;cursor:pointer;user-select:none">
+            <div style="width:{{ thumb }};height:{{ thumb }};flex:0 0 {{ thumb }};border-radius:14px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;padding:4px;box-sizing:border-box;opacity:{{ l.op }}">{{ l.img }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;opacity:{{ l.op }}">
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <span style="padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;background:{{ l.typeBg }};color:{{ l.typeFg }}">{{ l.typeLabel }}</span><sc-if value="{{ l.reserve }}" hint-placeholder-val="{{ false }}"><span style="padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;background:#3b5166;color:#fff">Rezervācijai</span></sc-if>
+                <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#5d6670"><span style="width:7px;height:7px;border-radius:50%;background:{{ l.dot }}"></span>{{ l.stLabel }}</span>
+              </div>
+              <div style="font-size:16px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+              <div style="font-size:14px;color:#5d6670"><span style="color:#1d2329;font-weight:600">{{ l.price }}</span> {{ l.unit }} · {{ l.catName }} · {{ l.posted }}</div>
+            </div>
+            <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:6px">
+                <div onClick="{{ l.edit }}" style="padding:9px 14px;border-radius:999px;background:#eef0ee;font-size:14px;font-weight:500;cursor:pointer;transition:transform .12s" style-active="transform:scale(.95)">Rediģēt</div>
+                <div onClick="{{ l.toggle }}" style="padding:9px 14px;border-radius:999px;background:#eef0ee;font-size:14px;font-weight:500;cursor:pointer;transition:transform .12s" style-active="transform:scale(.95)">{{ l.toggleLabel }}</div>
+                <div onClick="{{ l.del }}" style="padding:9px 14px;border-radius:999px;background:#fdecea;color:#b3261e;font-size:14px;font-weight:500;cursor:pointer;transition:transform .12s" style-active="transform:scale(.95)">Dzēst</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}"><span style="font-size:18px;color:#b5bbc0">›</span></sc-if>
+          </div>
+          <div style="position:absolute;left:{{ sepLeft }};right:0;bottom:0;height:1px;background:#eef0f1"></div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- NEW / EDIT LISTING -->
+  <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span onClick="{{ goListings }}" style="font-size:15px;color:#3f6e4a;cursor:pointer;font-weight:500">‹ Mani sludinājumi</span>
+      <h1 style="margin:0;font-size:{{ h1 }};line-height:1.08;letter-spacing:-.03em;font-weight:600">{{ formTitle }}</h1>
+    </div>
+    <div style="position:relative;width:min(100%,360px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#e9ebe8">
+      <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 2);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ typeX }});transition:{{ segTransition }}"></div>
+      <sc-for list="{{ typeOpts }}" as="o" hint-placeholder-count="2">
+        <div onPointerDown="{{ o.set }}" style="position:relative;padding:10px 0;text-align:center;font-size:15px;font-weight:{{ o.fw }};color:{{ o.fg }};cursor:pointer;user-select:none">{{ o.label }}</div>
+      </sc-for>
+    </div>
+    <span style="font-size:14px;color:#5d6670;margin-top:-10px;padding-left:4px">{{ typeHint }}</span>
+
+    <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Pamatinformācija</div>
+    <div style="background:#fff;border-radius:20px;padding:{{ cardPad }};display:flex;flex-direction:column;gap:18px;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Virsraksts
+        <input value="{{ fTitle }}" onChange="{{ onTitle }}" placeholder="Piem., Traktors John Deere 6155R, 2016" style="border:1px solid {{ titleBd }};background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0;transition:box-shadow .15s,background .15s,border-color .15s" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+        <sc-if value="{{ hasTitleErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:400;color:#b3261e">Ievadi virsrakstu</span></sc-if>
+      </label>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Kategorija
+          <select value="{{ fCat }}" onChange="{{ onCat }}" style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+            <sc-for list="{{ catOpts }}" as="c" hint-placeholder-count="5"><option value="{{ c.id }}">{{ c.name }}</option></sc-for>
+          </select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Apakškategorija
+          <select style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+            <sc-for list="{{ subOpts }}" as="s" hint-placeholder-count="3"><option>{{ s.name }}</option></sc-for>
+          </select>
+        </label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Apraksts
+        <textarea rows="5" placeholder="Stāvoklis, īpašības, piegādes iespējas…" style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;resize:vertical;line-height:1.5" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)"></textarea>
+      </label>
+    </div>
+
+    <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Cena</div>
+    <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+      <div onClick="{{ toggleNeg }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px {{ cardPadX }};cursor:pointer;border-bottom:1px solid #eef0f1">
+        <span style="font-size:16px">Cena pēc vienošanās</span>
+        <span style="position:relative;width:51px;height:31px;flex:0 0 51px;border-radius:999px;background:{{ negTrack }};transition:background .25s">
+          <span style="position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(20,26,32,.2);transform:translateX({{ negKnob }});transition:{{ knobTransition }}"></span>
+        </span>
+      </div>
+      <div style="padding:{{ cardPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:16px;opacity:{{ priceOp }};transition:opacity .2s">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Cena, €
+          <input value="{{ fPrice }}" onChange="{{ onPrice }}" disabled="{{ fNegotiable }}" inputMode="decimal" placeholder="Piem., 1 150" style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Mērvienība
+          <select style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329"><option>Par visu</option><option>/ gab.</option><option>/ kg</option><option>/ t</option><option>/ ber. m³</option></select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Daudzums
+          <input placeholder="Piem., 12 gab." style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+        </label>
+      </div>
+    </div>
+
+    <sc-if value="{{ isSellForm }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Pieejamība</div>
+      <div style="background:#fff;border-radius:20px;padding:{{ cardPad }};display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+        <div style="position:relative;width:min(100%,400px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#e9ebe8">
+          <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 2);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ availX }});transition:{{ segTransition }}"></div>
+          <sc-for list="{{ availOpts }}" as="o" hint-placeholder-count="2">
+            <div onPointerDown="{{ o.set }}" style="position:relative;padding:10px 0;text-align:center;font-size:15px;font-weight:{{ o.fw }};color:{{ o.fg }};cursor:pointer;user-select:none">{{ o.label }}</div>
+          </sc-for>
+        </div>
+        <span style="font-size:13px;color:#5d6670;line-height:1.45;padding-left:4px">{{ availHint }}</span>
+      </div>
+    </sc-if>
+
+    <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Foto un zīmes</div>
+    <div style="background:#fff;border-radius:20px;padding:{{ cardPad }};display:flex;flex-direction:column;gap:18px;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:14px;font-weight:500">Foto <span style="font-weight:400;color:#5d6670">· pirmais būs galvenais</span></span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px">
+          <div style="aspect-ratio:1;border-radius:14px;background:#eef3ee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:#2f5538;transition:transform .12s" style-active="transform:scale(.95)"><span style="font-size:26px;line-height:1;font-weight:300">+</span><span style="font-size:12px;font-weight:500">Pievienot</span></div>
+          <sc-for list="{{ photoSlots }}" as="p" hint-placeholder-count="2">
+            <div style="aspect-ratio:1;border-radius:14px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;text-align:center;padding:4px;box-sizing:border-box">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:14px;font-weight:500">Zīmes <span style="font-weight:400;color:#5d6670">· neobligāti</span></span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ listingBadges }}" as="b" hint-placeholder-count="3">
+            <div onClick="{{ b.toggle }}" style="padding:8px 13px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};transition:transform .12s,background .2s" style-active="transform:scale(.95)">{{ b.mark }} {{ b.name }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:13px;line-height:1.5;color:#5d6670;padding:0 4px">Atrašanās vieta un kontakti tiek ņemti no tava profila: {{ address }}.</div>
+    <div style="position:sticky;bottom:{{ barBottom }};z-index:20;display:flex;gap:10px;justify-content:flex-end;padding:12px;margin:0 -12px;border-radius:20px;background:rgba(245,246,244,.82);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)">
+      <div onClick="{{ goListings }}" style="flex:{{ btnFlex }};padding:14px 20px;border-radius:14px;background:#e9ebe8;font-size:15px;font-weight:500;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Atcelt</div>
+      <div onClick="{{ saveListing }}" style="flex:{{ btnFlex }};padding:14px 24px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.97)">{{ formCta }}</div>
+    </div>
+  </sc-if>
+
+  <!-- PROFILE EDIT -->
+  <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h1 style="margin:0;font-size:{{ h1 }};line-height:1.08;letter-spacing:-.03em;font-weight:600">Uzņēmuma profils</h1>
+      <div style="font-size:15px;color:#5d6670;line-height:1.45">Šo informāciju redz citi kartē un tavā publiskajā profilā.</div>
+    </div>
+    <div style="background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+      <div style="height:120px;background:repeating-linear-gradient(135deg,#eceee9 0 12px,#e4e7e1 12px 24px);position:relative">
+        <div style="position:absolute;right:12px;top:12px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:13px;font-weight:500;cursor:pointer;transition:transform .12s" style-active="transform:scale(.95)">Mainīt vāku</div>
+      </div>
+      <div style="padding:0 20px 18px;display:flex;align-items:flex-end;gap:14px">
+        <div style="position:relative;width:84px;height:84px;margin-top:-42px;border-radius:50%;border:4px solid #fff;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;box-shadow:0 4px 14px rgba(20,26,32,.1)">AA</div>
+        <span style="font-size:14px;font-weight:500;color:#3f6e4a;cursor:pointer;padding-bottom:6px">Mainīt logo</span>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Informācija</div>
+    <div style="background:#fff;border-radius:20px;padding:{{ cardPad }};display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px">
+        <sc-for list="{{ profileFields }}" as="f" hint-placeholder-count="6">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">{{ f.label }}
+            <input value="{{ f.value }}" style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+          </label>
+        </sc-for>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Par saimniecību
+        <textarea rows="4" style="border:1px solid transparent;background:#f5f6f4;border-radius:12px;padding:13px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;resize:vertical;line-height:1.5" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">Ģimenes saimniecība, kas audzē tīršķirnes Aberdīnas-Angus gaļas liellopus.</textarea>
+      </label>
+    </div>
+    <div style="font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#7a8590;padding:6px 4px 0">Zīmes un vieta</div>
+    <div style="background:#fff;border-radius:20px;padding:{{ cardPad }};display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(20,26,32,.05);margin-top:-10px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ profileBadges }}" as="b" hint-placeholder-count="3">
+          <div onClick="{{ b.toggle }}" style="padding:8px 13px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;background:{{ b.bg }};color:{{ b.fg }};transition:transform .12s,background .2s" style-active="transform:scale(.95)">{{ b.mark }} {{ b.name }}</div>
+        </sc-for>
+      </div>
+      <div style="height:180px;border-radius:14px;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279;text-align:center;padding:8px">karte: velc punktu, lai precizētu vietu</div>
+    </div>
+    <div style="position:sticky;bottom:{{ barBottom }};z-index:20;display:flex;gap:10px;justify-content:flex-end;padding:12px;margin:0 -12px;border-radius:20px;background:rgba(245,246,244,.82);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%)">
+      <div onClick="{{ goOverview }}" style="flex:{{ btnFlex }};padding:14px 20px;border-radius:14px;background:#e9ebe8;font-size:15px;font-weight:500;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Atcelt</div>
+      <div onClick="{{ saveProfile }}" style="flex:{{ btnFlex }};padding:14px 24px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Saglabāt</div>
+    </div>
+  </sc-if>
+
+  <!-- ACCOUNT -->
+  <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+    <h1 style="margin:0;font-size:{{ h1 }};line-height:1.08;letter-spacing:-.03em;font-weight:600">Konts</h1>
+    <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+      <div style="padding:16px 20px;border-bottom:1px solid #eef0f1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><span style="font-size:16px">E-pasts</span><span style="font-size:16px;color:#5d6670">{{ email }}</span></div>
+      <div style="padding:16px 20px;border-bottom:1px solid #eef0f1;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;transition:background .12s" style-active="background:#f3f4f2"><span style="font-size:16px">Mainīt paroli</span><span style="font-size:18px;color:#b5bbc0">›</span></div>
+      <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="flex:1 1 220px"><div style="font-size:16px;margin-bottom:2px">Verifikācija</div><div style="font-size:14px;color:#5d6670;line-height:1.5">{{ verifyStatus }}</div></div>
+        <sc-if value="{{ canRequestVerify }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ requestVerify }}" style="padding:9px 14px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:14px;font-weight:600;cursor:pointer;transition:transform .12s" style-active="transform:scale(.95)">Pieprasīt</div>
+        </sc-if>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+      <div onClick="{{ logout }}" style="padding:16px 20px;border-bottom:1px solid #eef0f1;font-size:16px;color:#3f6e4a;cursor:pointer;transition:background .12s" style-active="background:#f3f4f2">Iziet</div>
+      <div onClick="{{ askDeleteProfile }}" style="padding:16px 20px;font-size:16px;color:#d92d20;cursor:pointer;transition:background .12s" style-active="background:#fdf3f2">Dzēst profilu</div>
+    </div>
+    <div style="font-size:13px;color:#5d6670;line-height:1.5;padding:0 4px;margin-top:-8px">Dzēšot profilu, tiks neatgriezeniski dzēsti arī visi tavi sludinājumi.</div>
+  </sc-if>
+
+  </main>
+</div>
+
+<sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ showFab }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ goNew }}" style="position:fixed;right:16px;bottom:24px;z-index:1400;display:flex;align-items:center;gap:8px;padding:15px 20px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 10px 30px rgba(63,110,74,.35);transition:transform .12s" style-active="transform:scale(.94)"><span style="font-size:20px;line-height:1;font-weight:400">+</span>Sludinājums</div>
+  </sc-if>
+</sc-if>
+
+<sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+  <div ref="{{ scrimRef }}" onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:3000;background:rgba(20,26,32,.4);opacity:0"></div>
+  <div style="position:fixed;inset:0;z-index:3001;display:flex;align-items:{{ modalAlign }};justify-content:center;padding:{{ modalPad }};box-sizing:border-box;pointer-events:none">
+    <div ref="{{ modalRef }}" style="pointer-events:auto;width:{{ modalW }};display:flex;flex-direction:column;gap:8px;opacity:0">
+      <div style="background:{{ modalBg }};backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:{{ modalRadius }};overflow:hidden;box-shadow:0 24px 60px rgba(20,26,32,.28);display:flex;flex-direction:column">
+        <div style="padding:20px 20px 16px;display:flex;flex-direction:column;gap:6px;text-align:{{ modalTextAlign }}">
+          <div style="font-size:18px;font-weight:600;letter-spacing:-.01em">{{ modalTitle }}</div>
+          <div style="font-size:14px;line-height:1.5;color:#5d6670">{{ modalText }}</div>
+        </div>
+        <div onClick="{{ confirmModal }}" style="padding:16px;border-top:1px solid rgba(20,26,32,.08);text-align:center;font-size:17px;font-weight:600;color:#d92d20;cursor:pointer;transition:background .12s" style-active="background:rgba(20,26,32,.05)">{{ modalCta }}</div>
+      </div>
+      <div onClick="{{ closeModal }}" style="padding:16px;border-radius:{{ modalRadius }};background:#fff;text-align:center;font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 24px 60px rgba(20,26,32,.2);transition:background .12s" style-active="background:#f3f4f2">Atcelt</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:0;right:0;bottom:{{ toastBottom }};z-index:3100;display:flex;justify-content:center;pointer-events:none;padding:0 16px">
+    <div ref="{{ toastRef }}" style="pointer-events:auto;display:flex;align-items:center;gap:16px;padding:12px 12px 12px 18px;border-radius:999px;background:rgba(29,35,41,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#fff;font-size:14px;font-weight:500;box-shadow:0 12px 32px rgba(20,26,32,.3);opacity:0">
+      <span>{{ toast }}</span>
+      <sc-if value="{{ hasUndo }}" hint-placeholder-val="{{ false }}"><span onClick="{{ undo }}" style="padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);color:#cfe3d3;font-weight:600;cursor:pointer">Atsaukt</span></sc-if>
+    </div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;overview&quot;,&quot;listings&quot;,&quot;form&quot;,&quot;profile&quot;,&quot;account&quot;],&quot;default&quot;:&quot;overview&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;hasListings&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;verified&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;compact&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;reduceMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  cats = [
+    { id: 'lop', name: 'Lopkopība', subs: ['Dzīvnieki', 'Fermu aprīkojums un iekārtas', 'Barība', 'Veterinārie pakalpojumi'] },
+    { id: 'teh', name: 'Lauksaimniecības tehnika', subs: ['Traktori', 'Augsnes apstrāde', 'Graudu pirmapstrādes tehnika', 'Lopbarības sagatavošanas tehnika', 'Kravu transportēšanas tehnika', 'Rezerves daļas'] },
+    { id: 'sek', name: 'Sēklas un graudi', subs: ['Graudaugi', 'Krustzieži', 'Nektāraugi', 'Zālāju sēklas'] },
+    { id: 'mez', name: 'Mežsaimniecība', subs: ['Malka', 'Kokmateriāli', 'Mežizstrādes pakalpojumi'] },
+    { id: 'daz', name: 'Dažādi', subs: ['Biškopība un medus', 'Pakalpojumi', 'Citi'] }
+  ];
+  seed = [
+    { id: 'm1', reserve: true, type: 'sell', title: 'Angus teles, 8–10 mēnešus vecas', price: '1 150 €', unit: '/ gab.', cat: 'lop', posted: 'Vakar', active: true, img: 'foto: teles' },
+    { id: 'm2', type: 'buy', title: 'Meklēju ruļļu presi', price: 'Līdz 12 000 €', unit: '', cat: 'teh', posted: 'Pirms 5 d.', active: true, img: 'foto: ruļļu prese' },
+    { id: 'm3', type: 'sell', title: 'Angus bullis vaislai, 2 gadi', price: '2 800 €', unit: '', cat: 'lop', posted: 'Pirms 3 ned.', active: false, img: 'foto: bullis' }
+  ];
+  rootRef = React.createRef(); pageRef = React.createRef(); modalRef = React.createRef(); scrimRef = React.createRef(); toastRef = React.createRef();
+  sp = {};
+  state = {
+    tab: (typeof location !== 'undefined' && new URLSearchParams(location.search).get('startTab')) || this.props.startTab || 'overview',
+    items: (this.props.hasListings ?? true) ? this.seed.slice() : [], filter: 'all', narrow: typeof window !== 'undefined' && window.innerWidth < 720,
+    verifyReq: false, modal: null, toast: null, editId: null, titleErr: false, swiped: false,
+    fType: 'sell', fTitle: '', fCat: 'lop', fPrice: '', fNeg: false, fRes: false, fBadges: {}, pBadges: { 'Šķirnes saimniecība': true }
+  };
+  _lastTab = this.state.tab;
+  componentDidMount() {
+    this._onW = () => this.measure(); window.addEventListener('resize', this._onW); this.attachRO();
+    this._key = e => { if (e.key === 'Escape' && this.state.modal) this.closeModal(); };
+    window.addEventListener('keydown', this._key);
+    this._down = e => { if (this._openRow && !e.target.closest('[data-row="' + this._openRow + '"]')) this.closeRow(); };
+    document.addEventListener('pointerdown', this._down, true);
+  }
+  componentWillUnmount() { this._ro && this._ro.disconnect(); window.removeEventListener('resize', this._onW); window.removeEventListener('keydown', this._key); document.removeEventListener('pointerdown', this._down, true); clearTimeout(this._tt); clearTimeout(this._rt); Object.values(this.sp).forEach(s => cancelAnimationFrame(s.raf)); }
+  componentDidUpdate(pp) {
+    if (pp && pp.hasListings !== this.props.hasListings) this.setState({ items: (this.props.hasListings ?? true) ? this.seed.slice() : [] });
+    if (pp && pp.startTab !== this.props.startTab && this.props.startTab) this.setState({ tab: this.props.startTab });
+    if (this._lastTab !== this.state.tab) { this._lastTab = this.state.tab; this.enterTab(); }
+  }
+  measure() { const w = document.documentElement.clientWidth || window.innerWidth, n = w < 720; if (n !== this.state.narrow) { this.setState({ narrow: n }); } }
+  attachRO() { this.measure(); if (window.ResizeObserver) { this._ro = new ResizeObserver(() => this.measure()); this._ro.observe(document.documentElement); } this._onLoad = () => this.measure(); window.addEventListener('load', this._onLoad); [100, 500, 1500].forEach(t => setTimeout(() => this.measure(), t)); }
+  rm() { return !!this.props.reduceMotion || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  whenRef(ref, fn, n = 0) { if (ref.current) fn(ref.current); else if (n < 90) requestAnimationFrame(() => this.whenRef(ref, fn, n + 1)); }
+  spring(key, to, o, apply, done) {
+    const st = this.sp[key] || (this.sp[key] = { x: 0, v: 0, raf: 0 });
+    cancelAnimationFrame(st.raf);
+    let response = o.response || 0.35, damping = o.damping == null ? 1 : o.damping;
+    if (o.velocity != null) st.v = o.velocity;
+    if (this.rm()) { if (o.instantOnRM) { st.x = to; st.v = 0; apply(to); done && done(); return; } response = 0.2; damping = 1; st.v = 0; }
+    const k = Math.pow(2 * Math.PI / response, 2), c = 4 * Math.PI * damping / response, eps = o.eps || 0.0006, veps = o.veps || 0.02;
+    let last = performance.now();
+    const step = t => {
+      const dt = Math.min(0.032, (t - last) / 1000); last = t;
+      for (let i = 0; i < 4; i++) { const h = dt / 4, a = -k * (st.x - to) - c * st.v; st.v += a * h; st.x += st.v * h; }
+      if (Math.abs(st.x - to) < eps && Math.abs(st.v) < veps) { st.x = to; st.v = 0; st.raf = 0; apply(to); done && done(); return; }
+      apply(st.x); st.raf = requestAnimationFrame(step);
+    };
+    st.raf = requestAnimationFrame(step);
+  }
+  rubber(x, d, c = 0.55) { return (x * d * c) / (d + c * Math.abs(x)); }
+  enterTab() {
+    window.scrollTo(0, 0); this._openRow = null;
+    const el = this.pageRef.current; if (!el) return;
+    this.sp.page = { x: 0, v: 0, raf: 0 }; el.style.opacity = 0;
+    this.spring('page', 1, { response: 0.4 }, x => { el.style.opacity = Math.min(1, x); el.style.transform = this.rm() || x > 0.999 ? 'none' : 'translate3d(0,' + (1 - x) * 12 + 'px,0)'; });
+  }
+
+  // Swipe-to-reveal rows (mobile) — hysteresis + direction lock, rubber-band, momentum snap
+  REVEAL = 176;
+  rowEl(id) { return this.rootRef.current && this.rootRef.current.querySelector('[data-row="' + id + '"]'); }
+  applyRow(id, x) { const el = this.rowEl(id); if (el) el.style.transform = x ? 'translate3d(' + x + 'px,0,0)' : 'none'; }
+  closeRow() { const id = this._openRow; if (!id) return; this._openRow = null; this.spring('row:' + id, 0, { response: 0.3, eps: 0.5, veps: 5 }, x => this.applyRow(id, x)); }
+  rowDown = e => {
+    if (!this.state.narrow || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const id = e.currentTarget.getAttribute('data-row'), st = this.sp['row:' + id];
+    if (st) cancelAnimationFrame(st.raf);
+    this._rd = { id, x0: e.clientX, y0: e.clientY, s0: st ? st.x : 0, lock: null, hist: [{ x: e.clientX, t: performance.now() }], el: e.currentTarget, pid: e.pointerId };
+  };
+  rowMove = e => {
+    const d = this._rd; if (!d) return;
+    const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+    if (!d.lock) { if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; d.lock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'; if (d.lock === 'x') { d.x0 = e.clientX; d.el.setPointerCapture && d.el.setPointerCapture(d.pid); if (this._openRow && this._openRow !== d.id) this.closeRow(); } }
+    if (d.lock !== 'x') return;
+    let x = d.s0 + (e.clientX - d.x0), R = this.REVEAL;
+    if (x > 0) x = this.rubber(x, 300); if (x < -R) x = -R - this.rubber(-R - x, 300);
+    const st = this.sp['row:' + d.id] || (this.sp['row:' + d.id] = { x: 0, v: 0, raf: 0 }); st.x = x; st.v = 0; this.applyRow(d.id, x);
+    d.hist.push({ x: e.clientX, t: performance.now() }); if (d.hist.length > 8) d.hist.shift();
+  };
+  rowUp = () => {
+    const d = this._rd; this._rd = null; if (!d || d.lock !== 'x') return;
+    this._suppressTap = true; setTimeout(() => { this._suppressTap = false; }, 50);
+    const now = performance.now(), h = d.hist.filter(p => now - p.t < 100), a = h[0], b = h[h.length - 1];
+    const v = a && b && b.t > a.t ? (b.x - a.x) / ((b.t - a.t) / 1000) : 0, st = this.sp['row:' + d.id];
+    const proj = st.x + (v / 1000) * 0.99 / (1 - 0.99), to = proj < -this.REVEAL / 2 ? -this.REVEAL : 0;
+    this._openRow = to ? d.id : null; if (to) this.setState({ swiped: true });
+    this.spring('row:' + d.id, to, { response: 0.32, damping: Math.abs(v) > 500 ? 0.86 : 1, velocity: v, eps: 0.5, veps: 5, instantOnRM: true }, x => this.applyRow(d.id, x));
+  };
+
+  flash(msg, undo) {
+    clearTimeout(this._tt);
+    this.setState({ toast: { msg, undo } }, () => this.whenRef(this.toastRef, el => { this.sp.toast = { x: 0, v: 0, raf: 0 }; this.spring('toast', 1, { response: 0.36 }, x => { el.style.opacity = Math.min(1, x); el.style.transform = this.rm() ? 'none' : 'translate3d(0,' + (1 - x) * 24 + 'px,0) scale(' + (0.96 + 0.04 * x) + ')'; }); }));
+    this._tt = setTimeout(() => this.hideToast(), undo ? 5000 : 2600);
+  }
+  hideToast() { const el = this.toastRef.current; if (!el) { this.setState({ toast: null }); return; } this.spring('toast', 0, { response: 0.28 }, x => { el.style.opacity = Math.max(0, x); el.style.transform = this.rm() ? 'none' : 'translate3d(0,' + (1 - x) * 24 + 'px,0)'; }, () => this.setState({ toast: null })); }
+  openModal(m) { this.setState({ modal: m }, () => this.whenRef(this.modalRef, el => { this.sp.modal = { x: 0, v: 0, raf: 0 }; this.spring('modal', 1, { response: 0.36 }, x => this.applyModal(el, x)); })); }
+  closeModal(after) { const el = this.modalRef.current; if (!el) { this.setState({ modal: null }); return; } this.spring('modal', 0, { response: 0.26 }, x => this.applyModal(el, x), () => { this.setState({ modal: null }); after && after(); }); }
+  applyModal(el, x) { const sc = this.scrimRef.current, c = Math.max(0, Math.min(1, x)); if (sc) sc.style.opacity = c; if (this.rm()) { el.style.opacity = c; el.style.transform = 'none'; return; } if (this.state.narrow) { el.style.opacity = 1; el.style.transform = 'translate3d(0,' + (1 - x) * (el.offsetHeight + 40) + 'px,0)'; } else { el.style.opacity = c; el.style.transform = 'scale(' + (1.08 - 0.08 * x) + ')'; } }
+  openForm(item) {
+    if (item) this.setState({ tab: 'form', editId: item.id, fType: item.type, fTitle: item.title, fCat: item.cat, fPrice: item.price.replace(/[^\d ,]/g, '').trim(), fNeg: item.price === 'Pēc vienošanās', fRes: !!item.reserve, titleErr: false });
+    else this.setState({ tab: 'form', editId: null, fType: 'sell', fTitle: '', fCat: 'lop', fPrice: '', fNeg: false, fRes: false, fBadges: {}, titleErr: false });
+  }
+  renderVals() {
+    const s = this.state, narrow = !!this.props.compact || s.narrow, wide = !narrow, verified = !!this.props.verified, rm = this.rm();
+    const catName = id => (this.cats.find(c => c.id === id) || {}).name;
+    const activeCount = s.items.filter(i => i.active).length;
+    const dec = l => {
+      const sell = l.type === 'sell';
+      return { ...l, catName: catName(l.cat), typeLabel: sell ? 'Pārdod' : 'Pērk', typeBg: sell ? '#e6efe6' : '#f5ecd9', typeFg: sell ? '#2f5538' : '#7a5516',
+        stLabel: l.active ? 'Aktīvs' : 'Paslēpts', dot: l.active ? '#3f6e4a' : '#b5bbc0', op: l.active ? 1 : 0.55, toggleLabel: l.active ? 'Paslēpt' : 'Rādīt',
+        edit: e => { e && e.stopPropagation && e.stopPropagation(); this.openForm(l); },
+        tap: () => { if (this._suppressTap) return; if (this._openRow) { this.closeRow(); return; } if (narrow) this.openForm(l); },
+        toggle: e => { e && e.stopPropagation && e.stopPropagation(); this.closeRow(); this.setState(st => ({ items: st.items.map(i => i.id === l.id ? { ...i, active: !i.active } : i) })); this.flash(l.active ? 'Sludinājums paslēpts' : 'Sludinājums atkal redzams'); },
+        del: e => {
+          e && e.stopPropagation && e.stopPropagation();
+          const idx = s.items.findIndex(i => i.id === l.id), item = s.items[idx];
+          if (this.sp['row:' + l.id]) { cancelAnimationFrame(this.sp['row:' + l.id].raf); delete this.sp['row:' + l.id]; }
+          this._openRow = null;
+          this.setState(st => ({ items: st.items.filter(i => i.id !== l.id) }));
+          this.flash('Sludinājums dzēsts', () => { this.setState(st => { const it = st.items.slice(); it.splice(Math.min(idx, it.length), 0, item); return { items: it }; }); this.hideToast(); });
+        } };
+    };
+    const navDefs = [['overview', 'Pārskats', ''], ['listings', 'Sludinājumi', String(s.items.length)], ['profile', 'Uzņēmuma profils', ''], ['account', 'Konts', '']];
+    const curNav = s.tab === 'form' ? 'listings' : s.tab;
+    const filtered = s.items.filter(i => s.filter === 'all' || (s.filter === 'active' ? i.active : !i.active));
+    const cat = this.cats.find(c => c.id === s.fCat) || this.cats[0];
+    const fIdx = ['all', 'active', 'hidden'].indexOf(s.filter);
+    const badgeChip = (map, key) => n => { const on = !!map[n]; return { name: n, mark: on ? '✓' : '+', bg: on ? '#3f6e4a' : '#eef0ee', fg: on ? '#fff' : '#1d2329', toggle: () => this.setState(st => ({ [key]: { ...st[key], [n]: !st[key][n] } })) }; };
+    return {
+      rootRef: this.rootRef, pageRef: this.pageRef, modalRef: this.modalRef, scrimRef: this.scrimRef, toastRef: this.toastRef,
+      wide, narrow, pad: narrow ? '16px 16px 120px' : '36px 20px 80px', h1: narrow ? '30px' : '38px', cardPad: narrow ? '16px' : '22px', cardPadX: narrow ? '16px' : '22px',
+      thumb: narrow ? '64px' : '80px', sepLeft: narrow ? '94px' : '110px', actionsFlex: narrow ? '1 1 100%' : '0 0 auto', btnFlex: narrow ? '1' : '0 0 auto', barBottom: narrow ? '12px' : '16px',
+      segTransition: rm ? 'none' : 'transform .5s cubic-bezier(.32,.72,0,1)', knobTransition: rm ? 'none' : 'transform .35s cubic-bezier(.32,.72,0,1)',
+      toastBottom: narrow && (s.tab === 'overview' || s.tab === 'listings') ? '96px' : '28px',
+      name: 'Aizstrautu Angus', email: 'info@aizstrautuangus.lv', spec: 'Gaļas liellopi', address: 'Aizstrauti, Dobeles nov., LV-3721',
+      verified, views: (this.props.hasListings ?? true) ? 128 : 4, activeCount, totalCount: s.items.length,
+      nav: navDefs.map(([id, label, count]) => { const on = curNav === id; return { label, count, fw: on ? 600 : 500, go: () => this.setState({ tab: id }), pillBg: on ? '#3b5166' : 'rgba(20,26,32,.06)', pillFg: on ? '#fff' : '#1d2329', sideBg: on ? '#eef3ee' : 'transparent', sideFg: on ? '#2f5538' : '#33393f', countFg: on ? '#2f5538' : '#8a929a' }; }),
+      isOverview: s.tab === 'overview', isListings: s.tab === 'listings', isForm: s.tab === 'form', isProfile: s.tab === 'profile', isAccount: s.tab === 'account',
+      showFab: s.tab === 'overview' || s.tab === 'listings',
+      goNew: () => this.openForm(null), goListings: () => this.setState({ tab: 'listings' }), goProfile: () => this.setState({ tab: 'profile' }), goOverview: () => this.setState({ tab: 'overview' }),
+      showVerifyCard: !verified, canRequestVerify: !verified && !s.verifyReq,
+      verifyTitle: s.verifyReq ? 'Pieprasījums nosūtīts' : 'Iegūsti ✓ Pārbaudīts zīmi',
+      verifyText: s.verifyReq ? 'Mēs pārbaudīsim informāciju un ar tevi sazināsimies.' : 'Pārbaudīti uzņēmumi iegūst pircēju uzticību un tiek izcelti kartē.',
+      verifyStatus: verified ? '✓ Tavs uzņēmums ir pārbaudīts.' : s.verifyReq ? 'Pieprasījums nosūtīts — gaidām pārbaudi.' : 'Nav pārbaudīts. Pārbaudīti uzņēmumi saņem ✓ zīmi.',
+      requestVerify: () => { this.setState({ verifyReq: true }); this.flash('Verifikācijas pieprasījums nosūtīts'); },
+      hasListings: s.items.length > 0, noListings: s.items.length === 0, previewRows: s.items.slice(0, 3).map(dec),
+      filterTabs: [['all', 'Visi'], ['active', 'Aktīvie'], ['hidden', 'Paslēptie']].map(([id, label], i) => ({ label, count: s.items.filter(x => id === 'all' || (id === 'active' ? x.active : !x.active)).length, fw: fIdx === i ? 600 : 500, fg: fIdx === i ? '#1d2329' : '#5d6670', set: () => { this.closeRow(); this.setState({ filter: id }); } })),
+      filterX: fIdx * 100 + '%', showSwipeHint: !s.swiped && filtered.length > 0,
+      rows: filtered.map(dec), listEmpty: filtered.length === 0, listEmptyText: s.items.length === 0 ? 'Tev vēl nav neviena sludinājuma' : 'Šajā sadaļā nav sludinājumu',
+      rowDown: this.rowDown, rowMove: this.rowMove, rowUp: this.rowUp,
+      formTitle: s.editId ? 'Rediģēt sludinājumu' : 'Jauns sludinājums', formCta: s.editId ? 'Saglabāt' : 'Publicēt',
+      typeOpts: [['sell', 'Pārdodu'], ['buy', 'Pērku']].map(([id, label]) => ({ label, set: () => this.setState({ fType: id }), fw: s.fType === id ? 600 : 500, fg: s.fType === id ? '#1d2329' : '#5d6670' })),
+      typeX: (s.fType === 'sell' ? 0 : 100) + '%', typeHint: s.fType === 'sell' ? 'Piedāvā preci vai pakalpojumu' : 'Meklē, ko nopirkt',
+      fTitle: s.fTitle, onTitle: e => this.setState({ fTitle: e.target.value, titleErr: false }), hasTitleErr: s.titleErr, titleBd: s.titleErr ? '#b3261e' : 'transparent',
+      fPrice: s.fPrice, onPrice: e => this.setState({ fPrice: e.target.value }),
+      fCat: s.fCat, onCat: e => this.setState({ fCat: e.target.value }), catOpts: this.cats, subOpts: cat.subs.map(n => ({ name: n })),
+      fNegotiable: s.fNeg, toggleNeg: () => this.setState({ fNeg: !s.fNeg }), negTrack: s.fNeg ? '#3f6e4a' : '#dfe2df', negKnob: s.fNeg ? '20px' : '0px', priceOp: s.fNeg ? 0.4 : 1,
+      isSellForm: s.fType === 'sell', availX: (s.fRes ? 100 : 0) + '%',
+      availOpts: [['Pieejams uzreiz', false], ['Rezervācijai', true]].map(([label, v]) => ({ label, set: () => this.setState({ fRes: v }), fw: s.fRes === v ? 600 : 500, fg: s.fRes === v ? '#1d2329' : '#5d6670' })),
+      availHint: s.fRes ? 'Prece vēl nav gatava — pircēji var to rezervēt iepriekš. Uz kartītes būs zīme „Rezervācijai”.' : 'Prece ir pieejama un gatava pārdošanai.',
+      photoSlots: s.editId ? [{ label: 'galvenais foto' }, { label: 'foto 2' }] : [],
+      listingBadges: ['Tehnika ar garantiju', 'Bioloģiskā lauksaimniecība', 'Šķirnes dzīvnieki'].map(badgeChip(s.fBadges, 'fBadges')),
+      profileBadges: ['Bioloģiskā lauksaimniecība', 'Šķirnes saimniecība', 'Tehnika ar garantiju'].map(badgeChip(s.pBadges, 'pBadges')),
+      profileFields: [['Uzņēmuma / saimniecības nosaukums', 'Aizstrautu Angus'], ['Specializācija', 'Gaļas liellopi'], ['Kategorija', 'Lopkopība'], ['Adrese', 'Aizstrauti, Dobeles nov., LV-3721'], ['Tālrunis', '+371 29 114 562'], ['Kontakta e-pasts', 'info@aizstrautuangus.lv']].map(([label, value]) => ({ label, value })),
+      saveListing: () => {
+        const title = s.fTitle.trim();
+        if (!title) { this.setState({ titleErr: true }); window.scrollTo({ top: 0, behavior: rm ? 'auto' : 'smooth' }); return; }
+        const price = s.fNeg ? 'Pēc vienošanās' : (s.fPrice.trim() ? s.fPrice.trim() + ' €' : 'Pēc vienošanās');
+        if (s.editId) this.setState(st => ({ tab: 'listings', items: st.items.map(i => i.id === st.editId ? { ...i, type: st.fType, title, cat: st.fCat, price, reserve: st.fType === 'sell' && st.fRes } : i) }));
+        else this.setState(st => ({ tab: 'listings', filter: 'all', items: [{ id: 'n' + Date.now(), type: st.fType, title, price, unit: '', cat: st.fCat, posted: 'Tikko', active: true, img: 'foto', reserve: st.fType === 'sell' && st.fRes }].concat(st.items) }));
+        this.flash(s.editId ? 'Izmaiņas saglabātas' : 'Sludinājums publicēts');
+      },
+      saveProfile: () => { this.setState({ tab: 'overview' }); this.flash('Profils saglabāts'); },
+      logout: () => this.flash('Šis ir prototips — izrakstīšanās nenotika'),
+      askDeleteProfile: () => this.openModal({ title: 'Dzēst profilu?', text: 'Profils un visi tavi sludinājumi tiks neatgriezeniski dzēsti. Šo darbību nevar atsaukt.', cta: 'Dzēst profilu' }),
+      hasModal: !!s.modal, modalTitle: s.modal ? s.modal.title : '', modalText: s.modal ? s.modal.text : '', modalCta: s.modal ? s.modal.cta : '',
+      modalAlign: narrow ? 'flex-end' : 'center', modalPad: narrow ? '0 10px 24px' : '24px', modalW: narrow ? '100%' : 'min(340px,100%)', modalRadius: narrow ? '16px' : '18px',
+      modalBg: 'rgba(255,255,255,.94)', modalTextAlign: 'center',
+      closeModal: () => this.closeModal(),
+      confirmModal: () => this.closeModal(() => this.flash('Šis ir prototips — profils netika dzēsts')),
+      hasToast: !!s.toast, toast: s.toast ? s.toast.msg : '', hasUndo: !!(s.toast && s.toast.undo), undo: () => s.toast && s.toast.undo && s.toast.undo()
+    };
+  }
+}
+</script>
+</body>
+</html>

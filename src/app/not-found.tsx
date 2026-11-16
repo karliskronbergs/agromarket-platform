@@ -21,7 +21,7 @@ export default function NotFound() {
 
   return (
     <html lang="lv">
-      <body className="flex min-h-screen items-center justify-center bg-[#f6f7f5] px-6 text-center font-sans">
+      <body className="flex min-h-screen items-center justify-center bg-[#f5f6f4] px-6 text-center font-sans">
         <div className="flex flex-col items-center gap-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#8a929a]">404</p>
           <h1 className="text-2xl font-semibold text-[#1d2329]">Lapa nav atrasta / Page not found</h1>

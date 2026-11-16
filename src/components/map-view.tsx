@@ -14,6 +14,7 @@ import { MachineryFilterPanel, type MachineryFilters } from "@/components/machin
 import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-panel";
 import { SortMenu } from "@/components/sort-menu";
 import { MapSearchBar } from "@/components/map-search-bar";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
@@ -298,20 +299,13 @@ export function MapView({
     <div className="flex-shrink-0 border-b border-[#e3e6e8] bg-white">
       <div className="mx-auto flex max-w-[1648px] flex-col gap-3 px-4 py-3 sm:gap-3.5 sm:px-6 sm:py-4">
         <div className="flex items-center gap-3">
-          <div className="grid flex-shrink-0 grid-cols-3 gap-0.5 rounded-xl bg-[#f0f2f0] p-1 sm:flex sm:gap-0.5">
-            {(["profiles", "sell", "buy"] as MapMode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => navigate({ mode: m, ...categoryQuery() })}
-                className={`rounded-[9px] px-2 py-2 text-sm font-medium transition sm:px-4 ${
-                  mode === m ? "bg-white text-[#1d2329] shadow-sm" : "text-[#5d6670]"
-                }`}
-              >
-                {labels[m]}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            className="flex-shrink-0"
+            fill={false}
+            items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
+            value={mode}
+            onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
+          />
           <Spinner
             className={`hidden h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity sm:block ${isPending ? "opacity-100" : "opacity-0"}`}
           />
@@ -484,7 +478,7 @@ export function MapView({
       <div className="relative flex flex-1 overflow-hidden">
         {/* List pane */}
         <div
-          className={`absolute inset-0 z-10 flex flex-col gap-2.5 overflow-y-auto bg-[#f6f7f5] p-4 pb-24 sm:static sm:z-auto sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4 ${
+          className={`absolute inset-0 z-10 flex flex-col gap-2.5 overflow-y-auto bg-[#f5f6f4] p-4 pb-24 sm:static sm:z-auto sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4 ${
             mobileView === "map" ? "hidden sm:flex" : "flex"
           }`}
         >

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 export async function AuthShell({
   mode,
@@ -29,23 +30,18 @@ export async function AuthShell({
     { title: t("feature3Title"), body: t("feature3Body"), mobile: t("feature3Mobile") },
   ];
 
-  const tabClass = (active: boolean) =>
-    `rounded-[9px] py-2.5 text-center text-[15px] font-medium transition sm:px-[18px] sm:py-2 ${
-      active ? "bg-white text-[#1d2329] shadow-sm" : "text-[#5d6670]"
-    }`;
-
   return (
     <div className="flex flex-1 flex-col items-center px-4 pb-8 pt-6 sm:px-6 sm:py-12">
       <div className="w-full max-w-[1040px] overflow-hidden sm:rounded-[24px] sm:border sm:border-[#e3e6e8] sm:bg-white sm:[grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))] sm:grid">
         <div className="flex flex-col gap-[18px] sm:p-10">
-          <div className="grid grid-cols-2 gap-0.5 self-start rounded-xl bg-[#e9ebe8] p-1 sm:flex sm:w-fit sm:gap-0.5 sm:bg-[#f0f2f0]">
-            <Link href="/auth/login" className={tabClass(mode === "login")}>
-              {t("signInCta")}
-            </Link>
-            <Link href="/auth/sign-up" className={tabClass(mode === "signup")}>
-              {t("signUpCta")}
-            </Link>
-          </div>
+          <SegmentedControl
+            className="w-full self-start sm:w-fit"
+            items={[
+              { value: "login", label: t("signInCta"), href: "/auth/login" },
+              { value: "signup", label: t("signUpCta"), href: "/auth/sign-up" },
+            ]}
+            value={mode}
+          />
 
           <div>
             <h1 className="m-0 mb-1.5 text-[26px] font-semibold tracking-[-0.01em] text-[#1d2329] sm:text-[28px]">

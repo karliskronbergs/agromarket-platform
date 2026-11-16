@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f7f5;
+  --background: #f5f6f4;
   --foreground: #1d2329;
 
   /* Design tokens — design_handoff_v2/README.md "Design tokens" */
@@ -71,4 +71,31 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), Arial, Helvetica, sans-serif;
+}
+
+/* design_handoff_v2/FLUID.md "Press feedback": every tappable element
+   scales slightly on press. Scoped to buttons/links/role=button so it
+   covers cards, pills and nav items without needing a class per element. */
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  a,
+  [role="button"] {
+    transition: transform 120ms ease-out;
+  }
+  button:active:not(:disabled),
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes fluid-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

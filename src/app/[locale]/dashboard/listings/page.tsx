@@ -8,6 +8,7 @@ import { ReactivateButton } from "./reactivate-button";
 import { HideButton } from "./hide-button";
 import { AutoRenewCheckbox } from "./auto-renew-checkbox";
 import { DashboardToast } from "@/components/dashboard-toast";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -99,19 +100,15 @@ export default async function ListingsPage({
         </Link>
       </div>
 
-      <div className="flex w-fit gap-0.5 rounded-xl bg-[#eceeeb] p-1">
-        {filterTabs.map((tab) => (
-          <Link
-            key={tab.id}
-            href={tab.id === "all" ? "/dashboard/listings" : { pathname: "/dashboard/listings", query: { filter: tab.id } }}
-            className={`rounded-[9px] px-3.5 py-2 text-sm font-medium transition ${
-              filter === tab.id ? "bg-white text-[#1d2329]" : "text-[#5d6670]"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
+      <SegmentedControl
+        fill={false}
+        value={filter}
+        items={filterTabs.map((tab) => ({
+          value: tab.id,
+          label: tab.label,
+          href: tab.id === "all" ? "/dashboard/listings" : { pathname: "/dashboard/listings", query: { filter: tab.id } },
+        }))}
+      />
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-[#c9d0d5] bg-white p-10 text-center">

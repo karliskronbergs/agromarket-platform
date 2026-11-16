@@ -90,7 +90,7 @@ export function ThreadView({
 
   return (
     <div className="flex flex-1 flex-col gap-3 rounded-2xl border border-[#e3e6e8] bg-white p-4">
-      <div className="flex h-[55vh] min-h-64 flex-col gap-2 overflow-y-auto rounded-xl bg-[#f6f7f5] p-4">
+      <div className="flex h-[55vh] min-h-64 flex-col gap-2 overflow-y-auto rounded-xl bg-[#f5f6f4] p-4">
         {messages.map((m) => {
           const mine = m.sender_id === currentUserId;
           return (

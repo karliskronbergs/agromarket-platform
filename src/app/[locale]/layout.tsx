@@ -58,7 +58,7 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${lexend.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#f6f7f5]">
+      <body className="min-h-full flex flex-col bg-[#f5f6f4]">
         <NextIntlClientProvider>
           <SiteHeader locale={locale} />
           {children}

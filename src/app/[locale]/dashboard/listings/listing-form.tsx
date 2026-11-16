@@ -11,6 +11,8 @@ import { PRICE_UNIT_OPTIONS, getPriceUnitGroup } from "@/lib/price-units";
 import { CategoryFieldTree } from "@/components/category-field-tree";
 import { IconCheckmark } from "@/components/icons";
 import { Spinner } from "@/components/spinner";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { Switch } from "@/components/ui/switch";
 import { saveListing, type ListingState } from "./actions";
 import { ImageUploader } from "./image-uploader";
 
@@ -20,7 +22,7 @@ type ExistingImage = { id: string; url: string };
 const WEIGHT_UNIT_CATEGORY_SLUG = "seklas-un-graudi";
 
 const inputClass =
-  "rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
+  "rounded-xl border border-transparent bg-[#f5f6f4] px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a] focus:bg-white focus:shadow-[0_0_0_4px_rgba(63,110,74,0.12)]";
 
 export function ListingForm({
   locale,
@@ -229,7 +231,7 @@ export function ListingForm({
               value={price}
               disabled={negotiable}
               onChange={(e) => setPrice(e.target.value)}
-              className={`${inputClass} disabled:bg-[#f6f7f5] disabled:text-[#8a929a]`}
+              className={`${inputClass} disabled:bg-[#eceeeb] disabled:text-[#8a929a]`}
             />
           </Field>
           {priceUnitGroup && (
@@ -248,44 +250,30 @@ export function ListingForm({
 
         {listingType === "sell" && (
           <Field label={t("availability")}>
-            <div className="flex w-fit gap-1 rounded-xl bg-[#f0f2f0] p-1">
-              {(
-                [
-                  ["immediate", t("availabilityImmediate")],
-                  ["reservation", t("availabilityReservation")],
-                ] as const
-              ).map(([value, label]) => (
-                <label
-                  key={value}
-                  className="cursor-pointer rounded-[9px] px-3.5 py-2 text-sm font-medium text-[#5d6670] transition has-checked:bg-white has-checked:text-[#1d2329]"
-                >
-                  <input
-                    type="checkbox"
-                    name="availability"
-                    value={value}
-                    checked={availability === value}
-                    onChange={() => setAvailability(value)}
-                    className="sr-only"
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
+            <SegmentedControl
+              fill={false}
+              name="availability"
+              value={availability}
+              onChange={setAvailability}
+              items={[
+                { value: "immediate", label: t("availabilityImmediate") },
+                { value: "reservation", label: t("availabilityReservation") },
+              ]}
+            />
           </Field>
         )}
 
-        <label className="-mt-2 flex w-fit cursor-pointer items-center gap-2.5 text-sm text-[#1d2329]">
-          <input
-            type="checkbox"
+        <div className="-mt-2 flex w-fit items-center gap-3 text-sm text-[#1d2329]">
+          <Switch
+            label={td("formNegotiable")}
             checked={negotiable}
-            onChange={(e) => {
-              setNegotiable(e.target.checked);
-              if (e.target.checked) setPrice("");
+            onChange={(next) => {
+              setNegotiable(next);
+              if (next) setPrice("");
             }}
-            className="h-[18px] w-[18px] accent-[#3f6e4a]"
           />
-          {td("formNegotiable")}
-        </label>
+          <span>{td("formNegotiable")}</span>
+        </div>
 
         <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-[#1d2329]">
           <input type="checkbox" name="plusVat" defaultChecked={initial?.plusVat} className="h-[18px] w-[18px] accent-[#3f6e4a]" />

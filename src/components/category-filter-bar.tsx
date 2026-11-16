@@ -38,7 +38,7 @@ function Panel({
             type="button"
             onClick={() => onPick(child)}
             className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
-              isActive ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f6f7f5]"
+              isActive ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f5f6f4]"
             }`}
           >
             <span>{label(child)}</span>

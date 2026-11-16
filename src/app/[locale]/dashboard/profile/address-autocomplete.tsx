@@ -72,7 +72,7 @@ export function AddressAutocomplete({
                 setValue(s);
                 setOpen(false);
               }}
-              className="block w-full px-3 py-2 text-left text-sm hover:bg-[#f6f7f5]"
+              className="block w-full px-3 py-2 text-left text-sm hover:bg-[#f5f6f4]"
             >
               {s}
             </button>

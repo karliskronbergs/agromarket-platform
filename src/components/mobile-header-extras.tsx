@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname, useRouter as useNextRouter } from "next/navigation";
-import { Link } from "@/i18n/navigation";
 import { IconChevronLeft } from "@/components/icons";
 
 const BACK_SEGMENTS = new Set(["listings", "profiles", "auth"]);
@@ -21,20 +20,5 @@ export function MobileBackButton() {
     >
       <IconChevronLeft className="h-5 w-5" />
     </button>
-  );
-}
-
-export function MobileLoginCta({ loggedIn, label }: { loggedIn: boolean; label: string }) {
-  const pathname = usePathname();
-  const segment = pathname?.split("/").filter(Boolean)[1] ?? "";
-  if (loggedIn || segment === "auth") return null;
-
-  return (
-    <Link
-      href="/auth/login"
-      className="flex-shrink-0 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#3b5166]"
-    >
-      {label}
-    </Link>
   );
 }

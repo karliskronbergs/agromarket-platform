@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>lauks24.lv — Fluid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{margin:0;background:#f5f6f4;color:#1d2329;font-family:'Lexend',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#3f6e4a;text-decoration:none}a:hover{color:#2f5538}
+input::placeholder{color:#8a929a}
+.leaflet-container{font-family:'Lexend',system-ui,sans-serif;background:#e8ece6}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="min-height:100vh;display:flex;flex-direction:column;background:#f5f6f4">
+
+<header style="position:sticky;top:0;z-index:2000;background:{{ headerBg }};backdrop-filter:{{ headerBlur }};-webkit-backdrop-filter:{{ headerBlur }};color:#fff;box-shadow:0 1px 0 rgba(20,26,32,.08)">
+  <div style="max-width:1232px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:24px">
+    <img onClick="{{ goHome }}" src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:28px;display:block;cursor:pointer">
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <nav style="display:flex;gap:2px">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="3">
+          <div onClick="{{ n.go }}" style="padding:8px 12px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;background:{{ n.bg }};transition:background .15s,transform .12s" style-hover="background:rgba(255,255,255,.12)" style-active="transform:scale(.96)">{{ n.label }}</div>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:2px;font-size:14px"><span style="font-weight:600;padding:4px 6px">LV</span><span style="color:rgba(255,255,255,.65);padding:4px 6px;cursor:pointer">EN</span></div>
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div onClick="{{ goLogin }}" style="padding:8px 14px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .12s" style-hover="background:rgba(255,255,255,.12)" style-active="transform:scale(.96)">Ieiet</div>
+        <div onClick="{{ goSignup }}" style="padding:8px 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;background:#fff;color:#3b5166;transition:transform .12s" style-active="transform:scale(.96)">Izveidot profilu</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ toggleMenu }}" style="width:40px;height:40px;margin-right:-8px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:transform .12s,background .15s" style-active="transform:scale(.9);background:rgba(255,255,255,.12)">
+        <span style="width:18px;height:2px;border-radius:1px;background:#fff"></span><span style="width:18px;height:2px;border-radius:1px;background:#fff"></span>
+      </div>
+    </sc-if>
+  </div>
+</header>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeMenu }}" style="position:fixed;inset:0;z-index:2500"></div>
+  <div ref="{{ menuRef }}" style="position:fixed;top:60px;right:12px;z-index:2501;width:min(280px,calc(100% - 24px));padding:8px;box-sizing:border-box;border-radius:20px;background:rgba(255,255,255,.9);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 16px 48px rgba(20,26,32,.22);transform-origin:calc(100% - 20px) 0;opacity:0;display:flex;flex-direction:column">
+    <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4">
+      <div onClick="{{ m.go }}" style="padding:13px 14px;border-radius:12px;font-size:16px;font-weight:{{ m.fw }};color:{{ m.fg }};cursor:pointer;transition:background .12s" style-active="background:rgba(20,26,32,.06)">{{ m.label }}</div>
+    </sc-for>
+    <div onClick="{{ goSignup }}" style="margin-top:6px;padding:13px;border-radius:12px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Izveidot profilu</div>
+  </div>
+</sc-if>
+
+<main ref="{{ pageRef }}" style="flex:1;display:flex;flex-direction:column">
+
+<!-- HOME -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<section style="padding:clamp(48px,8vw,104px) 20px clamp(36px,5vw,56px);display:flex;flex-direction:column;align-items:center;gap:clamp(20px,2.4vw,28px);text-align:center">
+  <h1 style="margin:0;max-width:940px;font-size:clamp(38px,6.2vw,76px);line-height:1.03;letter-spacing:-.035em;font-weight:600;text-wrap:balance">Atrodi lauksaimniecības uzņēmumus sev tuvumā</h1>
+  <p style="margin:0;max-width:560px;font-size:clamp(17px,1.6vw,21px);line-height:1.45;letter-spacing:-.005em;color:#5d6670;text-wrap:pretty">Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem.</p>
+  <div style="width:100%;max-width:660px;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px">
+    <div style="position:relative;width:min(100%,380px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#e9ebe8">
+      <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ heroX }});transition:{{ segTransition }}"></div>
+      <sc-for list="{{ heroSegs }}" as="t" hint-placeholder-count="3">
+        <div onPointerDown="{{ t.set }}" style="position:relative;padding:9px 0;font-size:15px;font-weight:{{ t.fw }};color:{{ t.fg }};cursor:pointer;user-select:none;transition:color .2s">{{ t.label }}</div>
+      </sc-for>
+    </div>
+    <div style="width:100%;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 20px;box-sizing:border-box;background:#fff;border-radius:999px;box-shadow:0 1px 2px rgba(20,26,32,.05),0 10px 30px rgba(20,26,32,.08)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a929a" stroke-width="2" stroke-linecap="round" style="flex:0 0 20px"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+      <input value="{{ heroQ }}" onChange="{{ onHeroQ }}" onKeyDown="{{ onHeroKey }}" placeholder="{{ heroPlaceholder }}" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:17px;color:#1d2329;padding:12px 6px">
+      <div onClick="{{ heroSearch }}" style="flex:0 0 auto;padding:13px 24px;border-radius:999px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.96)">Meklēt</div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;max-width:720px">
+    <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="5">
+      <div onClick="{{ c.open }}" style="padding:7px 14px;border-radius:999px;background:#fff;font-size:14px;cursor:pointer;box-shadow:inset 0 0 0 1px #e3e6e8;transition:transform .12s,box-shadow .15s" style-hover="box-shadow:inset 0 0 0 1px #3f6e4a" style-active="transform:scale(.96)">{{ c.name }}</div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="max-width:1232px;width:100%;margin:0 auto;padding:0 20px;box-sizing:border-box">
+  <div style="position:relative;height:clamp(360px,44vw,540px);border-radius:clamp(20px,2.4vw,28px);overflow:hidden;background:#e8ece6;box-shadow:0 1px 2px rgba(20,26,32,.05),0 20px 50px rgba(20,26,32,.08);transform:translateZ(0)">
+    <div ref="{{ homeMapRef }}" style="position:absolute;inset:0"></div>
+    <div style="position:absolute;left:14px;right:14px;bottom:14px;z-index:500;display:flex;pointer-events:none">
+      <div style="pointer-events:auto;width:min(100%,440px);display:flex;align-items:center;gap:14px;padding:14px 14px 14px 18px;box-sizing:border-box;border-radius:20px;background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 30px rgba(20,26,32,.16)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:16px;font-weight:600;letter-spacing:-.01em">Uzņēmumi un saimniecības kartē</div>
+          <div style="font-size:13px;color:#4a535b;margin-top:2px">Filtrē pēc nozares un atrašanās vietas</div>
+        </div>
+        <div onClick="{{ goMap }}" style="flex:0 0 auto;padding:11px 16px;border-radius:999px;background:#3b5166;color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform .12s" style-active="transform:scale(.96)">Atvērt karti</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="max-width:1232px;width:100%;margin:0 auto;padding:clamp(56px,8vw,96px) 20px 0;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:clamp(28px,3.2vw,40px);line-height:1.1;letter-spacing:-.025em;font-weight:600">Pārlūko pēc nozares</h2>
+  <div style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -20px;padding:6px 20px 14px;scroll-padding:0 20px">
+    <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="5">
+      <div onClick="{{ c.open }}" style="flex:1 0 168px;scroll-snap-align:start;background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:28px;cursor:pointer;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .14s ease-out,box-shadow .2s" style-hover="box-shadow:0 1px 2px rgba(20,26,32,.05),0 12px 28px rgba(20,26,32,.08)" style-active="transform:scale(.97)">
+        <div style="width:52px;height:52px;border-radius:14px;background:#eef3ee;display:flex;align-items:center;justify-content:center"><img src="{{ c.icon }}" alt="" style="width:28px;height:28px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px">
+          <span style="font-size:16px;font-weight:500;line-height:1.3;letter-spacing:-.005em">{{ c.name }}</span>
+          <span style="color:#3f6e4a;font-size:17px;line-height:1.3">→</span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="padding:clamp(48px,7vw,80px) 0 0;display:flex;flex-direction:column;gap:20px">
+  <div style="max-width:1232px;width:100%;margin:0 auto;padding:0 20px;box-sizing:border-box;display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h2 style="margin:0;font-size:clamp(28px,3.2vw,40px);line-height:1.1;letter-spacing:-.025em;font-weight:600">Jaunākie sludinājumi</h2>
+      <span onClick="{{ goListings }}" style="font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">Visi sludinājumi →</span>
+    </div>
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;gap:8px">
+        <div onClick="{{ shelfPrev }}" style="width:40px;height:40px;border-radius:50%;background:#e9ebe8;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;color:{{ prevFg }};transition:transform .12s,background .15s" style-hover="background:#e0e3df" style-active="transform:scale(.92)">‹</div>
+        <div onClick="{{ shelfNext }}" style="width:40px;height:40px;border-radius:50%;background:#e9ebe8;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;color:{{ nextFg }};transition:transform .12s,background .15s" style-hover="background:#e0e3df" style-active="transform:scale(.92)">›</div>
+      </div>
+    </sc-if>
+  </div>
+  <div ref="{{ shelfRef }}" onScroll="{{ onShelfScroll }}" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px max(20px, calc((100% - 1192px) / 2)) 18px;scroll-padding:0 max(20px, calc((100% - 1192px) / 2))">
+    <sc-for list="{{ latest }}" as="l" hint-placeholder-count="5">
+      <div onClick="{{ l.quick }}" style="flex:0 0 min(76%,280px);scroll-snap-align:start;background:#fff;border-radius:20px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .14s ease-out,box-shadow .2s" style-hover="box-shadow:0 1px 2px rgba(20,26,32,.05),0 14px 32px rgba(20,26,32,.09)" style-active="transform:scale(.97)">
+        <div style="position:relative;aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">
+          {{ l.img }}
+          <span style="position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ l.typeBg }};color:{{ l.typeFg }}">{{ l.typeLabel }}</span><sc-if value="{{ l.reserve }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:12px;right:12px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:#3b5166;color:#fff;box-shadow:0 2px 8px rgba(20,26,32,.18)">Rezervācijai</span></sc-if>
+        </div>
+        <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:5px;flex:1">
+          <span style="font-size:12px;letter-spacing:.01em;color:#5d6670">{{ l.catName }}</span>
+          <span style="font-size:16px;font-weight:500;line-height:1.3;letter-spacing:-.005em">{{ l.title }}</span>
+          <span style="font-size:19px;font-weight:600;letter-spacing:-.015em;margin-top:2px">{{ l.price }} <span style="font-size:13px;font-weight:400;letter-spacing:0;color:#5d6670">{{ l.unit }}</span></span>
+          <span style="margin-top:auto;padding-top:8px;font-size:13px;color:#5d6670">{{ l.loc }} · {{ l.posted }}</span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section ref="{{ howRef }}" style="margin-top:clamp(48px,7vw,80px);background:#fff">
+  <div style="max-width:1232px;margin:0 auto;padding:clamp(56px,7vw,96px) 20px;display:flex;flex-direction:column;gap:clamp(32px,4vw,56px)">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:15px;font-weight:500;color:#3f6e4a">Kā tas darbojas</span>
+      <h2 style="margin:0;font-size:clamp(28px,3.2vw,40px);line-height:1.1;letter-spacing:-.025em;font-weight:600">Trīs veidi, kā izmantot lauks24.lv</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(32px,4vw,56px)">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:12px;padding-top:20px;border-top:1px solid #e3e6e8">
+          <span style="font-size:44px;line-height:1;font-weight:300;letter-spacing:-.03em;color:#3f6e4a">{{ s.n }}</span>
+          <h3 style="margin:8px 0 0;font-size:21px;line-height:1.25;letter-spacing:-.015em;font-weight:600">{{ s.t }}</h3>
+          <p style="margin:0;font-size:16px;line-height:1.55;color:#5d6670;text-wrap:pretty">{{ s.d }}</p>
+          <span onClick="{{ s.go }}" style="margin-top:4px;font-size:15px;font-weight:500;color:#3f6e4a;cursor:pointer">{{ s.cta }} →</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="max-width:1232px;width:100%;margin:0 auto;padding:clamp(48px,7vw,88px) 20px;box-sizing:border-box">
+  <div style="background:#3b5166;color:#fff;border-radius:clamp(24px,3vw,32px);padding:clamp(36px,6vw,72px) clamp(24px,5vw,64px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px">
+    <h2 style="margin:0;max-width:640px;font-size:clamp(28px,3.4vw,44px);line-height:1.08;letter-spacing:-.03em;font-weight:600;text-wrap:balance">Ļauj pircējiem un partneriem tevi atrast</h2>
+    <p style="margin:0;max-width:520px;font-size:17px;line-height:1.5;color:#d6dee6;text-wrap:pretty">Profila izveide aizņem pāris minūtes. Pievieno savu saimniecību kartei un sāc publicēt sludinājumus.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+      <div onClick="{{ goSignup }}" style="padding:14px 24px;border-radius:999px;background:#fff;color:#3b5166;font-size:16px;font-weight:600;cursor:pointer;transition:transform .12s" style-active="transform:scale(.96)">Izveidot profilu</div>
+      <div onClick="{{ goMap }}" style="padding:14px 24px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);color:#fff;font-size:16px;font-weight:500;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:rgba(255,255,255,.08)" style-active="transform:scale(.96)">Skatīt karti</div>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<!-- MAP -->
+<sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+  <div style="position:relative;height:calc(100dvh - 56px);min-height:480px;overflow:hidden;background:#e8ece6">
+    <div ref="{{ mainMapRef }}" style="position:absolute;inset:0"></div>
+    <sc-if value="{{ hasPin }}" hint-placeholder-val="{{ false }}">
+      <div ref="{{ pinRef }}" style="position:absolute;left:0;top:0;z-index:650;width:{{ pinW }};opacity:0;filter:drop-shadow(0 14px 30px rgba(20,26,32,.22))">
+        <div onClick="{{ pin.open }}" style="position:relative;background:#fff;border-radius:18px;padding:10px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.98)">
+          <sc-if value="{{ pinIsListing }}" hint-placeholder-val="{{ true }}">
+            <div style="position:relative;width:96px;height:96px;flex:0 0 96px;border-radius:12px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;padding:4px;box-sizing:border-box">{{ pin.img }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding-right:22px">
+              <div style="display:flex;gap:5px;flex-wrap:wrap"><span style="padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:{{ pin.typeBg }};color:{{ pin.typeFg }}">{{ pin.typeLabel }}</span><sc-if value="{{ pin.reserve }}" hint-placeholder-val="{{ false }}"><span style="padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:#3b5166;color:#fff">Rezervācijai</span></sc-if></div>
+              <div style="font-size:15px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ pin.title }}</div>
+              <div style="font-size:17px;font-weight:600;letter-spacing:-.015em">{{ pin.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ pin.unit }}</span></div>
+              <div style="font-size:12px;color:#5d6670;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ pin.loc }} · {{ pin.posted }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pinIsProfile }}" hint-placeholder-val="{{ false }}">
+            <div style="width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600">{{ pin.initials }}</div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding-right:22px">
+              <div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">{{ pin.name }}</span><sc-if value="{{ pin.verified }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span></sc-if></div>
+              <div style="font-size:13px;color:#2f5538;font-weight:500">{{ pin.spec }}</div>
+              <div style="font-size:12px;color:#5d6670">{{ pin.loc }}</div>
+              <div style="font-size:13px;font-weight:500;color:#3f6e4a;margin-top:2px">Skatīt profilu ›</div>
+            </div>
+          </sc-if>
+          <div onClick="{{ closePin }}" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:#eef0ee;display:flex;align-items:center;justify-content:center;font-size:12px;color:#5d6670;cursor:pointer">✕</div>
+        </div>
+        <span data-caret="1" style="position:absolute;left:20px;bottom:-6px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-radius:2px"></span>
+      </div>
+    </sc-if>
+    <div ref="{{ msRef }}" style="position:absolute;z-index:600;display:flex;flex-direction:column;overflow:hidden;top:{{ pTop }};left:{{ pLeft }};right:{{ pRight }};bottom:{{ pBottom }};width:{{ pW }};border-radius:{{ pRadius }};margin-bottom:{{ pMB }};padding-bottom:{{ pPB }};background:rgba(255,255,255,.86);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 12px 40px rgba(20,26,32,.18)">
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <div onPointerDown="{{ msDown }}" onPointerMove="{{ msMove }}" onPointerUp="{{ msUp }}" onPointerCancel="{{ msUp }}" style="flex:0 0 auto;padding:8px 16px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;touch-action:none;cursor:grab;user-select:none">
+          <span style="width:38px;height:5px;border-radius:3px;background:rgba(20,26,32,.18)"></span>
+          <span style="align-self:stretch;font-size:13px;font-weight:500;color:#4a535b">{{ resultLabel }}</span>
+        </div>
+      </sc-if>
+      <div style="flex:0 0 auto;padding:{{ pHeadPad }};display:flex;flex-direction:column;gap:10px;border-bottom:1px solid rgba(20,26,32,.06)">
+        <div style="display:flex;align-items:center;gap:8px;padding:0 6px 0 14px;border-radius:14px;background:rgba(20,26,32,.06)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5d6670" stroke-width="2" stroke-linecap="round" style="flex:0 0 18px"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <input value="{{ q }}" onChange="{{ onQ }}" onFocus="{{ onQFocus }}" placeholder="{{ mapPlaceholder }}" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:inherit;font-size:16px;color:#1d2329;padding:12px 4px">
+        </div>
+        <div style="position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:3px;border-radius:12px;background:rgba(20,26,32,.06)">
+          <div style="position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px) / 3);border-radius:9px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.1),0 3px 8px rgba(20,26,32,.06);transform:translateX({{ modeX }});transition:{{ segTransition }}"></div>
+          <sc-for list="{{ modeSegs }}" as="t" hint-placeholder-count="3">
+            <div onPointerDown="{{ t.set }}" style="position:relative;padding:7px 0;text-align:center;font-size:14px;font-weight:{{ t.fw }};color:{{ t.fg }};cursor:pointer;user-select:none">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px">
+          <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+            <div onClick="{{ c.set }}" style="flex:0 0 auto;white-space:nowrap;display:flex;align-items:center;gap:5px;padding:7px 12px 7px 13px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }};transition:transform .12s" style-active="transform:scale(.95)">{{ c.label }}<sc-if value="{{ c.hasSubs }}" hint-placeholder-val="{{ true }}"><svg width="10" height="10" viewBox="0 0 10 10" style="transform:rotate({{ c.rot }});transition:transform .3s cubic-bezier(.32,.72,0,1)"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></div>
+          </sc-for>
+        </div>
+      </div>
+      <div ref="{{ listRef }}" style="flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 8px 16px;display:flex;flex-direction:column;gap:2px">
+        <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;font-weight:500;color:#4a535b;padding:6px 10px 4px">{{ resultLabel }}</div></sc-if>
+        <sc-if value="{{ isProfileMode }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ profileResults }}" as="p" hint-placeholder-count="4">
+            <div data-id="{{ p.id }}" onClick="{{ p.open }}" onMouseEnter="{{ p.hover }}" style="padding:12px 10px;border-radius:14px;display:flex;gap:12px;align-items:center;cursor:pointer;background:{{ p.bg }};transition:background .15s,transform .12s" style-active="transform:scale(.98)">
+              <div style="width:46px;height:46px;flex:0 0 46px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px">{{ p.initials }}</div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600;letter-spacing:-.005em">{{ p.name }}</span><sc-if value="{{ p.verified }}" hint-placeholder-val="{{ false }}"><span title="Pārbaudīts" style="width:15px;height:15px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span></sc-if></div>
+                <div style="font-size:13px;color:#2f5538;font-weight:500">{{ p.spec }}</div>
+                <div style="font-size:13px;color:#5d6670">{{ p.loc }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ isListingMode }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ listingResults }}" as="l" hint-placeholder-count="3">
+            <div data-id="{{ l.id }}" onClick="{{ l.open }}" onMouseEnter="{{ l.hover }}" style="padding:10px;border-radius:14px;display:flex;gap:12px;cursor:pointer;background:{{ l.bg }};transition:background .15s,transform .12s" style-active="transform:scale(.98)">
+              <div style="width:84px;height:84px;flex:0 0 84px;border-radius:12px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);display:flex;align-items:center;justify-content:center;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;padding:4px;box-sizing:border-box">{{ l.img }}</div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:#5d6670">{{ l.catName }}<sc-if value="{{ l.reserve }}" hint-placeholder-val="{{ false }}"><span style="padding:2px 8px;border-radius:999px;background:#3b5166;color:#fff;font-size:11px;font-weight:600">Rezervācijai</span></sc-if></div>
+                <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+                <div style="font-size:16px;font-weight:600;letter-spacing:-.01em">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+                <div style="font-size:12px;color:#5d6670;margin-top:auto">{{ l.loc }} · {{ l.posted }}</div>
+              </div>
+            </div>
+          </sc-for>
+          <div onClick="{{ goSignup }}" style="margin:8px 4px 0;padding:13px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">+ Pievienot sludinājumu</div>
+        </sc-if>
+        <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:36px 16px;display:flex;flex-direction:column;gap:10px;align-items:center">
+            <div style="font-size:16px;font-weight:600">Nekas netika atrasts</div>
+            <div style="font-size:14px;color:#5d6670">Pamēģini citu kategoriju vai meklēšanas vārdu.</div>
+            <div onClick="{{ resetFilters }}" style="padding:10px 16px;border-radius:999px;background:#fff;font-size:14px;font-weight:500;cursor:pointer;box-shadow:inset 0 0 0 1px #d9dee2">Notīrīt filtrus</div>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ ddOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeDd }}" style="position:absolute;inset:0;z-index:10"></div>
+        <div ref="{{ ddRef }}" style="position:absolute;z-index:11;top:{{ ddTop }};left:{{ ddLeft }};width:{{ ddW }};max-height:{{ ddMaxH }};display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.94);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 0 1px rgba(20,26,32,.06),0 18px 48px rgba(20,26,32,.22);transform-origin:{{ ddOrigin }};opacity:0">
+          <div style="flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:14px 14px 10px 16px">
+            <img src="{{ ddCat.icon }}" alt="" style="width:22px;height:22px">
+            <span style="flex:1;font-size:15px;font-weight:600;letter-spacing:-.01em">{{ ddCat.name }}</span>
+            <sc-if value="{{ ddHasSel }}" hint-placeholder-val="{{ false }}"><span onClick="{{ clearSubs }}" style="font-size:13px;font-weight:500;color:#3f6e4a;cursor:pointer">Notīrīt</span></sc-if>
+          </div>
+          <div style="flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 6px 6px">
+            <div onClick="{{ clearSubs }}" style="display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:12px;cursor:pointer;transition:background .12s" style-active="background:rgba(20,26,32,.06)">
+              <span style="width:20px;height:20px;flex:0 0 20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;background:{{ ddAllBg }};box-shadow:{{ ddAllRing }}">✓</span>
+              <span style="flex:1;font-size:15px;font-weight:500">Visas apakškategorijas</span>
+              <span style="font-size:13px;color:#8a929a;font-variant-numeric:tabular-nums">{{ ddAllCount }}</span>
+            </div>
+            <div style="height:1px;background:rgba(20,26,32,.07);margin:2px 10px 4px"></div>
+            <sc-for list="{{ ddSubs }}" as="s" hint-placeholder-count="4">
+              <div onClick="{{ s.toggle }}" style="display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:12px;cursor:pointer;transition:background .12s" style-active="background:rgba(20,26,32,.06)">
+                <span style="width:20px;height:20px;flex:0 0 20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;background:{{ s.bg }};box-shadow:{{ s.ring }};transition:background .15s">✓</span>
+                <span style="flex:1;font-size:15px;line-height:1.3;color:{{ s.fg }}">{{ s.name }}</span>
+                <span style="font-size:13px;color:#8a929a;font-variant-numeric:tabular-nums">{{ s.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="flex:0 0 auto;padding:8px 10px 10px;border-top:1px solid rgba(20,26,32,.06)">
+            <div onClick="{{ closeDd }}" style="padding:12px;border-radius:12px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">{{ ddCta }}</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
+  <div style="position:sticky;top:56px;z-index:1400;background:rgba(245,246,244,.86);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 rgba(20,26,32,.05)">
+    <div style="max-width:1232px;margin:0 auto;padding:8px {{ backPadX }};display:flex;align-items:center;gap:12px;min-height:44px;box-sizing:border-box">
+      <div onClick="{{ goBack }}" style="display:flex;align-items:center;gap:4px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(20,26,32,.06);font-size:15px;font-weight:500;color:#1d2329;cursor:pointer;white-space:nowrap;transition:transform .12s,background .15s" style-hover="background:rgba(20,26,32,.09)" style-active="transform:scale(.95)"><span style="font-size:20px;line-height:1;margin-top:-2px">‹</span>{{ backLabel }}</div>
+      <span style="flex:1;min-width:0;font-size:14px;color:#5d6670;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ backContext }}</span>
+    </div>
+  </div>
+</sc-if>
+
+<!-- PROFILE -->
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1232px;width:100%;margin:0 auto;padding:{{ pagePad }};box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+    <div style="background:#fff;border-radius:{{ coverRadius }};overflow:hidden;box-shadow:0 1px 2px rgba(20,26,32,.05);margin:{{ coverMargin }}">
+      <div style="height:{{ coverH }};background:repeating-linear-gradient(135deg,#eceee9 0 12px,#e4e7e1 12px 24px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">vāka foto: saimniecība</div>
+      <div style="padding:0 clamp(18px,3vw,32px) clamp(20px,3vw,32px);display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">
+        <div style="width:{{ avatarSize }};height:{{ avatarSize }};border-radius:50%;background:#e4eaf0;color:#3b5166;border:4px solid #fff;margin-top:{{ avatarLift }};display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:600;box-shadow:0 4px 14px rgba(20,26,32,.1)">{{ profile.initials }}</div>
+        <div style="flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h1 style="margin:0;font-size:clamp(26px,3vw,36px);line-height:1.1;letter-spacing:-.025em;font-weight:600">{{ profile.name }}</h1>
+            <sc-if value="{{ profile.verified }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:13px;font-weight:500"><span style="width:14px;height:14px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span>Pārbaudīts</span></sc-if>
+          </div>
+          <div style="display:flex;gap:6px 14px;flex-wrap:wrap;font-size:15px;color:#5d6670"><span style="color:#1d2329;font-weight:500">{{ profile.spec }}</span><span>{{ profile.loc }}</span><span>Uz lauks24.lv kopš {{ profile.since }}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;flex:{{ actionsFlex }}">
+          <div onClick="{{ togglePhone }}" style="flex:1;padding:13px 18px;border-radius:14px;background:#eef0ee;font-size:15px;font-weight:500;text-align:center;white-space:nowrap;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">{{ phoneText }}</div>
+          <div style="flex:1;padding:13px 20px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;text-align:center;white-space:nowrap;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.97)">Rakstīt ziņu</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:{{ profCols }};gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div style="position:relative;align-self:flex-start;width:min(100%,340px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#e9ebe8">
+          <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 2);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ profX }});transition:{{ segTransition }}"></div>
+          <sc-for list="{{ profSegs }}" as="t" hint-placeholder-count="2">
+            <div onPointerDown="{{ t.set }}" style="position:relative;padding:9px 0;text-align:center;font-size:15px;font-weight:{{ t.fw }};color:{{ t.fg }};cursor:pointer;user-select:none">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ tabListings }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:14px">
+            <sc-for list="{{ profileListings }}" as="l" hint-placeholder-count="2">
+              <div onClick="{{ l.open }}" style="background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .14s ease-out,box-shadow .2s" style-hover="box-shadow:0 1px 2px rgba(20,26,32,.05),0 12px 28px rgba(20,26,32,.08)" style-active="transform:scale(.97)">
+                <div style="position:relative;aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">{{ l.img }}<span style="position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ l.typeBg }};color:{{ l.typeFg }}">{{ l.typeLabel }}</span><sc-if value="{{ l.reserve }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:#3b5166;color:#fff;box-shadow:0 2px 8px rgba(20,26,32,.18)">Rezervācijai</span></sc-if></div>
+                <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+                  <div style="font-size:17px;font-weight:600;letter-spacing:-.01em">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+                  <div style="font-size:12px;color:#5d6670">{{ l.posted }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ tabAbout }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+            <p style="margin:0;font-size:17px;line-height:1.6;text-wrap:pretty">{{ profile.about }}</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:6px 12px;border-radius:999px;background:#f0f2f0;font-size:13px">{{ profile.catName }}</span><span style="padding:6px 12px;border-radius:999px;background:#f0f2f0;font-size:13px">{{ profile.spec }}</span></div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div style="background:#fff;border-radius:20px;padding:6px 20px;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+          <div style="padding:14px 0;border-bottom:1px solid #eef0f1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Adrese</span><span style="font-size:15px">{{ profile.loc }}</span></div>
+          <div style="padding:14px 0;border-bottom:1px solid #eef0f1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Tālrunis</span><span style="font-size:15px">{{ phoneMasked }}</span></div>
+          <div style="padding:14px 0;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">E-pasts</span><span style="font-size:15px">{{ profile.email }}</span></div>
+        </div>
+        <div style="position:relative;height:240px;border-radius:20px;overflow:hidden;background:#e8ece6;box-shadow:0 1px 2px rgba(20,26,32,.05);transform:translateZ(0)">
+          <div ref="{{ miniMapRef }}" style="position:absolute;inset:0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- LISTING -->
+<sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1232px;width:100%;margin:0 auto;padding:{{ listingPad }};box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:{{ lCols }};grid-template-areas:{{ lAreas }};gap:{{ lGap }};align-items:start">
+      <div style="grid-area:gal;min-width:0;display:flex;flex-direction:column;gap:10px">
+        <div style="position:relative;border-radius:{{ galRadius }};overflow:hidden;background:#e4e7e1;transform:translateZ(0)">
+          <div ref="{{ galleryRef }}" onScroll="{{ onGal }}" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain">
+            <sc-for list="{{ shots }}" as="g" hint-placeholder-count="4">
+              <div style="flex:0 0 100%;aspect-ratio:4/3;max-height:560px;scroll-snap-align:start;scroll-snap-stop:always;background:repeating-linear-gradient(135deg,#eceee9 0 14px,#e4e7e1 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7a8279">{{ g }}</div>
+            </sc-for>
+          </div>
+          <span style="position:absolute;top:14px;left:14px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600;background:{{ listing.typeBg }};color:{{ listing.typeFg }}">{{ listing.typeLabel }}</span><sc-if value="{{ listing.reserve }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:14px;right:14px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:#3b5166;color:#fff;box-shadow:0 2px 8px rgba(20,26,32,.18)">Rezervācijai</span></sc-if>
+          <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ galPrev }}" style="position:absolute;left:14px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;opacity:{{ galPrevOp }};transition:opacity .2s,transform .12s" style-active="transform:scale(.9)">‹</div>
+            <div onClick="{{ galNext }}" style="position:absolute;right:14px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;opacity:{{ galNextOp }};transition:opacity .2s,transform .12s" style-active="transform:scale(.9)">›</div>
+          </sc-if>
+          <div style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px;padding:6px 8px;border-radius:999px;background:rgba(20,26,32,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+            <sc-for list="{{ dots }}" as="d" hint-placeholder-count="4"><span onClick="{{ d.set }}" style="width:{{ d.w }};height:7px;border-radius:999px;background:{{ d.bg }};cursor:pointer;transition:width .3s cubic-bezier(.32,.72,0,1),background .2s"></span></sc-for>
+          </div>
+        </div>
+        <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+            <sc-for list="{{ thumbs }}" as="t" hint-placeholder-count="4">
+              <div onClick="{{ t.set }}" style="aspect-ratio:4/3;border-radius:12px;box-shadow:inset 0 0 0 2px {{ t.bd }};background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;opacity:{{ t.op }};transition:opacity .2s,transform .12s" style-active="transform:scale(.96)">{{ t.short }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="grid-area:side;min-width:0;position:{{ sidePos }};top:80px;display:flex;flex-direction:column;gap:14px;padding:{{ sidePad }}">
+        <div style="background:{{ sideBg }};border-radius:22px;padding:{{ sideInner }};display:flex;flex-direction:column;gap:12px;box-shadow:{{ sideShadow }}">
+          <span style="font-size:13px;color:#5d6670">{{ listing.catName }}</span>
+          <h1 style="margin:0;font-size:clamp(24px,2.6vw,30px);line-height:1.15;letter-spacing:-.025em;font-weight:600;text-wrap:balance">{{ listing.title }}</h1>
+          <div style="font-size:clamp(28px,3vw,34px);font-weight:600;letter-spacing:-.03em">{{ listing.price }} <span style="font-size:15px;font-weight:400;letter-spacing:0;color:#5d6670">{{ listing.unit }}</span></div>
+          <div style="font-size:14px;color:#5d6670">{{ listing.loc }} · {{ listing.posted }}</div>
+          <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+              <div style="padding:15px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.97)">Sazinies</div>
+              <div onClick="{{ togglePhone }}" style="padding:15px;border-radius:14px;background:#eef0ee;font-size:16px;font-weight:500;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">{{ phoneText }}</div>
+            </div>
+          </sc-if>
+        </div>
+        <div onClick="{{ seller.open }}" style="background:#fff;border-radius:20px;padding:16px;display:flex;gap:14px;align-items:center;cursor:pointer;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .12s" style-active="transform:scale(.98)">
+          <div style="width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600">{{ seller.initials }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">{{ seller.name }}</span><sc-if value="{{ seller.verified }}" hint-placeholder-val="{{ false }}"><span style="width:15px;height:15px;border-radius:50%;background:#3f6e4a;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</span></sc-if></div>
+            <div style="font-size:13px;color:#5d6670;margin-top:2px">{{ seller.spec }}</div>
+          </div>
+          <span style="font-size:18px;color:#8a929a">›</span>
+        </div>
+        <div style="padding:14px 16px;border-radius:16px;background:#eceeeb;font-size:13px;line-height:1.5;color:#4a535b">Padoms: pirms samaksas apskati preci klātienē un vienojies par piegādi rakstiski.</div>
+      </div>
+
+      <div style="grid-area:desc;min-width:0;padding:{{ descPad }}">
+        <div style="background:#fff;border-radius:22px;padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;gap:22px;box-shadow:0 1px 2px rgba(20,26,32,.05)">
+          <div><h2 style="margin:0 0 10px;font-size:21px;letter-spacing:-.015em;font-weight:600">Apraksts</h2><p style="margin:0;font-size:17px;line-height:1.6;text-wrap:pretty">{{ listing.desc }}</p></div>
+          <div>
+            <h2 style="margin:0 0 4px;font-size:21px;letter-spacing:-.015em;font-weight:600">Detaļas</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));column-gap:28px">
+              <sc-for list="{{ details }}" as="d" hint-placeholder-count="6">
+                <div style="display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eef0f1;font-size:15px"><span style="color:#5d6670">{{ d.k }}</span><span style="font-weight:500;text-align:right">{{ d.v }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section style="padding:8px 0 clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:16px">
+    <h2 style="max-width:1232px;width:100%;margin:0 auto;padding:0 20px;box-sizing:border-box;font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em;font-weight:600">Līdzīgi sludinājumi</h2>
+    <div style="display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px max(20px, calc((100% - 1192px) / 2)) 14px;scroll-padding:0 max(20px, calc((100% - 1192px) / 2))">
+      <sc-for list="{{ similar }}" as="l" hint-placeholder-count="4">
+        <div onClick="{{ l.open }}" style="flex:0 0 min(76%,260px);scroll-snap-align:start;background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(20,26,32,.05);transition:transform .14s ease-out" style-active="transform:scale(.97)">
+          <div style="aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">{{ l.img }}</div>
+          <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:15px;font-weight:500;line-height:1.3">{{ l.title }}</div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.01em">{{ l.price }} <span style="font-size:12px;font-weight:400;color:#5d6670">{{ l.unit }}</span></div>
+            <div style="font-size:12px;color:#5d6670">{{ l.loc }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</sc-if>
+
+<!-- AUTH -->
+<sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1000px;width:100%;margin:0 auto;padding:clamp(20px,5vw,64px) clamp(12px,3vw,20px) 80px;box-sizing:border-box">
+    <div style="background:#fff;border-radius:clamp(22px,3vw,28px);overflow:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));box-shadow:0 1px 2px rgba(20,26,32,.05),0 20px 50px rgba(20,26,32,.06)">
+      <div style="padding:clamp(24px,4vw,44px);display:flex;flex-direction:column;gap:18px">
+        <div style="position:relative;width:min(100%,280px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;box-sizing:border-box;border-radius:999px;background:#eef0ee">
+          <div style="position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 2);border-radius:999px;background:#fff;box-shadow:0 1px 2px rgba(20,26,32,.08),0 3px 10px rgba(20,26,32,.06);transform:translateX({{ authX }});transition:{{ segTransition }}"></div>
+          <sc-for list="{{ authSegs }}" as="t" hint-placeholder-count="2">
+            <div onPointerDown="{{ t.set }}" style="position:relative;padding:9px 0;text-align:center;font-size:15px;font-weight:{{ t.fw }};color:{{ t.fg }};cursor:pointer;user-select:none">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-size:clamp(26px,3vw,32px);line-height:1.1;letter-spacing:-.025em;font-weight:600">{{ authTitle }}</h1>
+          <p style="margin:0;font-size:16px;color:#5d6670">{{ authSub }}</p>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">E-pasts
+          <input type="email" value="{{ email }}" onChange="{{ onEmail }}" placeholder="vards@saimnieciba.lv" style="border:1px solid {{ emailBd }};background:#f5f6f4;border-radius:12px;padding:14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;transition:box-shadow .15s,background .15s,border-color .15s" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+          <sc-if value="{{ hasErrEmail }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:400;color:#b3261e">{{ errEmail }}</span></sc-if>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">
+          <span style="display:flex;justify-content:space-between">Parole<sc-if value="{{ isLoginMode }}" hint-placeholder-val="{{ false }}"><span style="font-weight:400;color:#3f6e4a;cursor:pointer">Aizmirsi paroli?</span></sc-if></span>
+          <input type="password" value="{{ pw }}" onChange="{{ onPw }}" placeholder="••••••••" style="border:1px solid {{ pwBd }};background:#f5f6f4;border-radius:12px;padding:14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;transition:box-shadow .15s,background .15s,border-color .15s" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+          <span style="font-size:13px;font-weight:400;color:{{ pwHintFg }}">{{ pwHint }}</span>
+        </label>
+        <sc-if value="{{ isSignupMode }}" hint-placeholder-val="{{ true }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Apstiprini paroli
+            <input type="password" value="{{ pw2 }}" onChange="{{ onPw2 }}" placeholder="••••••••" style="border:1px solid {{ pw2Bd }};background:#f5f6f4;border-radius:12px;padding:14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;transition:box-shadow .15s,background .15s,border-color .15s" style-focus="background:#fff;border-color:#3f6e4a;box-shadow:0 0 0 4px rgba(63,110,74,.12)">
+            <sc-if value="{{ hasErrPw2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:400;color:#b3261e">{{ errPw2 }}</span></sc-if>
+          </label>
+        </sc-if>
+        <div onClick="{{ doAuth }}" style="padding:15px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer;margin-top:4px;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.97)">{{ authCta }}</div>
+        <sc-if value="{{ isSignupMode }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:13px;color:#5d6670;line-height:1.5">Reģistrējoties tu piekrīti mūsu <a href="#">lietošanas noteikumiem</a> un <a href="#">privātuma politikai</a>.</p>
+        </sc-if>
+      </div>
+      <div style="background:#3b5166;color:#fff;padding:clamp(24px,4vw,44px);display:flex;flex-direction:column;gap:24px">
+        <h2 style="margin:0;font-size:24px;line-height:1.2;letter-spacing:-.02em;font-weight:600">Ar profilu tu vari</h2>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <sc-for list="{{ perks }}" as="b" hint-placeholder-count="3">
+            <div style="display:flex;gap:14px"><span style="width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">{{ b.n }}</span><div><div style="font-weight:600;margin-bottom:3px">{{ b.t }}</div><div style="font-size:14px;color:#d6dee6;line-height:1.5">{{ b.d }}</div></div></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</main>
+
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+<footer style="background:#2f4254;color:#d6dee6;padding-bottom:{{ footerPB }}">
+  <div style="max-width:1232px;margin:0 auto;padding:44px 20px 28px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap">
+      <div style="max-width:340px;display:flex;flex-direction:column;gap:12px">
+        <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:26px;align-self:flex-start">
+        <p style="margin:0;font-size:14px;line-height:1.55">Uzņēmumi, sludinājumi un kontakti — lauksaimniecības profesionāļiem Latvijā.</p>
+      </div>
+      <div style="display:flex;gap:56px;flex-wrap:wrap;font-size:14px">
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="color:#fff;font-weight:600">Platforma</span><span onClick="{{ goMap }}" style="cursor:pointer">Karte</span><span onClick="{{ goListings }}" style="cursor:pointer">Sludinājumi</span><span onClick="{{ goSignup }}" style="cursor:pointer">Izveidot profilu</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px"><span style="color:#fff;font-weight:600">Informācija</span><span style="cursor:pointer">Privātuma politika</span><span style="cursor:pointer">Lietošanas noteikumi</span></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:13px;color:#aebccb">© 2026 lauks24.lv. Visas tiesības aizsargātas.</div>
+  </div>
+</footer>
+</sc-if>
+
+<sc-if value="{{ listingBar }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:1500;display:flex;align-items:center;gap:12px;padding:12px 16px 26px;background:rgba(255,255,255,.86);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:0 -1px 0 rgba(20,26,32,.08)">
+    <div style="flex:1;min-width:0"><div style="font-size:12px;color:#5d6670">{{ listing.typeLabel }}</div><div style="font-size:19px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ listing.price }}</div></div>
+    <div onClick="{{ togglePhone }}" style="padding:14px 14px;border-radius:14px;background:#eef0ee;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;transition:transform .12s" style-active="transform:scale(.96)">{{ phoneShort }}</div>
+    <div style="padding:14px 20px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform .12s" style-active="transform:scale(.96)">Sazinies</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasSheet }}" hint-placeholder-val="{{ false }}">
+  <div ref="{{ scrimRef }}" onClick="{{ closeSheet }}" style="position:fixed;inset:0;z-index:3000;background:rgba(20,26,32,.4);opacity:0"></div>
+  <div style="position:fixed;inset:0;z-index:3001;display:flex;align-items:{{ sheetAlign }};justify-content:center;padding:{{ sheetPad }};box-sizing:border-box;pointer-events:none">
+    <div ref="{{ sheetRef }}" style="pointer-events:auto;width:{{ sheetW }};max-height:{{ sheetMaxH }};background:#fff;border-radius:{{ sheetRadius }};overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(20,26,32,.3);opacity:0;margin-bottom:{{ sheetOverscroll }};padding-bottom:{{ sheetOverscrollPad }}">
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <div onPointerDown="{{ qlDown }}" onPointerMove="{{ qlMove }}" onPointerUp="{{ qlUp }}" onPointerCancel="{{ qlUp }}" style="flex:0 0 auto;padding:10px 0 8px;display:flex;justify-content:center;touch-action:none;cursor:grab"><span style="width:40px;height:5px;border-radius:3px;background:#d4d8dc"></span></div>
+      </sc-if>
+      <div style="flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain">
+        <div onPointerDown="{{ qlDown }}" onPointerMove="{{ qlMove }}" onPointerUp="{{ qlUp }}" onPointerCancel="{{ qlUp }}" style="position:relative;aspect-ratio:16/10;background:repeating-linear-gradient(135deg,#eceee9 0 12px,#e4e7e1 12px 24px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279;touch-action:{{ imgTouch }}">
+          {{ sl.img }}
+          <span style="position:absolute;top:14px;left:14px;padding:5px 11px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ sl.typeBg }};color:{{ sl.typeFg }}">{{ sl.typeLabel }}</span><sc-if value="{{ sl.reserve }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:14px;left:auto;right:60px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:#3b5166;color:#fff;box-shadow:0 2px 8px rgba(20,26,32,.18)">Rezervācijai</span></sc-if>
+          <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ closeSheet }}" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;font-family:'Lexend',sans-serif;font-size:16px;color:#1d2329;cursor:pointer;transition:transform .12s" style-active="transform:scale(.9)">✕</div>
+          </sc-if>
+        </div>
+        <div style="padding:22px 24px 24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:13px;color:#5d6670">{{ sl.catName }}</span>
+            <h3 style="margin:0;font-size:24px;line-height:1.2;letter-spacing:-.02em;font-weight:600;text-wrap:balance">{{ sl.title }}</h3>
+            <span style="font-size:28px;font-weight:600;letter-spacing:-.025em">{{ sl.price }} <span style="font-size:15px;font-weight:400;letter-spacing:0;color:#5d6670">{{ sl.unit }}</span></span>
+          </div>
+          <p style="margin:0;font-size:16px;line-height:1.55;color:#33393f;text-wrap:pretty">{{ sl.desc }}</p>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:#f5f6f4">
+            <div style="width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">{{ sl.initials }}</div>
+            <div style="min-width:0;flex:1"><div style="font-size:15px;font-weight:600">{{ sl.sellerName }}</div><div style="font-size:13px;color:#5d6670">{{ sl.loc }} · {{ sl.posted }}</div></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="flex:1 1 160px;padding:15px;border-radius:14px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer;transition:transform .12s,background .15s" style-hover="background:#355d3e" style-active="transform:scale(.97)">Sazinies</div>
+            <div onClick="{{ sl.full }}" style="flex:1 1 160px;padding:15px;border-radius:14px;background:#eef0ee;color:#1d2329;font-size:16px;font-weight:500;text-align:center;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Atvērt sludinājumu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;map&quot;,&quot;profile&quot;,&quot;listing&quot;,&quot;auth&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;glassHeader&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;reduceMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  cats = [
+    { id: 'lop', name: 'Lopkopība', icon: 'icons/lopkopiba.svg', subs: [['dzi', 'Dzīvnieki'], ['fer', 'Fermu aprīkojums un iekārtas'], ['bar', 'Barība'], ['vet', 'Veterinārie pakalpojumi']] },
+    { id: 'teh', name: 'Lauksaimniecības tehnika', icon: 'icons/tehnika.svg', subs: [['tra', 'Traktori'], ['aug', 'Augsnes apstrāde'], ['gra', 'Graudu pirmapstrādes tehnika'], ['lbt', 'Lopbarības sagatavošanas tehnika'], ['kra', 'Kravu transportēšanas tehnika'], ['rez', 'Rezerves daļas']] },
+    { id: 'sek', name: 'Sēklas un graudi', icon: 'icons/seklas.svg', subs: [['grd', 'Graudaugi'], ['kru', 'Krustzieži'], ['nek', 'Nektāraugi'], ['zal', 'Zālāju sēklas']] },
+    { id: 'mez', name: 'Mežsaimniecība', icon: 'icons/mezsaimnieciba.svg', subs: [['mal', 'Malka'], ['koks', 'Kokmateriāli'], ['mzp', 'Mežizstrādes pakalpojumi']] },
+    { id: 'daz', name: 'Dažādi', icon: 'icons/dazadi.svg', subs: [['med', 'Biškopība un medus'], ['pak', 'Pakalpojumi'], ['cit', 'Citi']] }
+  ];
+  profiles = [
+    { id: 'p1', sub: 'dzi', name: 'Aizstrautu Angus', initials: 'AA', spec: 'Gaļas liellopi', cat: 'lop', loc: 'Aizstrauti, Dobeles nov.', ll: [56.62, 23.28], verified: true, since: '2026', phone: '+371 29 114 562', email: 'info@aizstrautuangus.lv', about: 'Ģimenes saimniecība, kas audzē tīršķirnes Aberdīnas-Angus gaļas liellopus. Pārdodam teles, buļļus un vaislas dzīvniekus; iespējama apskate saimniecībā pēc iepriekšējas vienošanās.' },
+    { id: 'p2', sub: 'grd', name: 'ZS „Kalnāji”', initials: 'K', spec: 'Graudkopība', cat: 'sek', loc: 'Vecsaule, Bauskas nov.', ll: [56.43, 24.30], verified: true, since: '2026', phone: '+371 26 402 318', email: 'kalnaji@inbox.lv', about: 'Audzējam ziemas kviešus, rapsi un miežus. Piedāvājam sertificētu sēklu un graudu pārdošanu lielākos apjomos, iespējama piegāde.' },
+    { id: 'p3', sub: 'tra', name: 'Agro Serviss Vidzeme', initials: 'AS', spec: 'Tehnika un rezerves daļas', cat: 'teh', loc: 'Cēsis, Cēsu nov.', ll: [57.31, 25.27], verified: true, since: '2026', phone: '+371 27 550 901', email: 'serviss@agrovidzeme.lv', about: 'Lietotas lauksaimniecības tehnikas tirdzniecība, apkope un rezerves daļas. Strādājam ar saimniecībām visā Vidzemē.' },
+    { id: 'p4', sub: 'mal', name: 'SIA Meža Puse', initials: 'MP', spec: 'Mežizstrāde un malka', cat: 'mez', loc: 'Lubāna, Madonas nov.', ll: [56.90, 26.72], verified: false, since: '2026', phone: '+371 25 773 214', email: 'mezapuse@gmail.com', about: 'Mežizstrādes pakalpojumi, cirsmu iepirkšana un skaldītas malkas pārdošana ar piegādi.' },
+    { id: 'p5', sub: 'med', name: 'Dravnieks „Medusmaize”', initials: 'M', spec: 'Biškopība', cat: 'daz', loc: 'Kuldīga, Kuldīgas nov.', ll: [56.97, 21.97], verified: false, since: '2026', phone: '+371 28 019 455', email: 'medusmaize@inbox.lv', about: 'Neliela dravniecība Kurzemē. Ziedu, liepu un griķu medus, bišu vasks un propoliss.' },
+    { id: 'p6', sub: 'dzi', name: 'ZS „Purenes”', initials: 'P', spec: 'Piena lopkopība', cat: 'lop', loc: 'Svēte, Jelgavas nov.', ll: [56.60, 23.66], verified: true, since: '2026', phone: '+371 29 660 127', email: 'purenes@gmail.com', about: 'Piena lopkopības saimniecība ar 180 slaucamām govīm. Pārdodam vaislas telītes un iepērkam lopbarību.' }
+  ];
+  listings = [
+    { id: 'l1', sub: 'tra', type: 'sell', title: 'Traktors John Deere 6155R, 2016', price: '78 000 €', unit: '', cat: 'teh', seller: 'p3', posted: 'Šodien', cond: 'Lietots, 5 400 m/st', qty: '1 gab.', img: 'foto: traktors', desc: 'Labā tehniskā stāvoklī, regulāri apkopts servisā. AutoTrac gatavība, priekšējais uzkares mehānisms, gaisa kondicionieris. Iespējama apskate un izmēģinājums Cēsīs.' },
+    { id: 'l2', reserve: true, sub: 'dzi', type: 'sell', title: 'Angus teles, 8–10 mēnešus vecas', price: '1 150 €', unit: '/ gab.', cat: 'lop', seller: 'p1', posted: 'Vakar', cond: 'Tīršķirnes, ar ciltsrakstiem', qty: '12 gab.', img: 'foto: teles', desc: 'Pārdodam tīršķirnes Aberdīnas-Angus teles no slimību brīva ganāmpulka. Dzīvnieki pieraduši pie cilvēkiem, vakcinēti. Iespējama piegāde visā Latvijā.' },
+    { id: 'l3', sub: 'grd', type: 'buy', title: 'Pērku lopbarības miežus', price: 'Pēc vienošanās', unit: '', cat: 'sek', seller: 'p6', posted: 'Pirms 2 d.', cond: 'Mitrums līdz 14 %', qty: 'Līdz 200 t', img: 'foto: mieži', desc: 'Iepērkam lopbarības miežus no šī gada ražas. Varam paši organizēt transportu no Zemgales un Kurzemes. Samaksa 5 darba dienu laikā.' },
+    { id: 'l4', sub: 'kru', type: 'sell', title: 'Ziemas rapša sēkla, C1 kategorija', price: '9,80 €', unit: '/ kg', cat: 'sek', seller: 'p2', posted: 'Pirms 3 d.', cond: 'Sertificēta', qty: '2 t', img: 'foto: rapša sēkla', desc: 'Sertificēta ziemas rapša sēkla, kodināta. Iepakojumā pa 25 kg. Iespējama piegāde Zemgales reģionā.' },
+    { id: 'l5', sub: 'mal', type: 'sell', title: 'Bērza malka, skaldīta, 40 cm', price: '45 €', unit: '/ ber. m³', cat: 'mez', seller: 'p4', posted: 'Pirms 4 d.', cond: 'Sausa, 1 gadu žāvēta', qty: '40 ber. m³', img: 'foto: malka', desc: 'Sausa bērza malka, skaldīta 40 cm garumā. Piegāde ar pašizgāzēju Madonas, Gulbenes un Rēzeknes novados.' },
+    { id: 'l6', sub: 'lbt', type: 'buy', title: 'Meklēju ruļļu presi', price: 'Līdz 12 000 €', unit: '', cat: 'teh', seller: 'p1', posted: 'Pirms 5 d.', cond: 'Lietota, darba kārtībā', qty: '1 gab.', img: 'foto: ruļļu prese', desc: 'Meklēju lietotu ruļļu presi ar tīšanas funkciju, vēlams Krone vai Claas. Var būt nepieciešams neliels remonts.' },
+    { id: 'l7', sub: 'med', type: 'sell', title: 'Ziedu medus, 3 l burkās', price: '24 €', unit: '/ burka', cat: 'daz', seller: 'p5', posted: 'Pirms 6 d.', cond: 'Šī gada raža', qty: '60 burkas', img: 'foto: medus', desc: 'Kurzemes ziedu medus no pašu dravas. Iespējams saņemt Kuldīgā vai sūtīt ar pakomātu.' },
+    { id: 'l8', reserve: true, sub: 'dzi', type: 'sell', title: 'Vaislas telītes, Holšteinas šķirne', price: '1 400 €', unit: '/ gab.', cat: 'lop', seller: 'p6', posted: 'Pirms 1 ned.', cond: 'Grūsnas, 5–6 mēn.', qty: '6 gab.', img: 'foto: telītes', desc: 'Grūsnas Holšteinas šķirnes telītes no augstražīga ganāmpulka. Pieejami ciltsraksti un veterinārā dokumentācija.' }
+  ];
+  rootRef = React.createRef(); pageRef = React.createRef(); homeMapRef = React.createRef(); mainMapRef = React.createRef(); miniMapRef = React.createRef();
+  howRef = React.createRef(); shelfRef = React.createRef(); galleryRef = React.createRef(); sheetRef = React.createRef(); scrimRef = React.createRef();
+  msRef = React.createRef(); listRef = React.createRef(); menuRef = React.createRef(); ddRef = React.createRef(); pinRef = React.createRef();
+  navStack = [];
+  sp = {};
+  state = { page: (typeof location !== 'undefined' && new URLSearchParams(location.search).get('startPage')) || this.props.startPage || 'home', mode: 'profiles', cat: 'all', subs: [], dd: null, ddPos: null, pin: null, q: '', heroMode: 0, heroQ: '', profileId: 'p1', listingId: 'l1', authMode: 'signup', selected: null, profileTab: 'listings', imgIdx: 0, showPhone: false, sheetId: null, narrow: typeof window !== 'undefined' && window.innerWidth < 720, menuOpen: false, atStart: true, atEnd: false, email: '', pw: '', pw2: '', errs: {} };
+  _lastPage = this.state.page;
+
+  componentDidMount() {
+    this._onW = () => this.measure(); window.addEventListener('resize', this._onW); this.attachRO();
+    this._key = e => { if (e.key !== 'Escape') return; if (this.state.pin) this.closePin(); else if (this.state.dd) this.closeDd(); else if (this._qlActive) this.closeSheet(); else if (this.state.menuOpen) this.closeMenu(); };
+    window.addEventListener('keydown', this._key);
+    this._iv = setInterval(() => this.tick(), 250); this.tick();
+  }
+  componentWillUnmount() {
+    this._ro && this._ro.disconnect(); window.removeEventListener('resize', this._onW); window.removeEventListener('keydown', this._key);
+    clearInterval(this._iv); clearTimeout(this._rt); clearTimeout(this._mt);
+    Object.values(this.sp).forEach(s => cancelAnimationFrame(s.raf)); Object.values(this._maps || {}).forEach(m => { try { m.map.remove(); } catch (e) {} });
+  }
+  componentDidUpdate(pp) {
+    if (pp && pp.startPage !== this.props.startPage && this.props.startPage) this.go(this.props.startPage);
+    if (this._lastPage !== this.state.page) { this._lastPage = this.state.page; this.enterPage(); }
+    this.tick();
+  }
+  measure() { const w = document.documentElement.clientWidth || window.innerWidth, n = w < 720; if (n !== this.state.narrow) { this.forceClose(); this._msInit = false; this.setState({ narrow: n, menuOpen: false }); } }
+  attachRO() { this.measure(); if (window.ResizeObserver) { this._ro = new ResizeObserver(() => this.measure()); this._ro.observe(document.documentElement); } this._onLoad = () => this.measure(); window.addEventListener('load', this._onLoad); [100, 500, 1500].forEach(t => setTimeout(() => this.measure(), t)); }
+  whenRef(ref, fn, n = 0) { if (ref.current) fn(ref.current); else if (n < 90) requestAnimationFrame(() => this.whenRef(ref, fn, n + 1)); }
+  rm() { return !!this.props.reduceMotion || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  tick() { this.syncMaps(); this.initMs(); }
+
+  // Spring in Apple terms (damping ratio, response). Retargeting keeps current value + velocity.
+  spring(key, to, o, apply, done) {
+    const st = this.sp[key] || (this.sp[key] = { x: 0, v: 0, raf: 0 });
+    cancelAnimationFrame(st.raf);
+    let response = o.response || 0.35, damping = o.damping == null ? 1 : o.damping;
+    if (o.velocity != null) st.v = o.velocity;
+    if (this.rm()) { if (o.instantOnRM) { st.x = to; st.v = 0; apply(to); done && done(); return; } response = 0.2; damping = 1; st.v = 0; }
+    const k = Math.pow(2 * Math.PI / response, 2), c = 4 * Math.PI * damping / response, eps = o.eps || 0.0006, veps = o.veps || 0.02;
+    let last = performance.now();
+    const step = t => {
+      const dt = Math.min(0.032, (t - last) / 1000); last = t;
+      for (let i = 0; i < 4; i++) { const h = dt / 4, a = -k * (st.x - to) - c * st.v; st.v += a * h; st.x += st.v * h; }
+      if (Math.abs(st.x - to) < eps && Math.abs(st.v) < veps) { st.x = to; st.v = 0; st.raf = 0; apply(to); done && done(); return; }
+      apply(st.x); st.raf = requestAnimationFrame(step);
+    };
+    st.raf = requestAnimationFrame(step);
+  }
+  rubber(x, d, c = 0.55) { return (x * d * c) / (d + c * Math.abs(x)); }
+  velocityOf(hist) { const now = performance.now(), h = hist.filter(x => now - x.t < 100), a = h[0], b = h[h.length - 1]; return a && b && b.t > a.t ? (b.y - a.y) / ((b.t - a.t) / 1000) : 0; }
+  project(v, d = 0.998) { return (v / 1000) * d / (1 - d); }
+
+  go(page, extra = {}, back) {
+    const s = this.state;
+    if (!back && (page !== s.page || extra.listingId !== undefined && extra.listingId !== s.listingId || extra.profileId !== undefined && extra.profileId !== s.profileId)) {
+      const mm = this._maps && this._maps.main;
+      this.navStack.push({ page: s.page, mode: s.mode, cat: s.cat, subs: s.subs, q: s.q, listingId: s.listingId, profileId: s.profileId, profileTab: s.profileTab, y: window.scrollY, listY: this.listRef.current ? this.listRef.current.scrollTop : 0, view: mm ? { c: mm.map.getCenter(), z: mm.map.getZoom() } : null });
+      if (this.navStack.length > 30) this.navStack.shift();
+    }
+    this.forceClose(); this.setState({ page, selected: null, pin: null, dd: null, subs: [], showPhone: false, imgIdx: 0, menuOpen: false, errs: {}, ...extra });
+  }
+  goBack() {
+    const p = this.navStack.pop();
+    if (!p) { this.go('map', { mode: this.state.page === 'profile' ? 'profiles' : 'sell', cat: 'all', q: '' }, true); return; }
+    this._restore = p;
+    this.go(p.page, { mode: p.mode, cat: p.cat, subs: p.subs, q: p.q, listingId: p.listingId, profileId: p.profileId, profileTab: p.profileTab }, true);
+  }
+  // Pin card — anchored to the marker, scales out of it, follows the map
+  pinItem() { const id = this.state.pin; return id ? this.filtered().find(x => x.id === id) : null; }
+  positionPin() {
+    const el = this.pinRef.current, m = this._maps && this._maps.main, it = this.pinItem(); if (!el || !m || !it) return;
+    const pt = m.map.latLngToContainerPoint(it.ll || this.llOf(it)), W = el.offsetWidth, H = el.offsetHeight, MW = m.el.clientWidth;
+    const minL = this.state.narrow ? 12 : 432, left = Math.max(minL, Math.min(pt.x - W / 2, MW - W - 12));
+    let top = pt.y - H - 18, below = false; if (top < 12) { top = pt.y + 18; below = true; }
+    el.style.left = left + 'px'; el.style.top = top + 'px';
+    const cx = Math.max(16, Math.min(pt.x - left - 7, W - 30));
+    el.style.transformOrigin = (cx + 7) + 'px ' + (below ? '0' : '100%');
+    const c = el.querySelector('[data-caret]'); if (c) { c.style.left = cx + 'px'; c.style.top = below ? '-6px' : 'auto'; c.style.bottom = below ? 'auto' : '-6px'; }
+  }
+  applyPin(el, x) { el.style.opacity = Math.max(0, Math.min(1, x)); el.style.transform = this.rm() ? 'none' : 'scale(' + (0.82 + 0.18 * x) + ')'; }
+  openPin(id) {
+    const m = this._maps && this._maps.main; if (!m) return;
+    const was = !!this.state.pin;
+    this.setState({ selected: id, pin: id }, () => this.whenRef(this.pinRef, el => {
+      const it = this.pinItem(); if (!it) return;
+      const pt = m.map.latLngToContainerPoint(it.ll || this.llOf(it)), anim = { animate: !this.rm(), duration: 0.35 };
+      if (this.state.narrow && this.sp.ms) { const det = this.msDet(), visB = det.peek + 12, target = Math.round(visB * 0.62); this.snapMs(det.peek); if (pt.y > visB - 40 || pt.y < 150) m.map.panBy([0, pt.y - target], anim); }
+      else if (!this.state.narrow && pt.x < 480) m.map.panBy([pt.x - 720, 0], anim);
+      this.positionPin();
+      if (!was) { this.sp.pin = { x: 0, v: 0, raf: 0 }; this.applyPin(el, 0); }
+      this.spring('pin', 1, { response: 0.32, damping: was ? 1 : 0.86 }, x => this.applyPin(el, x));
+    }));
+  }
+  closePin() {
+    const el = this.pinRef.current;
+    if (!el || !this.state.pin) { if (this.state.pin) this.setState({ pin: null, selected: null }); return; }
+    this.spring('pin', 0, { response: 0.22 }, x => this.applyPin(el, x), () => this.setState({ pin: null, selected: null }));
+  }
+  enterPage() {
+    const r = this._restore; this._restore = null;
+    if (r) { this._restoreList = r.listY; this._restoreView = r.view; requestAnimationFrame(() => window.scrollTo(0, r.y)); }
+    else if (!this._keepScroll) window.scrollTo(0, 0);
+    this._keepScroll = false; this._msInit = false;
+    const el = this.pageRef.current; if (!el) return;
+    this.sp.page = { x: 0, v: 0, raf: 0 }; el.style.opacity = 0;
+    this.spring('page', 1, { response: 0.42 }, x => { el.style.opacity = Math.min(1, x); el.style.transform = this.rm() || x > 0.999 ? 'none' : 'translate3d(0,' + (1 - x) * 14 + 'px,0)'; });
+  }
+
+  // Mobile menu — scales from the button that opened it
+  openMenu() { this.setState({ menuOpen: true }, () => this.whenRef(this.menuRef, el => { this.sp.menu = { x: 0, v: 0, raf: 0 }; this.spring('menu', 1, { response: 0.32 }, x => this.applyMenu(el, x)); })); }
+  closeMenu(after) { const el = this.menuRef.current; if (!el) { this.setState({ menuOpen: false }); return; } this.spring('menu', 0, { response: 0.24 }, x => this.applyMenu(el, x), () => { this.setState({ menuOpen: false }); after && after(); }); }
+  applyMenu(el, x) { el.style.opacity = Math.max(0, Math.min(1, x)); el.style.transform = this.rm() ? 'none' : 'scale(' + (0.9 + 0.1 * x) + ')'; }
+
+  // Subcategory dropdown — anchored to its chip, scales out of it
+  openDd(catId, e) {
+    const panel = this.msRef.current, chip = e && e.currentTarget;
+    if (!panel || !chip) return;
+    const pr = panel.getBoundingClientRect(), cr = chip.getBoundingClientRect();
+    const w = Math.min(320, pr.width - 24), left = Math.max(12, Math.min(cr.left - pr.left, pr.width - w - 12));
+    const top = cr.bottom - pr.top + 8, cx = cr.left - pr.left + cr.width / 2 - left;
+    let vis = pr.height;
+    if (this.state.narrow) { vis = panel.parentElement.clientHeight - 12; if (this.sp.ms && this.sp.ms.x > 1) this.snapMs(0); }
+    this.setState({ dd: catId, ddPos: { left, top, w, cx, maxH: Math.max(160, vis - top - 12) } }, () => this.whenRef(this.ddRef, el => { this.sp.dd = { x: 0, v: 0, raf: 0 }; this.spring('dd', 1, { response: 0.32 }, x => this.applyDd(el, x)); }));
+  }
+  closeDd() { const el = this.ddRef.current; if (!el) { this.setState({ dd: null }); return; } this.spring('dd', 0, { response: 0.22 }, x => this.applyDd(el, x), () => this.setState({ dd: null })); }
+  applyDd(el, x) { el.style.opacity = Math.max(0, Math.min(1, x)); el.style.transform = this.rm() ? 'none' : 'scale(' + (0.88 + 0.12 * x) + ')'; }
+
+  // Map bottom sheet (mobile) — detents + momentum projection + rubber-banding
+  msDet() { const el = this.msRef.current, H = el.parentElement.clientHeight; return { H, full: 0, half: Math.round(H * 0.48), peek: Math.max(0, H - 12 - 196) }; }
+  applyMs(y) { const el = this.msRef.current; if (el) el.style.transform = this.state.narrow ? 'translate3d(0,' + y + 'px,0)' : 'none'; }
+  initMs() {
+    if (this._restoreList != null && this.listRef.current) { this.listRef.current.scrollTop = this._restoreList; this._restoreList = null; }
+    const el = this.msRef.current;
+    if (!el) { this._msInit = false; return; }
+    if (!this.state.narrow) { el.style.transform = 'none'; this._msInit = false; return; }
+    if (this._msInit) return;
+    this._msInit = true; const d = this.msDet(); this.sp.ms = { x: d.half, v: 0, raf: 0 }; this.applyMs(d.half);
+  }
+  snapMs(to, v = 0) { this.spring('ms', to, { response: 0.36, damping: Math.abs(v) > 600 ? 0.84 : 1, velocity: v, eps: 0.5, veps: 6, instantOnRM: true }, y => this.applyMs(y)); }
+  msDown = e => {
+    if (!this.state.narrow || !this.sp.ms || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    cancelAnimationFrame(this.sp.ms.raf);
+    this._msd = { y0: e.clientY, s0: this.sp.ms.x, hist: [{ y: e.clientY, t: performance.now() }], moved: false };
+    e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  msMove = e => {
+    const d = this._msd; if (!d) return;
+    if (!d.moved && Math.abs(e.clientY - d.y0) < 8) return;
+    if (!d.moved) { d.moved = true; d.y0 = e.clientY; }
+    const det = this.msDet(); let y = d.s0 + (e.clientY - d.y0);
+    if (y < det.full) y = det.full - this.rubber(det.full - y, det.H);
+    if (y > det.peek) y = det.peek + this.rubber(y - det.peek, det.H);
+    this.sp.ms.x = y; this.sp.ms.v = 0; this.applyMs(y);
+    d.hist.push({ y: e.clientY, t: performance.now() }); if (d.hist.length > 8) d.hist.shift();
+  };
+  msUp = () => {
+    const d = this._msd; if (!d) return; this._msd = null;
+    const det = this.msDet(), pts = [det.full, det.half, det.peek], x = this.sp.ms.x;
+    if (!d.moved) { const cur = pts.reduce((a, b) => Math.abs(b - x) < Math.abs(a - x) ? b : a); this.snapMs(cur === det.peek ? det.half : cur === det.half ? det.full : det.half); return; }
+    const v = this.velocityOf(d.hist), proj = x + this.project(v);
+    this.snapMs(pts.reduce((a, b) => Math.abs(b - proj) < Math.abs(a - proj) ? b : a), v);
+  };
+  focusItem(id) {
+    if (this.state.narrow && this.sp.ms) { const det = this.msDet(); if (this.sp.ms.x > det.half - 4) this.snapMs(det.half); }
+    setTimeout(() => { const box = this.listRef.current, it = box && box.querySelector('[data-id="' + id + '"]'); if (it) box.scrollTo({ top: it.offsetTop - 8, behavior: this.rm() ? 'auto' : 'smooth' }); }, 60);
+  }
+
+  // Quick look (home) — grows from the card, returns to it
+  openSheet(id, e) { if (this._qlActive || this.state.sheetId) return; this._originEl = e && e.currentTarget; this.setState({ sheetId: id }, () => this.whenRef(this.sheetRef, () => this.startOpen())); }
+  startOpen() {
+    const el = this.sheetRef.current; if (!el || this._qlActive || !this.state.sheetId) return;
+    this._qlActive = true; this.sp.ql = { x: 0, v: 0, raf: 0 };
+    el.style.transform = 'none'; this._final = el.getBoundingClientRect();
+    this._origin = this._originEl && this._originEl.isConnected ? this._originEl.getBoundingClientRect() : null;
+    this.applyQl(0); this.spring('ql', 1, { response: this.state.narrow ? 0.34 : 0.38 }, p => this.applyQl(p));
+  }
+  closeSheet(velocity) {
+    if (!this._qlActive) { if (this.state.sheetId) this.setState({ sheetId: null }); return; }
+    if (this._originEl && this._originEl.isConnected) this._origin = this._originEl.getBoundingClientRect();
+    this.spring('ql', 0, { response: 0.3, velocity: typeof velocity === 'number' ? velocity : undefined }, p => this.applyQl(p), () => { this._qlActive = false; this.setState({ sheetId: null }); });
+  }
+  forceClose() { if (this.sp.ql) cancelAnimationFrame(this.sp.ql.raf); this._qlActive = false; this._qld = null; if (this.state.sheetId) this.setState({ sheetId: null }); }
+  applyQl(p) {
+    const el = this.sheetRef.current, sc = this.scrimRef.current; if (!el) return;
+    const cl = Math.max(0, Math.min(1, p));
+    if (sc) sc.style.opacity = cl;
+    if (this.rm()) { el.style.transform = 'none'; el.style.opacity = cl; return; }
+    if (this.state.narrow) { el.style.opacity = 1; el.style.transform = 'translate3d(0,' + (1 - p) * el.offsetHeight + 'px,0)'; return; }
+    const f = this._final, o = this._origin;
+    if (!f || !o) { el.style.opacity = cl; el.style.transform = 'translate3d(0,' + (1 - p) * 24 + 'px,0)'; return; }
+    const s0 = o.width / f.width, s = s0 + (1 - s0) * p, dx = (o.left + o.width / 2) - (f.left + f.width / 2), dy = (o.top + o.height / 2) - (f.top + f.height / 2);
+    el.style.transformOrigin = '50% 50%';
+    el.style.transform = 'translate3d(' + dx * (1 - p) + 'px,' + dy * (1 - p) + 'px,0) scale(' + s + ')';
+    el.style.opacity = Math.min(1, Math.max(0, p * 2.4));
+  }
+  qlDown = e => {
+    if (!this.state.narrow || !this._qlActive || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    cancelAnimationFrame(this.sp.ql.raf);
+    const H = this.sheetRef.current.offsetHeight;
+    this._qld = { y0: e.clientY, off0: (1 - this.sp.ql.x) * H, H, hist: [{ y: e.clientY, t: performance.now() }] };
+    e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  qlMove = e => {
+    const d = this._qld; if (!d) return;
+    let off = d.off0 + (e.clientY - d.y0); if (off < 0) off = -this.rubber(-off, d.H);
+    this.sp.ql.x = 1 - off / d.H; this.sp.ql.v = 0; this.applyQl(this.sp.ql.x);
+    d.hist.push({ y: e.clientY, t: performance.now() }); if (d.hist.length > 8) d.hist.shift();
+  };
+  qlUp = () => {
+    const d = this._qld; if (!d) return; this._qld = null;
+    const v = this.velocityOf(d.hist), off = (1 - this.sp.ql.x) * d.H;
+    if (off + this.project(v) > d.H * 0.4) this.closeSheet(-v / d.H);
+    else this.spring('ql', 1, { response: 0.32, damping: Math.abs(v) > 300 ? 0.82 : 1, velocity: -v / d.H }, p => this.applyQl(p));
+  };
+
+  prof(id) { return this.profiles.find(p => p.id === id); }
+  llOf(l) { const p = this.prof(l.seller), n = parseInt(l.id.slice(1)); return [p.ll[0] + (n % 3 - 1) * 0.04, p.ll[1] + (n % 2 ? 0.06 : -0.06)]; }
+  filtered() {
+    return this.filterBy(this.state.cat, this.state.subs);
+  }
+  filterBy(cat, subs, mode) {
+    const s = this.state, q = s.q.trim().toLowerCase(); mode = mode || s.mode;
+    const okCat = (c, sb) => (cat === 'all' || c === cat) && (!subs.length || subs.includes(sb));
+    if (mode === 'profiles') return this.profiles.filter(p => okCat(p.cat, p.sub) && (!q || (p.name + ' ' + p.spec + ' ' + p.loc).toLowerCase().includes(q)));
+    return this.listings.filter(l => l.type === mode && okCat(l.cat, l.sub) && (!q || (l.title + ' ' + this.prof(l.seller).loc).toLowerCase().includes(q)));
+  }
+  syncMaps() { try { this._sync(); } catch (e) { console.warn('map', e); } }
+  _sync() {
+    const L = window.L; if (!L) return;
+    this._maps = this._maps || {};
+    const specs = { main: this.mainMapRef, home: this.homeMapRef, mini: this.miniMapRef }, s = this.state, narrow = s.narrow;
+    for (const k in specs) {
+      const el = specs[k].current, m = this._maps[k];
+      if (m && (!el || m.el !== el || !m.el.isConnected || m.narrow !== narrow)) { try { m.map.remove(); } catch (e) {} delete this._maps[k]; }
+      if (el && el.isConnected && !this._maps[k]) {
+        const main = k === 'main';
+        const map = L.map(el, { zoomControl: false, scrollWheelZoom: main, dragging: main || !L.Browser.mobile, attributionControl: true }).setView([56.88, 24.4], 7);
+        if (main && !narrow) L.control.zoom({ position: 'bottomright' }).addTo(map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
+        this._maps[k] = { el, map, layer: L.layerGroup().addTo(map), sig: null, ids: null, narrow };
+        if (main) {
+          map.on('move zoom', () => this.positionPin());
+          map.on('click', () => this.closePin());
+          if (this._restoreView) { map.setView(this._restoreView.c, this._restoreView.z, { animate: false }); this._maps[k].restored = true; this._restoreView = null; }
+        }
+        setTimeout(() => map.invalidateSize(), 60);
+      }
+    }
+    const pts = {};
+    if (this._maps.main) pts.main = this.filtered().map(x => ({ id: x.id, ll: x.ll || this.llOf(x), label: x.name || x.title, sel: s.selected === x.id }));
+    if (this._maps.home) pts.home = this.profiles.map(p => ({ id: p.id, ll: p.ll, label: p.name, sel: false }));
+    if (this._maps.mini) { const p = this.prof(s.profileId); pts.mini = [{ id: p.id, ll: p.ll, label: p.name, sel: true }]; }
+    for (const k in pts) {
+      const m = this._maps[k], list = pts[k], ids = list.map(p => p.id).join(','), sig = ids + '|' + list.filter(p => p.sel).map(p => p.id).join(',');
+      if (m.sig === sig) continue;
+      m.layer.clearLayers();
+      list.forEach(p => {
+        const mk = L.circleMarker(p.ll, { radius: p.sel ? 11 : 8, color: '#fff', weight: 3, fillColor: p.sel ? '#3b5166' : '#3f6e4a', fillOpacity: 1, bubblingMouseEvents: k !== 'main' }).addTo(m.layer);
+        if (k !== 'main') mk.bindTooltip(p.label, { direction: 'top', offset: [0, -8] });
+        if (k === 'main') mk.on('click', () => { this.openPin(p.id); if (!this.state.narrow) this.focusItem(p.id); });
+        if (k === 'home') mk.on('click', () => this.go('profile', { profileId: p.id, profileTab: 'listings' }));
+      });
+      if (m.restored) { m.restored = false; m.ids = ids; }
+      if (m.ids !== ids) {
+        const H = m.el.clientHeight;
+        const pad = k === 'main' ? (narrow ? { paddingTopLeft: [30, 40], paddingBottomRight: [30, Math.round(H * 0.55)] } : { paddingTopLeft: [450, 50], paddingBottomRight: [60, 50] }) : { paddingTopLeft: [40, 40], paddingBottomRight: [40, 110] };
+        if (k === 'mini') m.map.setView(list[0].ll, 9);
+        else if (list.length > 1) m.map.fitBounds(list.map(p => p.ll), { ...pad, maxZoom: 9 });
+        else if (list.length === 1) m.map.setView(list[0].ll, 9);
+      }
+      m.sig = sig; m.ids = ids;
+    }
+  }
+  galTo(i) { const el = this.galleryRef.current; if (el) el.scrollTo({ left: i * el.clientWidth, behavior: this.rm() ? 'auto' : 'smooth' }); }
+  shelfBy(dir) { const el = this.shelfRef.current; if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: this.rm() ? 'auto' : 'smooth' }); }
+
+  renderVals() {
+    const s = this.state, narrow = s.narrow, wide = !narrow, rm = this.rm();
+    const catName = id => (this.cats.find(c => c.id === id) || {}).name;
+    const seg = (labels, cur, set) => labels.map((label, i) => ({ label, fg: cur === i ? '#1d2329' : '#5d6670', fw: cur === i ? 600 : 500, set: () => set(i) }));
+    const decP = p => ({ ...p, catName: catName(p.cat), open: () => this.go('profile', { profileId: p.id, profileTab: 'listings' }), hover: () => wide && s.selected !== p.id && this.setState({ selected: p.id }), bg: s.selected === p.id ? 'rgba(63,110,74,.12)' : 'transparent' });
+    const decL = l => { const sp = this.prof(l.seller), sell = l.type === 'sell'; return { ...l, catName: catName(l.cat), sellerName: sp.name, initials: sp.initials, loc: sp.loc, typeLabel: sell ? 'Pārdod' : 'Pērk', typeBg: sell ? '#e6efe6' : '#f5ecd9', typeFg: sell ? '#2f5538' : '#7a5516', open: () => this.go('listing', { listingId: l.id }), quick: e => this.openSheet(l.id, e), full: () => this.go('listing', { listingId: l.id }), hover: () => wide && s.selected !== l.id && this.setState({ selected: l.id }), bg: s.selected === l.id ? 'rgba(63,110,74,.12)' : 'transparent' }; };
+    const modes = ['profiles', 'sell', 'buy'], modeLabels = ['Uzņēmumi', 'Pārdod', 'Pērk'];
+    const ph = ['Meklē uzņēmumu, nozari vai vietu…', 'Piem., traktors, teles, malka…', 'Piem., mieži, ruļļu prese…'];
+    const results = this.filtered(), n = results.length, isProfileMode = s.mode === 'profiles';
+    const noun = isProfileMode ? (n === 1 ? 'uzņēmums' : 'uzņēmumi') : (n === 1 ? 'sludinājums' : 'sludinājumi');
+    const profile = decP(this.prof(s.profileId)), listing = decL(this.listings.find(l => l.id === s.listingId)), seller = decP(this.prof(listing.seller));
+    const phoneOwner = s.page === 'listing' ? seller : profile;
+    const sim = this.listings.filter(l => l.id !== listing.id && l.cat === listing.cat).concat(this.listings.filter(l => l.id !== listing.id && l.cat !== listing.cat)).slice(0, 6);
+    const shots = [listing.img, 'foto: detaļas', 'foto: no sāniem', 'foto: dokumenti'];
+    const isSignup = s.authMode === 'signup', errs = s.errs;
+    const heroSearch = () => this.go('map', { mode: modes[s.heroMode], q: s.heroQ, cat: 'all' });
+    const goMap = () => this.go('map', { mode: 'profiles', cat: 'all', q: '' }), goListings = () => this.go('map', { mode: 'sell', cat: 'all', q: '' });
+    const goSignup = () => this.go('auth', { authMode: 'signup' }), goLogin = () => this.go('auth', { authMode: 'login' });
+    const goHow = () => { const run = () => { this._keepScroll = s.page !== 'home'; if (s.page !== 'home') this.go('home'); setTimeout(() => { const el = this.howRef.current; if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 72, behavior: rm ? 'auto' : 'smooth' }); }, 80); }; if (s.menuOpen) this.closeMenu(run); else run(); };
+    const navTo = fn => () => { if (s.menuOpen) this.closeMenu(fn); else fn(); };
+    const glass = this.props.glassHeader ?? true;
+    const onMapMode = s.page === 'map';
+    const doAuth = () => {
+      const e = {};
+      if (!/^\S+@\S+\.\S+$/.test(s.email)) e.email = 'Ievadi derīgu e-pasta adresi';
+      if (s.pw.length < 8) e.pw = 'Parolei jābūt vismaz 8 rakstzīmēm';
+      if (isSignup && s.pw2 !== s.pw) e.pw2 = 'Paroles nesakrīt';
+      if (Object.keys(e).length) this.setState({ errs: e }); else this.go('profile', { profileId: 'p1', profileTab: 'listings', email: '', pw: '', pw2: '' });
+    };
+    return {
+      rootRef: this.rootRef, pageRef: this.pageRef, homeMapRef: this.homeMapRef, mainMapRef: this.mainMapRef, miniMapRef: this.miniMapRef, howRef: this.howRef,
+      pinRef: this.pinRef, closePin: e => { e && e.stopPropagation && e.stopPropagation(); this.closePin(); },
+      ...(() => { const it = s.page === 'map' && s.pin ? results.find(x => x.id === s.pin) : null; if (!it) return { hasPin: false, pin: {}, pinIsListing: false, pinIsProfile: false, pinW: '340px' };
+        const d = isProfileMode ? decP(it) : decL(it); return { hasPin: true, pin: d, pinIsListing: !isProfileMode, pinIsProfile: isProfileMode, pinW: narrow ? 'min(360px, calc(100% - 24px))' : '360px' }; })(),
+      hasBack: s.page === 'listing' || s.page === 'profile', goBack: () => this.goBack(), backPadX: narrow ? '12px' : '20px',
+      ...(() => { const p = this.navStack[this.navStack.length - 1]; const lbl = !p ? (s.page === 'profile' ? 'Karte' : 'Sludinājumi') : p.page === 'map' ? (p.mode === 'profiles' ? 'Karte' : 'Sludinājumi') : p.page === 'home' ? 'Sākums' : p.page === 'listing' ? 'Sludinājums' : p.page === 'profile' ? 'Profils' : 'Atpakaļ';
+        return { backLabel: lbl, backContext: s.page === 'listing' ? catName(this.listings.find(l => l.id === s.listingId).cat) : '' }; })(),
+      shelfRef: this.shelfRef, galleryRef: this.galleryRef, sheetRef: this.sheetRef, scrimRef: this.scrimRef, msRef: this.msRef, listRef: this.listRef, menuRef: this.menuRef,
+      narrow, wide, headerBg: glass ? 'rgba(59,81,102,.95)' : '#3b5166', headerBlur: glass ? 'blur(20px) saturate(180%)' : 'none',
+      segTransition: rm ? 'none' : 'transform .5s cubic-bezier(.32,.72,0,1)',
+      navItems: [['Karte', goMap, onMapMode && s.mode === 'profiles'], ['Sludinājumi', goListings, onMapMode && s.mode !== 'profiles'], ['Kā tas darbojas', goHow, false]].map(([label, go, on]) => ({ label, go, bg: on ? 'rgba(255,255,255,.16)' : 'transparent' })),
+      goHome: navTo(() => this.go('home')), goMap: navTo(goMap), goListings: navTo(goListings), goSignup: navTo(goSignup), goLogin: navTo(goLogin),
+      toggleMenu: () => s.menuOpen ? this.closeMenu() : this.openMenu(), closeMenu: () => this.closeMenu(), menuOpen: s.menuOpen,
+      menuItems: [['Karte', goMap, onMapMode && s.mode === 'profiles'], ['Sludinājumi', goListings, onMapMode && s.mode !== 'profiles'], ['Kā tas darbojas', goHow, false], ['Ieiet', goLogin, s.page === 'auth' && !isSignup]].map(([label, go, on]) => ({ label, go: () => label === 'Kā tas darbojas' ? go() : this.closeMenu(go), fg: on ? '#2f5538' : '#1d2329', fw: on ? 600 : 500 })),
+      isHome: s.page === 'home', isMap: s.page === 'map', isProfile: s.page === 'profile', isListing: s.page === 'listing', isAuth: s.page === 'auth',
+      showFooter: s.page !== 'map', footerPB: narrow && s.page === 'listing' ? '96px' : '0',
+      // home
+      heroSegs: seg(modeLabels, s.heroMode, i => this.setState({ heroMode: i })), heroX: s.heroMode * 100 + '%',
+      heroQ: s.heroQ, onHeroQ: e => this.setState({ heroQ: e.target.value }), onHeroKey: e => { if (e.key === 'Enter') heroSearch(); }, heroSearch, heroPlaceholder: ph[s.heroMode],
+      homeCats: this.cats.map(c => ({ ...c, open: () => this.go('map', { mode: 'profiles', cat: c.id, q: '' }) })),
+      latest: this.listings.map(decL),
+      shelfPrev: () => this.shelfBy(-1), shelfNext: () => this.shelfBy(1),
+      onShelfScroll: e => { const el = e.currentTarget, a = el.scrollLeft < 8, b = el.scrollLeft + el.clientWidth > el.scrollWidth - 8; if (a !== s.atStart || b !== s.atEnd) this.setState({ atStart: a, atEnd: b }); },
+      prevFg: s.atStart ? '#b5bbc0' : '#1d2329', nextFg: s.atEnd ? '#b5bbc0' : '#1d2329',
+      steps: [
+        { n: '1', t: 'Parādi savu saimniecību kartē', d: 'Izveido profilu ar nozari un atrašanās vietu, lai tevi atrastu pircēji un partneri tuvākajā apkārtnē.', cta: 'Izveidot profilu', go: goSignup },
+        { n: '2', t: 'Pārdod vai pērc', d: 'Publicē un meklē sludinājumus par tehniku, dzīvniekiem, sēklām, pakalpojumiem u.c.', cta: 'Skatīt sludinājumus', go: goListings },
+        { n: '3', t: 'Sazinies', d: 'Raksti ziņu vai zvani pārdevējam pa tiešo. Bez starpniekiem.', cta: 'Atrast partnerus', go: goMap }
+      ],
+      // quick look
+      hasSheet: !!s.sheetId, sl: s.sheetId ? decL(this.listings.find(l => l.id === s.sheetId)) : {}, closeSheet: () => this.closeSheet(),
+      sheetAlign: narrow ? 'flex-end' : 'center', sheetPad: narrow ? '0' : '24px', sheetW: narrow ? '100%' : 'min(560px,100%)',
+      sheetMaxH: narrow ? 'calc(100% - 48px)' : '100%', sheetRadius: narrow ? '22px 22px 0 0' : '24px',
+      sheetOverscroll: narrow ? '-48px' : '0', sheetOverscrollPad: narrow ? '48px' : '0', imgTouch: narrow ? 'none' : 'auto',
+      qlDown: this.qlDown, qlMove: this.qlMove, qlUp: this.qlUp,
+      // map
+      pTop: narrow ? '12px' : '16px', pLeft: narrow ? '0' : '16px', pRight: narrow ? '0' : 'auto', pBottom: narrow ? '0' : '16px', pW: narrow ? 'auto' : 'min(400px, calc(100% - 32px))',
+      pRadius: narrow ? '22px 22px 0 0' : '22px', pMB: narrow ? '-60px' : '0', pPB: narrow ? '60px' : '0', pHeadPad: narrow ? '2px 16px 12px' : '16px 16px 12px',
+      msDown: this.msDown, msMove: this.msMove, msUp: this.msUp,
+      modeSegs: seg(modeLabels, modes.indexOf(s.mode), i => this.setState({ mode: modes[i], selected: null })), modeX: modes.indexOf(s.mode) * 100 + '%',
+      q: s.q, onQ: e => this.setState({ q: e.target.value, selected: null }), mapPlaceholder: ph[modes.indexOf(s.mode)],
+      onQFocus: () => { if (narrow && this.sp.ms) this.snapMs(0); },
+      catChips: [{ id: 'all', name: 'Visas', subs: [] }].concat(this.cats).map(c => { const on = s.cat === c.id, open = s.dd === c.id, cnt = on ? s.subs.length : 0; return { label: c.name + (cnt ? ' · ' + cnt : ''), hasSubs: c.subs.length > 0, rot: open ? '180deg' : '0deg',
+        set: e => { if (c.id === 'all') { this.setState({ cat: 'all', subs: [], selected: null }); return; } if (open) { this.closeDd(); return; } if (!on) this.setState({ cat: c.id, subs: [], selected: null }); this.openDd(c.id, e); },
+        bg: on ? '#3f6e4a' : 'rgba(20,26,32,.06)', fg: on ? '#fff' : '#1d2329' }; }),
+      ddOpen: !!s.dd, ddRef: this.ddRef, closeDd: () => this.closeDd(),
+      ...(() => { const c = this.cats.find(x => x.id === s.dd) || this.cats[0], p = s.ddPos || { left: 12, top: 120, w: 300, cx: 40, maxH: 400 }, sel = s.subs;
+        const nAll = this.filterBy(c.id, []).length, nSel = this.filterBy(c.id, sel).length;
+        return { ddCat: c, ddTop: p.top + 'px', ddLeft: p.left + 'px', ddW: p.w + 'px', ddMaxH: p.maxH + 'px', ddOrigin: p.cx + 'px 0', ddHasSel: sel.length > 0,
+          ddAllBg: sel.length ? 'transparent' : '#3f6e4a', ddAllRing: sel.length ? 'inset 0 0 0 1.5px #c3c9ce' : 'none', ddAllCount: nAll,
+          clearSubs: () => this.setState({ subs: [], selected: null }),
+          ddSubs: c.subs.map(([id, name]) => { const on = sel.includes(id); return { name, count: this.filterBy(c.id, [id]).length, bg: on ? '#3f6e4a' : 'transparent', ring: on ? 'none' : 'inset 0 0 0 1.5px #c3c9ce', fg: '#1d2329',
+            toggle: () => this.setState(st => ({ subs: st.subs.includes(id) ? st.subs.filter(x => x !== id) : st.subs.concat(id), selected: null })) }; }),
+          ddCta: nSel === 0 ? 'Nav rezultātu' : 'Rādīt ' + nSel + ' ' + (isProfileMode ? (nSel === 1 ? 'uzņēmumu' : 'uzņēmumus') : (nSel === 1 ? 'sludinājumu' : 'sludinājumus')) }; })(),
+      resultLabel: n === 0 ? 'Nav rezultātu' : n + ' ' + noun, isProfileMode, isListingMode: !isProfileMode, empty: n === 0,
+      profileResults: isProfileMode ? results.map(decP) : [], listingResults: isProfileMode ? [] : results.map(decL),
+      resetFilters: () => this.setState({ cat: 'all', subs: [], q: '' }),
+      // profile
+      profile, profileListings: this.listings.filter(l => l.seller === profile.id).map(decL),
+      pagePad: narrow ? '0 0 48px' : '24px 20px 72px', coverRadius: narrow ? '0' : '24px', coverMargin: '0', coverH: narrow ? '140px' : '200px',
+      avatarSize: narrow ? '88px' : '108px', avatarLift: narrow ? '-44px' : '-54px', actionsFlex: narrow ? '1 1 100%' : '0 0 auto',
+      profCols: narrow ? 'minmax(0,1fr)' : 'minmax(0,1fr) 360px',
+      profSegs: seg(['Sludinājumi', 'Par saimniecību'], s.profileTab === 'listings' ? 0 : 1, i => this.setState({ profileTab: i ? 'about' : 'listings' })), profX: (s.profileTab === 'listings' ? 0 : 100) + '%',
+      tabListings: s.profileTab === 'listings', tabAbout: s.profileTab === 'about',
+      togglePhone: () => this.setState({ showPhone: !s.showPhone }),
+      phoneText: s.showPhone ? phoneOwner.phone : 'Parādīt tālruni', phoneShort: s.showPhone ? phoneOwner.phone : 'Tālrunis', phoneMasked: s.showPhone ? phoneOwner.phone : phoneOwner.phone.slice(0, 8) + ' ••• •••',
+      // listing
+      listing, seller, similar: sim.map(decL), shots,
+      onGal: e => { const el = e.currentTarget, i = Math.round(el.scrollLeft / Math.max(1, el.clientWidth)); if (i !== s.imgIdx) this.setState({ imgIdx: i }); },
+      dots: shots.map((x, i) => ({ set: () => this.galTo(i), w: i === s.imgIdx ? '20px' : '7px', bg: i === s.imgIdx ? '#fff' : 'rgba(255,255,255,.55)' })),
+      galPrev: () => this.galTo(Math.max(0, s.imgIdx - 1)), galNext: () => this.galTo(Math.min(shots.length - 1, s.imgIdx + 1)),
+      galPrevOp: s.imgIdx === 0 ? 0 : 1, galNextOp: s.imgIdx === shots.length - 1 ? 0 : 1,
+      thumbs: shots.map((label, i) => ({ short: label.replace('foto: ', ''), set: () => this.galTo(i), bd: i === s.imgIdx ? '#3f6e4a' : 'transparent', op: i === s.imgIdx ? 1 : 0.7 })),
+      details: [['Kategorija', listing.catName], ['Stāvoklis', listing.cond], ['Daudzums', listing.qty], ['Atrašanās vieta', listing.loc], ['Publicēts', listing.posted], ['Sludinājuma nr.', '10' + listing.id.slice(1) + '42']].map(([k, v]) => ({ k, v })),
+      listingPad: narrow ? '0 0 16px' : '24px 20px 32px', lCols: narrow ? 'minmax(0,1fr)' : 'minmax(0,1fr) 380px', lAreas: narrow ? '"gal" "side" "desc"' : '"gal side" "desc side"', lGap: narrow ? '12px' : '20px 28px',
+      galRadius: narrow ? '0' : '24px', sidePos: narrow ? 'static' : 'sticky', sidePad: narrow ? '0 16px' : '0', descPad: narrow ? '0 16px' : '0',
+      sideBg: narrow ? 'transparent' : '#fff', sideInner: narrow ? '8px 4px 4px' : '24px', sideShadow: narrow ? 'none' : '0 1px 2px rgba(20,26,32,.05)',
+      listingBar: s.page === 'listing' && narrow,
+      // auth
+      authSegs: seg(['Ieiet', 'Reģistrēties'], isSignup ? 1 : 0, i => this.setState({ authMode: i ? 'signup' : 'login', errs: {} })), authX: (isSignup ? 100 : 0) + '%',
+      isSignupMode: isSignup, isLoginMode: !isSignup,
+      authTitle: isSignup ? 'Izveido savu profilu' : 'Laipni lūdzam atpakaļ', authSub: isSignup ? 'Aizņem tikai pāris minūtes.' : 'Ieej, lai pārvaldītu profilu un sludinājumus.', authCta: isSignup ? 'Reģistrēties' : 'Ieiet',
+      email: s.email, pw: s.pw, pw2: s.pw2,
+      onEmail: e => this.setState({ email: e.target.value, errs: { ...errs, email: null } }), onPw: e => this.setState({ pw: e.target.value, errs: { ...errs, pw: null } }), onPw2: e => this.setState({ pw2: e.target.value, errs: { ...errs, pw2: null } }),
+      hasErrEmail: !!errs.email, errEmail: errs.email, emailBd: errs.email ? '#b3261e' : 'transparent',
+      pwHint: errs.pw || (isSignup ? 'Vismaz 8 rakstzīmes' : ''), pwHintFg: errs.pw ? '#b3261e' : '#5d6670', pwBd: errs.pw ? '#b3261e' : 'transparent',
+      hasErrPw2: !!errs.pw2, errPw2: errs.pw2, pw2Bd: errs.pw2 ? '#b3261e' : 'transparent', doAuth,
+      perks: [{ n: '1', t: 'Parādīties kartē', d: 'Pircēji un partneri tevi atradīs pēc nozares un atrašanās vietas.' }, { n: '2', t: 'Publicēt sludinājumus', d: 'Pārdod vai meklē tehniku, lopus, sēklas, graudus un kokmateriālus.' }, { n: '3', t: 'Saņemt ziņas', d: 'Sazinies ar pircējiem un pārdevējiem tieši platformā.' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

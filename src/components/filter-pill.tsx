@@ -6,7 +6,7 @@ import { IconChevronDown, IconCheckmark } from "@/components/icons";
 
 export function optionClass(active: boolean) {
   return `rounded-lg px-3 py-2 text-left text-sm transition ${
-    active ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f6f7f5]"
+    active ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f5f6f4]"
   }`;
 }
 
@@ -27,7 +27,7 @@ export function CheckboxPill({
       className={`flex flex-shrink-0 snap-start items-center gap-2.5 rounded-full border px-3.5 py-2 text-sm font-medium shadow-sm transition-all ${
         checked
           ? "border-[#3f6e4a] bg-[#eef3ee] text-[#2f5538]"
-          : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]/50 hover:bg-[#f6f7f5]"
+          : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]/50 hover:bg-[#f5f6f4]"
       }`}
     >
       <span

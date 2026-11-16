@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>izsole.lauks24.lv</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f6f7f5;color:#1d2329;font-family:'Lexend',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#3f6e4a;text-decoration:none}a:hover{color:#2f5538;text-decoration:underline}
+input::placeholder{color:#8a929a}
+@keyframes lkPulse{0%{box-shadow:0 0 0 0 rgba(217,45,32,.55)}70%{box-shadow:0 0 0 7px rgba(217,45,32,0)}100%{box-shadow:0 0 0 0 rgba(217,45,32,0)}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="min-height:100%;display:flex;flex-direction:column;background:#f6f7f5;font-family:'Lexend',system-ui,sans-serif;color:#1d2329">
+
+<header style="background:#3b5166;color:#fff;position:sticky;top:0;z-index:50">
+  <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1280px;margin:0 auto;padding:10px 24px;min-height:44px;display:flex;align-items:center;gap:28px">
+      <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+        <img src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:30px;display:block">
+        <span style="width:1px;height:24px;background:rgba(255,255,255,.35)"></span><span style="font-size:19px;font-weight:500;letter-spacing:-.01em;line-height:1;padding:6px 0;border-bottom:2px solid transparent" style-hover="border-bottom-color:rgba(255,255,255,.6)">Izsoles</span>
+      </div>
+      <nav style="display:flex;gap:4px;flex:1">
+        <sc-for list="{{ topNav }}" as="n" hint-placeholder-count="3">
+          <div onClick="{{ n.go }}" style="padding:8px 12px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;background:{{ n.bg }}" style-hover="background:rgba(255,255,255,.1)">{{ n.label }}</div>
+        </sc-for>
+      </nav>
+      <a href="#" style="font-size:14px;color:#fff;opacity:.85">lauks24.lv ↗</a>
+      <div style="display:flex;align-items:center;gap:6px;font-size:14px"><span style="font-weight:600;padding:4px 6px;border-bottom:2px solid #fff">LV</span><span style="color:rgba(255,255,255,.75);padding:4px 6px;cursor:pointer">EN</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;background:rgba(255,255,255,.18);cursor:pointer">
+        <div style="width:30px;height:30px;border-radius:50%;background:#fff;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">JB</div>
+        <span style="font-size:14px;font-weight:500">Konts</span>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ compact }}" hint-placeholder-val="{{ false }}">
+    <div style="height:56px;padding:0 16px;display:flex;align-items:center;gap:10px">
+      <img onClick="{{ goHome }}" src="https://jvywesvogdsenqdwteww.supabase.co/storage/v1/object/public/site-assets/logo/logo.png" alt="lauks24.lv" style="height:26px;display:block;cursor:pointer">
+      <span style="width:1px;height:20px;background:rgba(255,255,255,.35);margin:0 2px"></span><span onClick="{{ goHome }}" style="font-size:17px;font-weight:500;letter-spacing:-.01em;line-height:1;cursor:pointer">Izsoles</span>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.3);border-radius:8px;overflow:hidden"><span style="padding:5px 8px;background:#fff;color:#3b5166">LV</span><span style="padding:5px 8px">EN</span></div>
+      <div style="width:34px;height:34px;border-radius:50%;background:#fff;color:#3b5166;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">JB</div>
+    </div>
+    <div style="display:flex;gap:4px;padding:0 12px 10px;overflow-x:auto;scrollbar-width:none">
+      <sc-for list="{{ topNav }}" as="n" hint-placeholder-count="3">
+        <div onClick="{{ n.go }}" style="flex:0 0 auto;white-space:nowrap;padding:8px 12px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;background:{{ n.bg }}">{{ n.label }}</div>
+      </sc-for>
+    </div>
+  </sc-if>
+</header>
+
+<main style="flex:1;width:100%;max-width:1280px;margin:0 auto;padding:{{ pad }};box-sizing:border-box;display:flex;flex-direction:column;gap:{{ gap }}">
+
+<!-- HOME -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:640px">
+      <h1 style="margin:0;font-size:{{ h1 }};font-weight:600;letter-spacing:-.02em">Izsoles</h1>
+    </div>
+    <div style="display:flex;gap:2px;padding:4px;background:#eceeeb;border-radius:12px;overflow-x:auto;max-width:100%;scrollbar-width:none">
+      <sc-for list="{{ homeTabs }}" as="t" hint-placeholder-count="4">
+        <div onClick="{{ t.set }}" style="flex:0 0 auto;white-space:nowrap;padding:8px 14px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }};box-shadow:{{ t.sh }}">{{ t.label }} <span style="color:#8a929a">{{ t.count }}</span></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:{{ auctionCols }};gap:20px">
+    <sc-for list="{{ auctionCards }}" as="a" hint-placeholder-count="3">
+      <div onClick="{{ a.open }}" style="background:#fff;border:{{ a.cardBd }};box-shadow:{{ a.cardSh }};border-radius:18px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:box-shadow .15s,transform .15s" style-hover="transform:translateY(-2px)">
+        <div style="position:relative;aspect-ratio:16/9;background:repeating-linear-gradient(135deg,#eceee9 0 12px,#e4e7e1 12px 24px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">
+          {{ a.img }}
+          <span style="position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:6px;padding:5px 9px 5px 6px;border-radius:999px;background:rgba(255,255,255,.95);font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;color:#1d2329"><span title="{{ a.country }}" style="width:20px;height:14px;flex:0 0 20px;border-radius:3px;background:{{ a.flagBg }};box-shadow:inset 0 0 0 1px rgba(29,35,41,.12);display:inline-block"></span>{{ a.cc }}</span>
+          <span style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;background:{{ a.stBg }};color:{{ a.stFg }};border:1.5px solid {{ a.stBd }};box-shadow:{{ a.stSh }}"><sc-if value="{{ a.isLive }}" hint-placeholder-val="{{ false }}">{{ liveDot }}</sc-if>{{ a.stLabel }}</span>
+          <div style="position:absolute;right:14px;bottom:-22px;display:flex;gap:6px;z-index:2">
+            <sc-for list="{{ a.dates }}" as="d" hint-placeholder-count="2">
+              <div style="width:52px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(29,35,41,.14);overflow:hidden;text-align:center;font-family:'Lexend',sans-serif">
+                <div style="background:#3f6e4a;color:#fff;font-size:10px;font-weight:600;letter-spacing:.06em;padding:3px 0">{{ d.mon }}</div>
+                <div style="font-size:20px;font-weight:600;color:#1d2329;padding:3px 0 4px">{{ d.day }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;left:16px;bottom:-26px;width:56px;height:56px;border-radius:50%;background:#e4eaf0;color:#3b5166;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-family:'Lexend',sans-serif;font-size:17px;font-weight:600;z-index:2">{{ a.initials }}</div>
+        </div>
+        <div style="height:4px;background:#eceeeb;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ a.progress }};background:#3f6e4a"></div></div>
+        <div style="padding:36px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:19px;font-weight:600;line-height:1.25;letter-spacing:-.01em;text-wrap:balance">{{ a.title }}</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#5d6670;flex-wrap:wrap"><span title="{{ a.country }}" style="width:20px;height:14px;flex:0 0 20px;border-radius:3px;background:{{ a.flagBg }};box-shadow:inset 0 0 0 1px rgba(29,35,41,.12);display:inline-block"></span><span>{{ a.country }} · {{ a.loc }} · {{ a.seller }}</span></div>
+          </div>
+          <div style="font-size:14px;color:#5d6670">{{ a.lotsLabel }} · {{ a.biddersLabel }}</div>
+          <div style="margin-top:auto;padding-top:12px;border-top:1px solid #eef0f1;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:12px;color:#5d6670">{{ a.cdLabel }}</span>
+              <sc-if value="{{ a.hasSegs }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:baseline;gap:10px">
+                  <sc-for list="{{ a.segs }}" as="s" hint-placeholder-count="3">
+                    <span style="display:flex;align-items:baseline;gap:2px"><span style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums">{{ s.v }}</span><span style="font-size:12px;color:#5d6670">{{ s.l }}</span></span>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ a.noSegs }}" hint-placeholder-val="{{ false }}"><span style="font-size:16px;font-weight:600">{{ a.endedText }}</span></sc-if>
+            </div>
+            <sc-if value="{{ a.isRegistered }}" hint-placeholder-val="{{ false }}"><span style="padding:5px 10px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:12px;font-weight:600">✓ Tu esi pieteicies</span></sc-if>
+            <sc-if value="{{ a.showCta }}" hint-placeholder-val="{{ true }}"><span style="padding:10px 16px;border-radius:10px;background:{{ a.ctaBg }};color:{{ a.ctaFg }};border:1px solid {{ a.ctaBd }};font-size:14px;font-weight:600">{{ a.cta }}</span></sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <section ref="{{ howRef }}" style="display:flex;flex-direction:column;gap:16px;margin-top:{{ howTop }}">
+    <h2 style="margin:0;font-size:{{ h2 }};font-weight:600;letter-spacing:-.01em">Kā tas darbojas</h2>
+    <div style="display:grid;grid-template-columns:{{ stepCols }};gap:14px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="width:36px;height:36px;border-radius:10px;background:#eef3ee;color:#2f5538;display:flex;align-items:center;justify-content:center;font-weight:600">{{ s.n }}</div>
+          <div style="font-size:17px;font-weight:600">{{ s.t }}</div>
+          <div style="font-size:14px;line-height:1.55;color:#5d6670">{{ s.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</sc-if>
+
+<!-- AUCTION -->
+<sc-if value="{{ isAuction }}" hint-placeholder-val="{{ false }}">
+  <span onClick="{{ goHome }}" style="align-self:flex-start;font-size:14px;font-weight:500;color:#3f6e4a;cursor:pointer">← Visas izsoles</span>
+  <div style="background:#fff;border:{{ au.cardBd }};box-shadow:{{ au.cardSh }};border-radius:20px;overflow:hidden;display:grid;grid-template-columns:{{ heroCols }}">
+    <div style="padding:{{ heroPad }};display:flex;flex-direction:column;gap:16px;order:{{ heroTextOrder }}">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.06em;background:{{ au.stBg }};color:{{ au.stFg }};border:1.5px solid {{ au.stBd }};box-shadow:{{ au.stSh }}"><sc-if value="{{ au.isLive }}" hint-placeholder-val="{{ false }}">{{ liveDot }}</sc-if>{{ au.stLabel }}</span>
+        <span style="font-size:14px;color:#5d6670">{{ au.range }}</span>
+      </div>
+      <h1 style="margin:0;font-size:{{ h1 }};line-height:1.12;font-weight:600;letter-spacing:-.02em;text-wrap:balance">{{ au.title }}</h1>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#e4eaf0;color:#3b5166;display:flex;align-items:center;justify-content:center;font-weight:600">{{ au.initials }}</div>
+        <div><div style="font-size:15px;font-weight:600">{{ au.seller }}</div><div style="display:flex;align-items:center;gap:7px;font-size:13px;color:#5d6670;flex-wrap:wrap"><span title="{{ au.country }}" style="width:18px;height:12px;flex:0 0 18px;border-radius:3px;background:{{ au.flagBg }};box-shadow:inset 0 0 0 1px rgba(29,35,41,.12);display:inline-block"></span><span>{{ au.country }} · {{ au.loc }} · <a href="#">Profils lauks24.lv ↗</a></span></div></div>
+      </div>
+      <div style="background:#f6f7f5;border-radius:14px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#5d6670">{{ au.cdLabel }}</span>
+          <span style="font-size:{{ cdSize }};font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ au.cdText }}</span>
+        </div>
+        <sc-if value="{{ au.showRegister }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ openRegister }}" style="padding:13px 20px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#355d3e">Pieteikties izsolei</div>
+        </sc-if>
+        <sc-if value="{{ au.isRegistered }}" hint-placeholder-val="{{ false }}">
+          <span style="padding:9px 14px;border-radius:999px;background:#eef3ee;color:#2f5538;font-size:14px;font-weight:600">✓ Tu esi pieteicies</span>
+        </sc-if>
+      </div>
+    </div>
+    <div style="min-height:{{ heroImgH }};background:repeating-linear-gradient(135deg,#eceee9 0 14px,#e4e7e1 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279;order:{{ heroImgOrder }}">{{ au.img }}</div>
+  </div>
+
+
+  <div style="display:flex;gap:4px;border-bottom:1px solid #e3e6e8">
+    <sc-for list="{{ auctionTabs }}" as="t" hint-placeholder-count="2">
+      <div onClick="{{ t.set }}" style="padding:12px 16px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:-1px;border-bottom:2px solid {{ t.bd }};color:{{ t.fg }}">{{ t.label }}</div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ tabLots }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;max-width:100%">
+        <sc-for list="{{ lotFilters }}" as="f" hint-placeholder-count="3">
+          <div onClick="{{ f.set }}" style="flex:0 0 auto;white-space:nowrap;padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }}">{{ f.label }} <span style="opacity:.7">{{ f.count }}</span></div>
+        </sc-for>
+      </div>
+      <select value="{{ sort }}" onChange="{{ onSort }}" style="border:1px solid #d9dee2;border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;background:#fff;color:#1d2329;outline:none">
+        <option value="n">Pēc lotes numura</option><option value="asc">Cena: augošā</option><option value="desc">Cena: dilstošā</option>
+      </select>
+    </div>
+    <sc-if value="{{ lotsEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px dashed #c9d0d5;border-radius:16px;padding:36px 20px;text-align:center;font-size:15px;color:#5d6670">{{ lotsEmptyText }}</div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:{{ lotCols }};gap:{{ lotGap }}">
+      <sc-for list="{{ lotCards }}" as="l" hint-placeholder-count="8">
+        <div onClick="{{ l.open }}" style="background:#fff;border:{{ l.bd }};border-radius:16px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:box-shadow .15s" style-hover="box-shadow:0 10px 24px rgba(29,35,41,.08)">
+          <div style="position:relative;aspect-ratio:1;background:repeating-linear-gradient(135deg,#eceee9 0 10px,#e4e7e1 10px 20px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#7a8279;text-align:center;padding:6px;box-sizing:border-box">
+            {{ l.img }}
+            <span style="position:absolute;top:10px;left:10px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.94);font-family:'Lexend',sans-serif;font-size:12px;font-weight:500;color:#1d2329;font-variant-numeric:tabular-nums">{{ l.timeText }}</span>
+            <span onClick="{{ l.toggleWatch }}" title="Vērot" style="position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-size:17px;color:{{ l.starFg }};font-family:'Lexend',sans-serif">{{ l.star }}</span>
+            <sc-if value="{{ l.hasMine }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute;left:10px;bottom:10px;padding:4px 10px;border-radius:999px;font-family:'Lexend',sans-serif;font-size:12px;font-weight:600;background:{{ l.myBg }};color:{{ l.myFg }}">{{ l.myLabel }}</span>
+            </sc-if>
+          </div>
+          <div style="padding:{{ lotPad }};display:flex;flex-direction:column;gap:5px;flex:1">
+            <span style="align-self:flex-start;padding:2px 9px;border-radius:999px;background:#1d2329;color:#fff;font-size:11px;font-weight:600;letter-spacing:.03em">LOTS {{ l.n }}</span>
+            <div style="font-size:15px;font-weight:600;line-height:1.3">{{ l.title }}</div>
+            <div style="font-size:13px;font-style:italic;color:#5d6670">{{ l.name }}</div>
+            <div style="margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap">
+              <span style="font-size:{{ lotPrice }};font-weight:700;letter-spacing:-.01em">{{ l.priceText }}</span>
+              <span style="font-size:12px;color:#5d6670">{{ l.biddersText }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabInfo }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:{{ infoCols }};gap:16px;align-items:start">
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <h3 style="margin:0;font-size:18px;font-weight:600">Par izsoli</h3>
+        <p style="margin:0;font-size:15px;line-height:1.6;text-wrap:pretty">{{ au.desc }}</p>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ infoRows }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #eef0f1;font-size:14px"><span style="color:#5d6670">{{ r.k }}</span><span style="font-weight:500;text-align:right">{{ r.v }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <h3 style="margin:0;font-size:18px;font-weight:600">Kontakti</h3>
+        <sc-for list="{{ au.contacts }}" as="c" hint-placeholder-count="2">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <div><div style="font-size:15px;font-weight:500">{{ c.name }}</div><div style="font-size:13px;color:#5d6670">{{ c.role }}</div></div>
+            <a href="#" style="padding:8px 12px;border-radius:9px;border:1px solid #d9dee2;font-size:14px;font-weight:500;color:#1d2329">{{ c.phone }}</a>
+          </div>
+        </sc-for>
+        <a href="#" style="font-size:14px;font-weight:500">Izsoles noteikumi →</a>
+      </div>
+    </div>
+  </sc-if>
+</sc-if>
+
+<!-- MY -->
+<sc-if value="{{ isMy }}" hint-placeholder-val="{{ false }}">
+  <h1 style="margin:0;font-size:{{ h1 }};font-weight:600;letter-spacing:-.02em">Manas izsoles</h1>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="margin:0;font-size:{{ h2 }};font-weight:600">Mani solījumi</h2>
+    <sc-if value="{{ noMyBids }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px dashed #c9d0d5;border-radius:16px;padding:32px 20px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">
+        <div style="font-size:16px;font-weight:600">Tu vēl neesi solījis</div>
+        <div style="font-size:14px;color:#5d6670">Atver izsoli, izvēlies loti un iestati maksimālo summu.</div>
+        <div onClick="{{ goHome }}" style="padding:11px 16px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Skatīt izsoles</div>
+      </div>
+    </sc-if>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ myBids }}" as="b" hint-placeholder-count="2">
+        <div onClick="{{ b.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:12px;display:flex;gap:14px;align-items:center;cursor:pointer;flex-wrap:wrap" style-hover="border-color:#3f6e4a">
+          <div style="width:72px;height:72px;flex:0 0 72px;border-radius:10px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px)"></div>
+          <div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="padding:2px 9px;border-radius:999px;background:#1d2329;color:#fff;font-size:11px;font-weight:600">LOTS {{ b.n }}</span><span style="padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;background:{{ b.myBg }};color:{{ b.myFg }}">{{ b.myLabel }}</span></div>
+            <div style="font-size:15px;font-weight:600">{{ b.title }} · <span style="font-weight:400;font-style:italic;color:#5d6670">{{ b.name }}</span></div>
+            <div style="font-size:13px;color:#5d6670">{{ b.auctionTitle }}</div>
+          </div>
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Pašreizējā cena</span><span style="font-size:17px;font-weight:700">{{ b.priceText }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Tava maks. summa</span><span style="font-size:15px;font-weight:600">{{ b.myMaxText }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5d6670">Noslēdzas pēc</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">{{ b.timeText }}</span></div>
+            <sc-if value="{{ b.isOutbid }}" hint-placeholder-val="{{ false }}"><span style="padding:10px 14px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:14px;font-weight:600">Solīt vēlreiz</span></sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="margin:0;font-size:{{ h2 }};font-weight:600">Vērotās lotes</h2>
+    <sc-if value="{{ noWatch }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:14px;color:#5d6670">Spied ☆ uz lotes, lai to saglabātu šeit.</div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:{{ lotCols }};gap:{{ lotGap }}">
+      <sc-for list="{{ watchCards }}" as="l" hint-placeholder-count="2">
+        <div onClick="{{ l.open }}" style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center;cursor:pointer">
+          <div style="width:56px;height:56px;flex:0 0 56px;border-radius:10px;background:repeating-linear-gradient(135deg,#eceee9 0 8px,#e4e7e1 8px 16px)"></div>
+          <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:14px;font-weight:600">Lots {{ l.n }} · {{ l.title }}</div>
+            <div style="font-size:14px"><span style="font-weight:700">{{ l.priceText }}</span> <span style="color:#5d6670;font-size:12px">· {{ l.timeText }}</span></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="margin:0;font-size:{{ h2 }};font-weight:600">Izsoles, kurām esmu pieteicies</h2>
+    <sc-if value="{{ noRegs }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px;color:#5d6670">Tu vēl neesi pieteicies nevienai izsolei.</div></sc-if>
+    <div style="background:#fff;border:1px solid #e3e6e8;border-radius:16px;overflow:hidden">
+      <sc-for list="{{ myRegs }}" as="r" hint-placeholder-count="1">
+        <div onClick="{{ r.open }}" style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #eef0f1;cursor:pointer;flex-wrap:wrap">
+          <div style="min-width:0"><div style="font-size:15px;font-weight:600">{{ r.title }}</div><div style="font-size:13px;color:#5d6670">{{ r.range }}</div></div>
+          <span style="padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:{{ r.stBg }};color:{{ r.stFg }}">{{ r.stLabel }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+</main>
+
+<sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+  <footer style="border-top:1px solid #e3e6e8;background:#fff">
+    <div style="max-width:1280px;margin:0 auto;padding:22px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:#5d6670">
+      <span>© 2026 lauks24.lv · Izsoles</span>
+      <div style="display:flex;gap:20px;flex-wrap:wrap"><a href="#" style="color:#5d6670">Izsoles noteikumi</a><a href="#" style="color:#5d6670">Privātuma politika</a><a href="#" style="color:#5d6670">lauks24.lv ↗</a></div>
+    </div>
+  </footer>
+</sc-if>
+
+
+<!-- LOT PANEL -->
+<sc-if value="{{ hasLot }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+    <div onClick="{{ closeLot }}" style="position:fixed;inset:0;z-index:60;background:rgba(29,35,41,.35)"></div>
+  </sc-if>
+  <div ref="{{ lotRef }}" style="position:fixed;top:0;right:0;bottom:0;width:{{ panelW }};z-index:70;background:#f6f7f5;overflow-y:auto;box-shadow:-12px 0 40px rgba(29,35,41,.18);display:flex;flex-direction:column;scrollbar-width:thin">
+    <div style="position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e3e6e8;padding:10px 12px;display:flex;align-items:center;gap:8px">
+      <div onClick="{{ closeLot }}" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer" style-hover="background:#f0f2f0">{{ closeGlyph }}</div>
+      <div style="flex:1;font-size:14px;color:#5d6670;text-align:center">Lots <span style="font-weight:600;color:#1d2329">{{ lot.n }}</span> no {{ lotTotal }}</div>
+      <div onClick="{{ prevLot }}" style="width:40px;height:40px;border-radius:10px;border:1px solid #e3e6e8;display:flex;align-items:center;justify-content:center;cursor:pointer;color:{{ prevFg }}">‹</div>
+      <div onClick="{{ nextLot }}" style="width:40px;height:40px;border-radius:10px;border:1px solid #e3e6e8;display:flex;align-items:center;justify-content:center;cursor:pointer;color:{{ nextFg }}">›</div>
+    </div>
+
+    <div style="position:relative;aspect-ratio:4/3;flex:0 0 auto;background:repeating-linear-gradient(135deg,#eceee9 0 14px,#e4e7e1 14px 28px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7a8279">
+      {{ mainImg }}
+      <div onClick="{{ prevImg }}" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:'Lexend',sans-serif;font-size:18px;color:#1d2329;cursor:pointer">‹</div>
+      <div onClick="{{ nextImg }}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;font-family:'Lexend',sans-serif;font-size:18px;color:#1d2329;cursor:pointer">›</div>
+      <div style="position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px">
+        <sc-for list="{{ dots }}" as="d" hint-placeholder-count="4"><span onClick="{{ d.set }}" style="width:{{ d.w }};height:8px;border-radius:999px;background:{{ d.bg }};cursor:pointer;transition:width .2s"></span></sc-for>
+      </div>
+    </div>
+
+    <div style="padding:{{ lotBodyPad }};display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="padding:3px 10px;border-radius:999px;background:#1d2329;color:#fff;font-size:12px;font-weight:600;letter-spacing:.03em">LOTS {{ lot.n }}</span>
+          <sc-if value="{{ lot.hasMine }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:{{ lot.myBg }};color:{{ lot.myFg }}">{{ lot.myLabel }}</span></sc-if>
+          <div style="flex:1"></div>
+          <span onClick="{{ lot.toggleWatch }}" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid #d9dee2;background:#fff;font-size:13px;font-weight:500;cursor:pointer;color:{{ lot.starFg }}">{{ lot.star }} <span style="color:#1d2329">{{ lot.watchLabel }}</span></span>
+        </div>
+        <h2 style="margin:0;font-size:{{ lotTitleSize }};font-weight:600;letter-spacing:-.01em;line-height:1.2">{{ lot.title }}</h2>
+        <div style="font-size:16px;font-style:italic;color:#5d6670">{{ lot.name }}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px">
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px">
+          <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5d6670">{{ lot.timeLabel }}</span>
+          <span style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums">{{ lot.timeText }}</span>
+          <span style="font-size:12px;color:#5d6670">{{ lot.orderText }}</span>
+        </div>
+        <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right">
+          <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5d6670">{{ lot.priceLabel }}</span>
+          <span style="font-size:{{ lotPriceBig }};font-weight:700;letter-spacing:-.02em;line-height:1.05">{{ lot.priceText }}</span>
+          <span style="font-size:12px;color:#5d6670">{{ lot.biddersText }}</span>
+        </div>
+      </div>
+
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ canBid }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div onClick="{{ quickBid }}" style="padding:15px;border-radius:12px;background:{{ quickBg }};color:{{ quickFg }};font-size:16px;font-weight:600;text-align:center;cursor:{{ quickCursor }}" style-hover="filter:brightness(.95)">{{ quickLabel }}</div>
+            <span style="font-size:12px;color:#5d6670;text-align:center;margin-top:-4px">{{ quickHint }}</span>
+            <div style="display:flex;align-items:center;gap:10px;margin:4px 0"><span style="flex:1;height:1px;background:#e3e6e8"></span><span style="font-size:12px;color:#8a929a">vai</span><span style="flex:1;height:1px;background:#e3e6e8"></span></div>
+            <span style="font-size:14px;font-weight:500">{{ maxTitle }}</span>
+            <div style="display:flex;gap:8px">
+              <input value="{{ bidInput }}" onChange="{{ onBidInput }}" onKeyDown="{{ onBidKey }}" inputMode="numeric" placeholder="{{ bidPlaceholder }}" style="flex:1;min-width:0;border:1px solid {{ bidBd }};border-radius:10px;padding:13px 14px;font:inherit;font-size:16px;outline:none;background:#fff;color:#1d2329">
+              <div onClick="{{ submitBid }}" style="padding:13px 18px;border-radius:10px;border:1.5px solid #3f6e4a;color:#2f5538;background:#fff;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;white-space:nowrap" style-hover="background:#f3f7f3">Iestatīt</div>
+            </div>
+            <sc-if value="{{ hasBidError }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#b3261e">{{ bidError }}</span></sc-if>
+            <span style="font-size:12px;line-height:1.5;color:#5d6670">Sistēma solīs tavā vietā pa {{ stepText }} soļiem tikai tik, cik vajag, lai tu paliktu vadībā — līdz šai summai.</span>
+          </div>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{ needsRegister }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#eef3ee;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="flex:1 1 200px"><div style="font-size:15px;font-weight:600;margin-bottom:2px">Lai solītu, piesakies izsolei</div><div style="font-size:13px;color:#2f5538;line-height:1.45">Pieteikšanās aizņem minūti.</div></div>
+          <div onClick="{{ openRegister }}" style="padding:11px 16px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Pieteikties izsolei</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasLotNotice }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#f0f2f0;border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.5;color:#4a535b">{{ lotNotice }}</div>
+      </sc-if>
+
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:6px 16px">
+        <sc-for list="{{ lotDetails }}" as="d" hint-placeholder-count="6">
+          <div style="display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #eef0f1;font-size:14px"><span style="color:#5d6670">{{ d.k }}</span><span style="font-weight:500;text-align:right">{{ d.v }}</span></div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:15px;font-weight:600">Apraksts</span>
+        <p style="margin:0;font-size:14px;line-height:1.6;text-wrap:pretty">{{ lot.desc }}</p>
+      </div>
+      <div style="background:#fff;border:1px solid #e3e6e8;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:15px;font-weight:600;margin-bottom:6px">Solījumu vēsture</span>
+        <sc-if value="{{ noHistory }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:#5d6670">Vēl nav solījumu.</span></sc-if>
+        <sc-for list="{{ history }}" as="h" hint-placeholder-count="3">
+          <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #eef0f1;font-size:14px">
+            <span style="color:{{ h.fg }};font-weight:{{ h.fw }}">{{ h.who }}</span>
+            <span style="display:flex;gap:12px"><span style="color:#5d6670;font-size:13px">{{ h.t }}</span><span style="font-weight:600">{{ h.amountText }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="height:{{ lotBottomSpace }}"></div>
+    </div>
+
+    <sc-if value="{{ compact }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ canBid }}" hint-placeholder-val="{{ false }}">
+        <div style="position:sticky;bottom:0;margin-top:auto;background:#fff;border-top:1px solid #e3e6e8;padding:12px 16px 26px;display:flex;align-items:center;gap:12px">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;color:#5d6670">{{ lot.priceLabel }}</div><div style="font-size:19px;font-weight:700;white-space:nowrap">{{ lot.priceText }}</div></div>
+          <div onClick="{{ openSheet }}" style="padding:13px 12px;border-radius:12px;border:1.5px solid #3f6e4a;color:#2f5538;background:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Maks. summa</div>
+          <div onClick="{{ quickBid }}" style="padding:14px 14px;border-radius:12px;background:{{ quickBg }};color:{{ quickFg }};font-size:15px;font-weight:600;cursor:{{ quickCursor }};white-space:nowrap">{{ quickShort }}</div>
+        </div>
+      </sc-if>
+    </sc-if>
+  </div>
+</sc-if>
+
+<!-- MOBILE BID SHEET -->
+<sc-if value="{{ showSheet }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeSheet }}" style="position:fixed;inset:0;z-index:80;background:rgba(29,35,41,.45);display:flex;align-items:flex-end">
+    <div onClick="{{ stop }}" style="width:100%;background:#fff;border-radius:20px 20px 0 0;padding:10px 16px 30px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box">
+      <div style="width:40px;height:5px;border-radius:3px;background:#d9dee2;align-self:center"></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:18px;font-weight:600">Lots {{ lot.n }} · {{ lot.priceText }}</span><span style="font-size:13px;color:#5d6670">{{ lot.timeText }}</span></div>
+      <span style="font-size:14px;font-weight:500">{{ maxTitle }}</span>
+      <input value="{{ bidInput }}" onChange="{{ onBidInput }}" onKeyDown="{{ onBidKey }}" inputMode="numeric" placeholder="{{ bidPlaceholder }}" style="border:1px solid {{ bidBd }};border-radius:12px;padding:14px;font:inherit;font-size:16px;outline:none;background:#fff;color:#1d2329;min-width:0">
+      <sc-if value="{{ hasBidError }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#b3261e">{{ bidError }}</span></sc-if>
+      <div onClick="{{ submitBid }}" style="padding:15px;border-radius:12px;background:#3f6e4a;color:#fff;font-size:16px;font-weight:600;text-align:center;cursor:pointer">Iestatīt maksimālo summu</div>
+      <span style="font-size:12px;line-height:1.5;color:#5d6670;text-align:center">Sistēma solīs tavā vietā pa {{ stepText }} soļiem tikai tik, cik vajag, lai tu paliktu vadībā — līdz šai summai.</span>
+    </div>
+  </div>
+</sc-if>
+
+<!-- MODALS -->
+<sc-if value="{{ showConfirm }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:90;background:rgba(29,35,41,.45);display:flex;align-items:center;justify-content:center;padding:20px">
+    <div onClick="{{ stop }}" style="background:#fff;border-radius:18px;padding:24px;max-width:420px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(29,35,41,.25)">
+      <div style="font-size:19px;font-weight:600">{{ confirmTitle }}</div>
+      <div style="background:#f6f7f5;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-size:14px;color:#5d6670">Lots {{ lot.n }} · {{ confirmKind }}</span><span style="font-size:22px;font-weight:700">{{ confirmText }}</span></div>
+      <div style="font-size:14px;line-height:1.5;color:#5d6670">Solījumu nevar atsaukt. Ja uzvarēsi, apņemies iegādāties loti par gala cenu.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap">
+        <div onClick="{{ closeModal }}" style="padding:12px 16px;border-radius:10px;border:1px solid #d9dee2;font-size:15px;font-weight:500;cursor:pointer">Atcelt</div>
+        <div onClick="{{ confirmBid }}" style="padding:12px 18px;border-radius:10px;background:#3f6e4a;color:#fff;font-size:15px;font-weight:600;cursor:pointer">Apstiprināt</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ showRegister }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:90;background:rgba(29,35,41,.45);display:flex;align-items:center;justify-content:center;padding:20px">
+    <div onClick="{{ stop }}" style="background:#fff;border-radius:18px;padding:24px;max-width:460px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(29,35,41,.25)">
+      <div><div style="font-size:19px;font-weight:600;margin-bottom:4px">Pieteikties izsolei</div><div style="font-size:14px;color:#5d6670">{{ au.title }}</div></div>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Vārds, uzvārds vai uzņēmums<input value="Jānis Bērziņš" style="border:1px solid #d9dee2;border-radius:10px;padding:12px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500">Tālrunis<input value="+371 26 000 000" style="border:1px solid #d9dee2;border-radius:10px;padding:12px 14px;font:inherit;font-size:16px;font-weight:400;outline:none;color:#1d2329;min-width:0"></label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;cursor:pointer"><input type="checkbox" checked="{{ agree }}" onChange="{{ onAgree }}" style="width:18px;height:18px;margin-top:1px;accent-color:#3f6e4a;flex:0 0 18px">Esmu iepazinies un piekrītu <a href="#">izsoles noteikumiem</a></label>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap">
+        <div onClick="{{ closeModal }}" style="padding:12px 16px;border-radius:10px;border:1px solid #d9dee2;font-size:15px;font-weight:500;cursor:pointer">Atcelt</div>
+        <div onClick="{{ doRegister }}" style="padding:12px 18px;border-radius:10px;background:{{ regBg }};color:#fff;font-size:15px;font-weight:600;cursor:{{ regCursor }}">Pieteikties</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:{{ toastBottom }};transform:translateX(-50%);z-index:100;background:{{ toastBg }};color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 10px 24px rgba(29,35,41,.25);max-width:calc(100% - 32px);box-sizing:border-box;text-align:center">{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;auction&quot;,&quot;my&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startLot&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;registered&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;compact&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  t0 = Date.now();
+  H = 3600000; D = 86400000; M = 60000;
+  MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAI', 'JŪN', 'JŪL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEC'];
+  auctions = [
+    { id: 'a1', country: 'Latvija', cc: 'LV', flagBg: 'linear-gradient(#9e3039 0 40%,#fff 40% 60%,#9e3039 60%)', title: 'Aizstrautu angus vaislas buļļu izsole', seller: 'Aizstrautu Angus', initials: 'AA', loc: 'Dobeles nov.', start: this.t0 - 4 * this.D, close: this.t0 + this.D + 22 * this.H + 15 * this.M, step: 50, img: 'foto: buļļi ganībās', kind: 'Angus vaislas bullis', breed: 'Aberdīnas-Angus',
+      names: ['Aizstrautu Chelsijs', 'Aizstrautu Paris', 'Aizstrautu Oskars', 'Aizstrautu Bruno', 'Aizstrautu Makss', 'Aizstrautu Leo', 'Aizstrautu Arnis', 'Aizstrautu Kārlis'],
+      prices: [3500, 3500, 3800, 3600, 4100, 3550, 3900, 3700], rival: [3600, 3500, 4000, 3600, 4500, 3550, 4300, 3700], bidders: [1, 1, 3, 2, 5, 2, 4, 3],
+      desc: 'Tīršķirnes Aberdīnas-Angus vaislas buļļi no slimību brīva ganāmpulka. Dzīvniekus var apskatīt saimniecībā līdz izsoles noslēgumam, iepriekš sazinoties.',
+      contacts: [{ name: 'Jānis Kalniņš', role: 'Saimniecības vadītājs', phone: '+371 29 114 562' }, { name: 'lauks24.lv', role: 'Pieteikšanās un tehniski jautājumi', phone: '+371 20 000 024' }] },
+    { id: 'a2', country: 'Latvija', cc: 'LV', flagBg: 'linear-gradient(#9e3039 0 40%,#fff 40% 60%,#9e3039 60%)', title: 'Brūzilu liellopu vaislas buļļu izsole', seller: 'Brūzilas AS', initials: 'BA', loc: 'Bauskas nov.', start: this.t0 + 6 * this.D, close: this.t0 + 13 * this.D, step: 50, img: 'foto: liellopi', kind: 'Vaislas bullis', breed: 'Limuzīnas',
+      names: ['Brūzilu Rūdis', 'Brūzilu Ozols', 'Brūzilu Grafs', 'Brūzilu Lords', 'Brūzilu Barons', 'Brūzilu Bizons'],
+      prices: [3000, 3000, 3200, 3000, 3400, 3000], rival: [3000, 3000, 3200, 3000, 3400, 3000], bidders: [0, 0, 0, 0, 0, 0],
+      desc: 'Limuzīnas šķirnes vaislas buļļi ar ciltsrakstiem. Izsoles laikā dzīvniekus var apskatīt Brūzilās.',
+      contacts: [{ name: 'Brūzilas AS', role: 'Pārdevējs', phone: '+371 26 402 318' }] },
+    { id: 'a3', country: 'Lietuva', cc: 'LT', flagBg: 'linear-gradient(#fdb913 0 33.33%,#006a44 33.33% 66.66%,#c1272d 66.66%)', title: 'Holšteinas telīšu izsole', seller: 'ŽŪB „Agrovita”', initials: 'A', loc: 'Kauno r.', start: this.t0 - 20 * this.D, close: this.t0 - 6 * this.D, step: 50, img: 'foto: telītes', kind: 'Grūsna telīte', breed: 'Holšteinas',
+      names: ['Agrovita Bella', 'Agrovita Dora', 'Agrovita Mia', 'Agrovita Gintarė', 'Agrovita Rasa', 'Agrovita Laima'],
+      prices: [1450, 1600, 1350, 1500, 1700, 1400], rival: [1450, 1600, 1350, 1500, 1700, 1400], bidders: [4, 6, 3, 5, 7, 3],
+      desc: 'Grūsnas Holšteinas šķirnes telītes no augstražīga ganāmpulka.',
+      contacts: [{ name: 'ŽŪB „Agrovita”', role: 'Pārdevējs', phone: '+370 612 34 567' }] }
+,
+    { id: 'a4', country: 'Igaunija', cc: 'EE', flagBg: 'linear-gradient(#0072ce 0 33.33%,#000 33.33% 66.66%,#fff 66.66%)', title: 'Lietotās lauksaimniecības tehnikas izsole', seller: 'OÜ Tartu Agro', initials: 'TA', loc: 'Tartumaa', start: this.t0 + 3 * this.D, close: this.t0 + 10 * this.D, step: 100, img: 'foto: traktori', kind: 'Tehnikas vienība', breed: '—',
+      names: ['John Deere 6155R', 'Claas Arion 630', 'Krone Comprima', 'Väderstad Rapid', 'Amazone ZA-TS'],
+      prices: [52000, 41000, 18000, 23000, 9000], rival: [52000, 41000, 18000, 23000, 9000], bidders: [0, 0, 0, 0, 0],
+      desc: 'Lietota, apkopta tehnika. Apskate Tartu reģionā pēc vienošanās.',
+      contacts: [{ name: 'OÜ Tartu Agro', role: 'Pārdevējs', phone: '+372 5123 4567' }] }
+  ];
+  lotsOf(aid) {
+    const a = this.auctions.find(x => x.id === aid);
+    return a.names.map((name, i) => ({ id: aid + '-' + (i + 1), aid, n: i + 1, title: a.kind + ' ' + (i + 1), name, rival: a.rival[i], start: a.prices[i] - (a.bidders[i] ? 50 * Math.min(a.bidders[i], 3) : 0),
+      born: ['03.2024', '04.2024', '02.2024', '05.2024', '03.2024', '06.2024', '04.2024', '05.2024'][i], weight: (620 + i * 23) + ' kg', breed: a.breed,
+      sire: ['Rito 707', 'Netherton Max', 'Blelack Duke', 'Rito 707', 'Idvies Kingdom', 'Netherton Max', 'Blelack Duke', 'Idvies Kingdom'][i], img: 'foto: ' + name,
+      desc: 'Mierīgs, labi barots, pieradis pie cilvēkiem. Vakcinēts, ar ciltsrakstiem un veterināro dokumentāciju. Iespējama apskate saimniecībā.' }));
+  }
+  initLots(registered) {
+    const m = {};
+    this.auctions.forEach(a => this.lotsOf(a.id).forEach((l, i) => {
+      const b = a.bidders[i], h = [];
+      for (let k = 0; k < Math.min(b, 3); k++) h.push({ who: 'Dalībnieks ' + (b - k + 1), amount: a.prices[i] - k * 50, t: (k * 3 + 2) + ' h', you: false });
+      m[l.id] = { price: a.prices[i], leader: b ? 'rival' : null, bidders: b, myMax: null, history: h };
+    }));
+    if (registered) {
+      Object.assign(m['a1-3'], { price: 4050, leader: 'you', myMax: 4300, bidders: 4 }); m['a1-3'].history.unshift({ who: 'Tu', amount: 4050, t: '40 min', you: true });
+      Object.assign(m['a1-6'], { price: 3650, leader: 'rival', myMax: 3600, bidders: 3 }); m['a1-6'].history.unshift({ who: 'Dalībnieks 5', amount: 3650, t: '12 min', you: false }, { who: 'Tu', amount: 3600, t: '13 min', you: true });
+      this.rivalBoost = { 'a1-6': 3800 };
+    }
+    return m;
+  }
+  rivalBoost = {};
+  rootRef = React.createRef(); lotRef = React.createRef(); howRef = React.createRef();
+  state = {
+    view: this.props.startView ?? 'home', auctionId: 'a1', lotId: this.props.startLot || null, homeTab: 'all', auctionTab: 'lots', lotFilter: 'all', sort: 'n',
+    watch: (this.props.registered ?? false) ? { 'a1-5': true, 'a1-7': true } : {}, regs: { a1: !!this.props.registered },
+    lots: this.initLots(!!this.props.registered), bidInput: '', bidError: '', modal: null, sheet: false, agree: false, pending: null, toast: null, toastKind: 'ok', imgIdx: 0, now: Date.now()
+  };
+  componentDidMount() { this._iv = setInterval(() => this.setState({ now: Date.now() }), 1000); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._tt); }
+  componentDidUpdate(pp, ps) {
+    pp = pp || {}; ps = ps || this._prev || {}; this._prev = { view: this.state.view, auctionId: this.state.auctionId, lotId: this.state.lotId };
+    if (pp.startView !== this.props.startView && this.props.startView) this.setState({ view: this.props.startView });
+    if (pp.startLot !== this.props.startLot) this.setState({ lotId: this.props.startLot || null });
+    if (ps.view !== this.state.view || ps.auctionId !== this.state.auctionId) this.scrollTop();
+    if (ps.lotId !== this.state.lotId && this.lotRef.current) this.lotRef.current.scrollTop = 0;
+  }
+  scrollTop() {
+    let el = this.rootRef.current && this.rootRef.current.parentElement;
+    while (el && el !== document.body && el !== document.documentElement) {
+      const oy = getComputedStyle(el).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) { el.scrollTop = 0; return; }
+      el = el.parentElement;
+    }
+    window.scrollTo(0, 0);
+  }
+  flash(msg, kind) { clearTimeout(this._tt); this.setState({ toast: msg, toastKind: kind || 'ok' }); this._tt = setTimeout(() => this.setState({ toast: null }), 3200); }
+  eur(n) { return n.toLocaleString('lv-LV').replace(/\s/g, ' ') + ' €'; }
+  dstr(ts) { const d = new Date(ts); return d.getDate() + '. ' + ['janv.', 'febr.', 'marts', 'apr.', 'maijs', 'jūn.', 'jūl.', 'aug.', 'sept.', 'okt.', 'nov.', 'dec.'][d.getMonth()]; }
+  parts(ms) { ms = Math.max(0, ms); const d = Math.floor(ms / this.D), h = Math.floor(ms % this.D / this.H), m = Math.floor(ms % this.H / this.M), s = Math.floor(ms % this.M / 1000); return { d, h, m, s }; }
+  cd(ms) { const p = this.parts(ms); if (ms <= 0) return 'Noslēgusies'; if (p.d) return p.d + 'd ' + p.h + 'h ' + p.m + 'm'; if (p.h) return p.h + 'h ' + p.m + 'm ' + p.s + 's'; return String(p.m).padStart(2, '0') + ':' + String(p.s).padStart(2, '0'); }
+  status(a, now) { return now < a.start ? 'upcoming' : now < a.close ? 'live' : 'ended'; }
+  lotClose(l) { return this.auctions.find(x => x.id === l.aid).close; }
+  minBid(l) { const a = this.auctions.find(x => x.id === l.aid), L = this.state.lots[l.id]; return L.leader === 'you' ? L.myMax + a.step : (L.leader ? L.price + a.step : L.price); }
+  applyBid(lot, amount) {
+    const a = this.auctions.find(x => x.id === lot.aid), step = a.step;
+    this.setState(st => {
+      const L = { ...st.lots[lot.id] }, r = Math.max(lot.rival, this.rivalBoost[lot.id] || 0), first = L.myMax == null, hist = L.history.slice();
+      let msg, kind;
+      if (amount <= r && L.leader !== 'you') {
+        L.price = Math.min(r, amount + step); L.leader = 'rival';
+        hist.unshift({ who: 'Dalībnieks ' + (L.bidders + 1), amount: L.price, t: 'tikko', you: false }, { who: 'Tu', amount, t: 'tikko', you: true });
+        msg = 'Tevi pārsolīja — citam dalībniekam ir augstāka maksimālā summa. Mēģini vēlreiz.'; kind = 'warn';
+      } else {
+        const wasYou = L.leader === 'you';
+        if (!wasYou) { L.price = L.leader ? Math.min(amount, Math.max(L.price + step, r + step)) : L.price; hist.unshift({ who: 'Tu', amount: L.price, t: 'tikko', you: true }); }
+        L.leader = 'you'; msg = wasYou ? 'Maksimālā summa paaugstināta līdz ' + this.eur(amount) : 'Tu esi vadībā!'; kind = 'ok';
+      }
+      L.myMax = amount; if (first) L.bidders += 1; L.history = hist;
+      return { lots: { ...st.lots, [lot.id]: L }, modal: null, sheet: false, bidInput: '', bidError: '', pending: null };
+    }, () => this.flash(this._msg, this._kind));
+    const L0 = this.state.lots[lot.id], r0 = Math.max(lot.rival, this.rivalBoost[lot.id] || 0);
+    this._msg = (amount <= r0 && L0.leader !== 'you') ? 'Tevi pārsolīja — citam dalībniekam ir augstāka maksimālā summa. Mēģini vēlreiz.' : (L0.leader === 'you' ? 'Maksimālā summa paaugstināta līdz ' + this.eur(amount) : 'Tu esi vadībā!');
+    this._kind = (amount <= r0 && L0.leader !== 'you') ? 'warn' : 'ok';
+  }
+  renderVals() {
+    const s = this.state, now = s.now, compact = !!this.props.compact;
+    const au0 = this.auctions.find(a => a.id === s.auctionId);
+    const stMeta = st => st === 'live' ? { stLabel: 'LIVE', stBg: '#fff', stFg: '#d92d20', stBd: '#d92d20' } : st === 'upcoming' ? { stLabel: 'Gaidāma', stBg: '#f0f2f0', stFg: '#4a535b', stBd: 'transparent' } : { stLabel: 'Noslēgusies', stBg: '#eceeeb', stFg: '#5d6670', stBd: 'transparent' };
+    const go = (view, extra) => this.setState({ view, lotId: null, sheet: false, ...(extra || {}) });
+    const decA = a => {
+      const st = this.status(a, now), reg = !!s.regs[a.id], target = st === 'upcoming' ? a.start : a.close, p = this.parts(target - now);
+      const sd = new Date(a.start), ed = new Date(a.close);
+      return { ...a, ...stMeta(st), stSh: st === 'live' ? '0 0 0 3px rgba(217,45,32,.14)' : 'none', cardBd: st === 'live' ? '2px solid #d92d20' : '1px solid #e3e6e8', cardSh: st === 'live' ? '0 0 0 4px rgba(217,45,32,.12)' : 'none', isLive: st === 'live', range: this.dstr(a.start) + ' – ' + this.dstr(a.close),
+        dates: [{ mon: this.MON[sd.getMonth()], day: sd.getDate() }, { mon: this.MON[ed.getMonth()], day: ed.getDate() }],
+        progress: Math.round(Math.min(1, Math.max(0, (now - a.start) / (a.close - a.start))) * 100) + '%',
+        lotsLabel: a.names.length + ' lotes', biddersLabel: st === 'upcoming' ? 'solīšana vēl nav sākusies' : a.bidders.reduce((x, y) => Math.max(x, y), 0) + 5 + ' dalībnieki',
+        cdLabel: st === 'live' ? 'Noslēdzas pēc' : st === 'upcoming' ? 'Sākas pēc' : 'Noslēdzās', cdText: st === 'ended' ? this.dstr(a.close) : this.cd(target - now),
+        hasSegs: st !== 'ended', noSegs: st === 'ended', endedText: this.dstr(a.close),
+        segs: [{ v: p.d, l: 'd.' }, { v: p.h, l: 'st.' }, { v: p.m, l: 'min.' }],
+        isRegistered: reg && st !== 'ended', showCta: !reg || st === 'ended', cta: st === 'ended' ? 'Skatīt rezultātus' : 'Skatīt lotes',
+        ctaBg: st === 'live' ? '#3f6e4a' : '#fff', ctaFg: st === 'live' ? '#fff' : '#1d2329', ctaBd: st === 'live' ? '#3f6e4a' : '#d9dee2',
+        showRegister: !reg && st !== 'ended', isStaggered: st !== 'ended',
+        open: () => go('auction', { auctionId: a.id, auctionTab: 'lots', lotFilter: 'all' }) };
+    };
+    const allA = this.auctions.map(decA);
+    const tabDefs = [['all', 'Visas'], ['live', 'Notiek'], ['upcoming', 'Gaidāmās'], ['ended', 'Noslēgušās']];
+    const au = decA(au0), auSt = this.status(au0, now);
+    const decL = l => {
+      const L = s.lots[l.id], a = this.auctions.find(x => x.id === l.aid), st = this.status(a, now), left = this.lotClose(l) - now, w = !!s.watch[l.id];
+      const mine = L.myMax != null, lead = L.leader === 'you', ended = st === 'ended' || left <= 0;
+      return { ...l, priceText: this.eur(L.price), price: L.price,
+        biddersText: L.bidders ? L.bidders + (L.bidders === 1 ? ' solītājs' : ' solītāji') : 'Nav solījumu',
+        timeText: st === 'upcoming' ? 'Sākas ' + this.dstr(a.start) : ended ? 'Noslēgusies' : this.cd(left),
+        star: w ? '★' : '☆', starFg: w ? '#c58a1b' : '#5d6670', watchLabel: w ? 'Vēroju' : 'Vērot',
+        toggleWatch: e => { e && e.stopPropagation && e.stopPropagation(); this.setState(x => ({ watch: { ...x.watch, [l.id]: !x.watch[l.id] } })); },
+        hasMine: mine, myLabel: ended ? (lead ? 'Uzvarēji' : 'Nepārdots tev') : lead ? 'Tu esi vadībā' : 'Pārsolīts', myBg: lead ? '#3f6e4a' : '#f5ecd9', myFg: lead ? '#fff' : '#7a5516',
+        bd: mine ? (lead ? '2px solid #3f6e4a' : '2px solid #e2c48a') : '1px solid #e3e6e8',
+        isOutbid: mine && !lead && !ended, myMaxText: mine ? this.eur(L.myMax) : '—', auctionTitle: a.title,
+        timeLabel: st === 'upcoming' ? 'Solīšana sākas' : ended ? 'Statuss' : 'Noslēdzas pēc',
+        orderText: st === 'upcoming' ? this.dstr(a.start) : ended ? this.dstr(a.close) : 'Visas lotes noslēdzas vienlaicīgi',
+        priceLabel: ended ? 'Gala cena' : L.leader ? 'Pašreizējā cena' : 'Sākuma cena',
+        open: () => this.setState({ lotId: l.id, auctionId: l.aid, imgIdx: 0, bidInput: '', bidError: '' }) };
+    };
+    const lotsAll = this.lotsOf(au0.id).map(decL);
+    let lotsF = lotsAll.filter(l => s.lotFilter === 'all' || (s.lotFilter === 'watch' ? s.watch[l.id] : l.hasMine));
+    if (s.sort === 'asc') lotsF = lotsF.slice().sort((x, y) => x.price - y.price);
+    if (s.sort === 'desc') lotsF = lotsF.slice().sort((x, y) => y.price - x.price);
+    const lotRaw = s.lotId ? this.lotsOf(s.lotId.split('-')[0]).find(l => l.id === s.lotId) : null;
+    const lot = lotRaw ? decL(lotRaw) : {};
+    const lotA = lotRaw ? this.auctions.find(a => a.id === lotRaw.aid) : au0;
+    const lotSt = this.status(lotA, now), lotEnded = lotRaw ? (lotSt === 'ended' || this.lotClose(lotRaw) <= now) : false;
+    const lotReg = !!s.regs[lotA.id];
+    const lotList = lotRaw ? this.lotsOf(lotA.id) : [];
+    const idx = lotRaw ? lotRaw.n - 1 : 0;
+    const min = lotRaw ? this.minBid(lotRaw) : 0;
+    const shots = lotRaw ? [lotRaw.img, 'foto: no sāniem', 'foto: galva', 'foto: ciltsraksti'] : [];
+    const L = lotRaw ? s.lots[lotRaw.id] : null;
+    const submitBid = () => {
+      const v = parseInt(String(s.bidInput).replace(/[^\d]/g, ''), 10);
+      if (!v || v < min) { this.setState({ bidError: 'Minimālā summa ir ' + this.eur(min) }); return; }
+      if (v % lotA.step) { this.setState({ bidError: 'Summai jābūt soļa (' + this.eur(lotA.step) + ') daudzkārtnim' }); return; }
+      this.setState({ modal: 'confirm', pending: v, pendingKind: 'max', bidError: '' });
+    };
+    const myBidLots = this.auctions.flatMap(a => this.lotsOf(a.id)).filter(l => s.lots[l.id].myMax != null).map(decL);
+    const watchLots = this.auctions.flatMap(a => this.lotsOf(a.id)).filter(l => s.watch[l.id]).map(decL);
+    return {
+      rootRef: this.rootRef, lotRef: this.lotRef, howRef: this.howRef,
+      liveDot: React.createElement('span', { key: 'live-dot', style: { width: 7, height: 7, borderRadius: '50%', background: '#d92d20', display: 'inline-block', animation: 'lkPulse 1.6s ease-out infinite' } }),
+      wide: !compact, compact,
+      pad: compact ? '16px 16px 40px' : '32px 24px 64px', gap: compact ? '16px' : '24px', h1: compact ? '26px' : '36px', h2: compact ? '19px' : '22px', lead: compact ? '15px' : '17px',
+      auctionCols: compact ? 'minmax(0,1fr)' : 'repeat(auto-fill,minmax(360px,1fr))', stepCols: compact ? 'minmax(0,1fr)' : 'repeat(3,minmax(0,1fr))', howTop: compact ? '8px' : '24px',
+      heroCols: compact ? 'minmax(0,1fr)' : 'minmax(0,1.1fr) minmax(0,1fr)', heroPad: compact ? '18px' : '32px', heroImgH: compact ? '200px' : '100%', heroTextOrder: compact ? 2 : 1, heroImgOrder: compact ? 1 : 2, cdSize: compact ? '22px' : '28px',
+      statCols: compact ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,auto)', infoCols: compact ? 'minmax(0,1fr)' : 'minmax(0,1.6fr) minmax(0,1fr)',
+      lotCols: compact ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fill,minmax(230px,1fr))', lotGap: compact ? '10px' : '16px', lotPad: compact ? '10px' : '14px', lotPrice: compact ? '17px' : '20px',
+      panelW: compact ? '100%' : '560px', closeGlyph: compact ? '←' : '✕', lotBodyPad: compact ? '16px' : '20px', lotTitleSize: compact ? '22px' : '26px', lotPriceBig: compact ? '26px' : '34px', lotBottomSpace: compact ? '0px' : '12px',
+      toastBottom: compact ? (s.lotId ? '100px' : '24px') : '28px', toastBg: s.toastKind === 'warn' ? '#7a5516' : '#1d2329',
+      topNav: [['my', 'Manas izsoles'], ['how', 'Kā tas darbojas']].map(([id, label]) => ({ label, bg: (s.view === id || (id === 'home' && s.view === 'auction')) ? 'rgba(255,255,255,.14)' : 'transparent',
+        go: () => id === 'how' ? (go('home'), setTimeout(() => { const el = this.howRef.current; if (el) { let p = el.parentElement; while (p && !(getComputedStyle(p).overflowY === 'auto' && p.scrollHeight > p.clientHeight)) p = p.parentElement; if (p) p.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' }); else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }); } }, 80)) : go(id) })),
+      tabBar: [['Izsoles', '6px', 'home'], ['Manas izsoles', '50%', 'my'], ['Konts', '50% 50% 6px 6px', 'acct']].map(([label, radius, id]) => { const on = s.view === id || (id === 'home' && s.view === 'auction'); return { label, radius, fg: on ? '#3f6e4a' : '#8a929a', fill: on ? '#e6efe6' : 'transparent', fw: on ? 600 : 500, go: () => id !== 'acct' && go(id) }; }),
+      goHome: () => go('home'),
+      isHome: s.view === 'home', isAuction: s.view === 'auction', isMy: s.view === 'my',
+      homeTabs: tabDefs.map(([id, label]) => { const on = s.homeTab === id; return { label, count: id === 'all' ? '' : allA.filter(a => this.status(a, now) === id).length, set: () => this.setState({ homeTab: id }), bg: on ? '#fff' : 'transparent', fg: on ? '#1d2329' : '#5d6670', sh: on ? '0 1px 3px rgba(29,35,41,.1)' : 'none' }; }),
+      auctionCards: allA.filter(a => s.homeTab === 'all' || this.status(this.auctions.find(x => x.id === a.id), now) === s.homeTab),
+      steps: [{ n: 1, t: 'Piesakies izsolei', d: 'Apstiprini kontaktinformāciju un piekrīti noteikumiem. To dari vienreiz katrai izsolei.' }, { n: 2, t: 'Iestati maksimālo summu', d: 'Sistēma solīs tavā vietā pa soļiem — tikai tik, cik vajag, lai tu paliktu vadībā.' }, { n: 3, t: 'Seko līdzi noslēgumam', d: 'Visas lotes noslēdzas vienlaicīgi. Ja tevi pārsolīs, saņemsi paziņojumu un varēsi solīt vēlreiz.' }],
+      au, stats: [{ k: 'Lotes', v: au0.names.length }, { k: 'Solis', v: this.eur(au0.step) }, { k: 'Sākums', v: this.dstr(au0.start) }, { k: 'Noslēgšanās', v: this.dstr(au0.close) }].map((x, i) => ({ ...x, pl: (compact ? i % 2 : i) ? '16px' : '0px', bl: (compact ? i % 2 : i) ? '1px solid #eef0f1' : 'none', bt: compact && i > 1 ? '1px solid #eef0f1' : 'none' })),
+      auctionTabs: [['lots', 'Lotes'], ['info', 'Informācija']].map(([id, label]) => ({ label, set: () => this.setState({ auctionTab: id }), bd: s.auctionTab === id ? '#3f6e4a' : 'transparent', fg: s.auctionTab === id ? '#1d2329' : '#5d6670' })),
+      tabLots: s.auctionTab === 'lots', tabInfo: s.auctionTab === 'info',
+      lotFilters: [['all', 'Visas lotes', lotsAll.length], ['watch', '☆ Vērotās', lotsAll.filter(l => s.watch[l.id]).length], ['mine', 'Mani solījumi', lotsAll.filter(l => l.hasMine).length]].map(([id, label, count]) => { const on = s.lotFilter === id; return { label, count, set: () => this.setState({ lotFilter: id }), bg: on ? '#3f6e4a' : '#fff', fg: on ? '#fff' : '#1d2329', bd: on ? '#3f6e4a' : '#e3e6e8' }; }),
+      sort: s.sort, onSort: e => this.setState({ sort: e.target.value }),
+      lotCards: lotsF, lotsEmpty: lotsF.length === 0, lotsEmptyText: s.lotFilter === 'watch' ? 'Tu vēl nevēro nevienu loti. Spied ☆ uz lotes.' : 'Šajā izsolē tu vēl neesi solījis.',
+      infoRows: [{ k: 'Norises laiks', v: au.range }, { k: 'Noslēgšanās kārtība', v: 'Visas lotes vienlaicīgi' }, { k: 'Soļa lielums', v: this.eur(au0.step) }, { k: 'Atrašanās vieta', v: au0.country + ', ' + au0.loc }],
+      hasLot: !!lotRaw, lot, lotTotal: lotList.length,
+      closeLot: () => this.setState({ lotId: null, sheet: false }),
+      prevLot: () => idx > 0 && this.setState({ lotId: lotList[idx - 1].id, imgIdx: 0, bidInput: '', bidError: '' }), nextLot: () => idx < lotList.length - 1 && this.setState({ lotId: lotList[idx + 1].id, imgIdx: 0, bidInput: '', bidError: '' }),
+      prevFg: idx > 0 ? '#1d2329' : '#c9d0d5', nextFg: idx < lotList.length - 1 ? '#1d2329' : '#c9d0d5',
+      mainImg: shots[s.imgIdx] || '', dots: shots.map((x, i) => ({ set: () => this.setState({ imgIdx: i }), w: i === s.imgIdx ? '22px' : '8px', bg: i === s.imgIdx ? '#fff' : 'rgba(255,255,255,.65)' })),
+      prevImg: () => this.setState({ imgIdx: (s.imgIdx + shots.length - 1) % shots.length }), nextImg: () => this.setState({ imgIdx: (s.imgIdx + 1) % shots.length }),
+      canBid: !!lotRaw && lotReg && lotSt === 'live' && !lotEnded, needsRegister: !!lotRaw && !lotReg && !lotEnded,
+      hasLotNotice: !!lotRaw && ((lotReg && lotSt === 'upcoming') || lotEnded),
+      lotNotice: lotEnded ? (L && L.leader === 'you' ? 'Apsveicam — tu uzvarēji šo loti. Pārdevējs ar tevi sazināsies.' : 'Šī lote ir noslēgusies.') : 'Tu esi pieteicies. Solīšana sāksies ' + this.dstr(lotA.start) + '.',
+      stepText: this.eur(lotA.step), bidInput: s.bidInput, bidPlaceholder: 'vismaz ' + this.eur(min),
+      onBidInput: e => this.setState({ bidInput: e.target.value, bidError: '' }), onBidKey: e => { if (e.key === 'Enter') submitBid(); },
+      quickLeading: L && L.leader === 'you', quick: [].map(v => { const on = String(s.bidInput) === String(v); return { label: this.eur(v), set: () => this.setState({ bidInput: String(v), bidError: '' }), bd: on ? '#3f6e4a' : '#d9dee2', bg: on ? '#eef3ee' : '#fff' }; }),
+      quickBid: () => { if (L && L.leader === 'you') return; this.setState({ modal: 'confirm', pending: min, pendingKind: 'quick', sheet: false, bidError: '' }); },
+      quickLabel: L && L.leader === 'you' ? '✓ Tu esi vadībā' : 'Solīt ' + this.eur(min), quickShort: L && L.leader === 'you' ? '✓ Vadībā' : 'Solīt ' + this.eur(min),
+      quickHint: L && L.leader === 'you' ? 'Tava maks. summa: ' + this.eur(L.myMax) : 'Viens solis (+' + this.eur(lotA.step) + ') virs pašreizējās cenas',
+      quickBg: L && L.leader === 'you' ? '#eef3ee' : '#3f6e4a', quickFg: L && L.leader === 'you' ? '#2f5538' : '#fff', quickCursor: L && L.leader === 'you' ? 'default' : 'pointer',
+      maxTitle: L && L.leader === 'you' ? 'Paaugstināt maksimālo summu' : 'Iestatīt maksimālo summu',
+      confirmTitle: s.pendingKind === 'quick' ? 'Apstiprini solījumu' : 'Apstiprini maksimālo summu', confirmKind: s.pendingKind === 'quick' ? 'solījums' : 'maks. summa',
+      submitBid, hasBidError: !!s.bidError, bidError: s.bidError, bidBd: s.bidError ? '#b3261e' : '#d9dee2',
+      lotDetails: lotRaw ? [['Šķirne', lotRaw.breed], ['Dzimis', lotRaw.born], ['Svars', lotRaw.weight], ['Tēvs', lotRaw.sire], ['Ciltsraksti', 'Ir'], ['Atrašanās vieta', lotA.country + ', ' + lotA.loc]].map(([k, v]) => ({ k, v })) : [],
+      history: L ? L.history.map(h => ({ who: h.you ? 'Tu' : h.who, t: h.t, amountText: this.eur(h.amount), fg: h.you ? '#2f5538' : '#1d2329', fw: h.you ? 600 : 400 })) : [], noHistory: !L || L.history.length === 0,
+      openSheet: () => this.setState({ sheet: true }), closeSheet: () => this.setState({ sheet: false }), showSheet: s.sheet && !!lotRaw,
+      showConfirm: s.modal === 'confirm' && !!lotRaw, confirmText: s.pending ? this.eur(s.pending) : '', confirmBid: () => this.applyBid(lotRaw, s.pending),
+      showRegister: s.modal === 'register', agree: s.agree, onAgree: e => this.setState({ agree: e.target.checked }),
+      openRegister: () => this.setState({ modal: 'register', agree: false, auctionId: lotRaw ? lotRaw.aid : s.auctionId }),
+      regBg: s.agree ? '#3f6e4a' : '#a9bcae', regCursor: s.agree ? 'pointer' : 'not-allowed',
+      doRegister: () => { if (!s.agree) return; this.setState(x => ({ modal: null, regs: { ...x.regs, [x.auctionId]: true } })); this.flash('Pieteikums apstiprināts — vari solīt'); },
+      closeModal: () => this.setState({ modal: null }), stop: e => e.stopPropagation(),
+      myBids: myBidLots, noMyBids: myBidLots.length === 0, watchCards: watchLots, noWatch: watchLots.length === 0,
+      myRegs: allA.filter(a => s.regs[a.id]).map(a => { const st = this.status(this.auctions.find(x => x.id === a.id), now); return { ...a, stLabel: st === 'live' ? 'LIVE' : st === 'upcoming' ? 'Pieteicies · gaidāma' : 'Noslēgusies', stBg: st === 'live' ? '#fdecea' : '#f0f2f0', stFg: st === 'live' ? '#d92d20' : '#4a535b' }; }),
+      noRegs: !Object.values(s.regs).some(Boolean),
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

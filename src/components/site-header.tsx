@@ -1,11 +1,11 @@
-﻿import { getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/auth/actions";
-import { MobileBackButton, MobileLoginCta } from "@/components/mobile-header-extras";
-import { IconMail } from "@/components/icons";
+import { MobileBackButton } from "@/components/mobile-header-extras";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 
 function initialsFor(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -55,7 +55,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
     }
   }
 
-  const navItemClass = "rounded-lg px-3 py-2 text-[15px] font-medium text-white transition hover:bg-white/10";
+  const navItemClass = "rounded-full px-3 py-2 text-[15px] font-medium text-white transition hover:bg-white/[0.12]";
 
   const navLinks = (
     <>
@@ -98,7 +98,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
   ));
 
   return (
-    <header className="sticky top-0 z-[2000] bg-[#3b5166] shadow-[0_1px_0_rgba(0,0,0,0.08)]">
+    <header className="sticky top-0 z-[2000] bg-[rgba(59,81,102,.95)] shadow-[0_1px_0_rgba(20,26,32,.08)] backdrop-blur-[20px] backdrop-saturate-[1.8]">
       {/* Mobile row */}
       <div className="flex h-14 items-center gap-2.5 px-4 sm:hidden">
         <MobileBackButton />
@@ -110,24 +110,25 @@ export async function SiteHeader({ locale }: { locale: string }) {
           )}
         </Link>
         <div className="flex-1" />
-        {user && (
-          <Link
-            href="/dashboard/messages"
-            aria-label={t("messages")}
-            className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-white active:bg-white/15"
-          >
-            <IconMail className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-red-600 px-[3px] text-[9px] font-bold leading-none text-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </Link>
-        )}
         <div className="flex flex-shrink-0 items-center overflow-hidden rounded-lg border border-white/30 text-[13px] font-semibold">
           {mobileLangLinks}
         </div>
-        <MobileLoginCta loggedIn={!!user} label={t("signIn")} />
+        <MobileNavMenu
+          loggedIn={!!user}
+          unreadCount={unreadCount}
+          signOutAction={boundSignOut}
+          labels={{
+            map: t("map"),
+            listings: t("listings"),
+            howItWorks: t("howItWorks"),
+            signIn: t("signIn"),
+            createProfile: t("createProfile"),
+            messages: t("messages"),
+            myProfile: t("myProfile"),
+            signOut: t("signOut"),
+            menu: t("menu"),
+          }}
+        />
       </div>
 
       {/* Desktop row */}
@@ -183,7 +184,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
             </Link>
             <Link
               href="/auth/sign-up"
-              className="rounded-lg bg-white px-4 py-2.5 text-[15px] font-semibold text-[#3b5166] transition hover:bg-[#e9eef3]"
+              className="rounded-full bg-white px-4 py-2.5 text-[15px] font-semibold text-[#3b5166] transition hover:bg-[#e9eef3]"
             >
               {t("createProfile")}
             </Link>

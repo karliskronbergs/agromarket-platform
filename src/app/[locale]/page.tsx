@@ -125,7 +125,7 @@ export default async function Home({
                     href={{ pathname: "/map", query: { mode: "profiles", category: c.id } }}
                     className="flex-shrink-0 basis-[132px] overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white"
                   >
-                    <div className="flex h-[84px] items-center justify-center bg-[#f6f7f5]">
+                    <div className="flex h-[84px] items-center justify-center bg-[#f5f6f4]">
                       <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#eef3ee]">
                         {CategoryIcon && <CategoryIcon className="h-9 w-9 text-[#3f6e4a]" />}
                       </div>
