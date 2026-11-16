@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { Link } from "@/i18n/navigation";
+import { springDefault, fadeTransition, usePrefersReducedMotion } from "@/lib/motion";
 
 export function MobileNavMenu({
   loggedIn,
@@ -26,6 +28,7 @@ export function MobileNavMenu({
 }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (!open) return;
@@ -51,14 +54,26 @@ export function MobileNavMenu({
         <span className="h-[2px] w-[18px] rounded-sm bg-white" />
       </button>
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-[2500]" onClick={() => setOpen(false)} />
-          <div
-            ref={menuRef}
-            style={{ transformOrigin: "calc(100% - 20px) 0" }}
-            className="fixed right-3 top-[60px] z-[2501] flex w-[min(280px,calc(100%-24px))] flex-col gap-0.5 rounded-[20px] bg-white/90 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_16px_48px_rgba(20,26,32,0.22)] backdrop-blur-[24px] backdrop-saturate-[1.8]"
-          >
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              className="fixed inset-0 z-[2500]"
+              onClick={() => setOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={fadeTransition}
+            />
+            <motion.div
+              ref={menuRef}
+              style={{ transformOrigin: "calc(100% - 20px) 0" }}
+              className="fixed right-3 top-[60px] z-[2501] flex w-[min(280px,calc(100%-24px))] flex-col gap-0.5 rounded-[20px] bg-white/90 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_16px_48px_rgba(20,26,32,0.22)] backdrop-blur-[24px] backdrop-saturate-[1.8]"
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+              animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+              transition={reducedMotion ? fadeTransition : springDefault}
+            >
             <Link href="/map" onClick={() => setOpen(false)} className={itemClass}>
               {labels.map}
             </Link>
@@ -111,9 +126,10 @@ export function MobileNavMenu({
                 </Link>
               </>
             )}
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }

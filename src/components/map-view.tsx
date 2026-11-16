@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -15,6 +16,7 @@ import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-p
 import { SortMenu } from "@/components/sort-menu";
 import { MapSearchBar } from "@/components/map-search-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { springDefault, fadeTransition, usePrefersReducedMotion } from "@/lib/motion";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
@@ -144,6 +146,7 @@ export function MapView({
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
   const [containerWidth, setContainerWidth] = useState(390);
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
+  const reducedMotion = usePrefersReducedMotion();
 
   function navigate(query: Record<string, string>) {
     startTransition(() => {
@@ -518,58 +521,70 @@ export function MapView({
           <div ref={mapContainerRef} className="absolute inset-0" />
 
           {/* Selected-marker card, shown on click at any screen size */}
-          {selectedPoint && popupPos && (
-            <Link
-              href={selectedPoint.href}
-              style={{
-                left: Math.min(Math.max(popupPos.x, 138), containerWidth - 138),
-                top: Math.max(popupPos.y - 18, 8),
-              }}
-              className="absolute z-[600] flex w-[276px] -translate-x-1/2 -translate-y-full items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
-            >
-              <div
+          <AnimatePresence>
+            {selectedPoint && popupPos && (
+              <motion.div
+                key={selectedPoint.id}
                 style={{
-                  backgroundImage:
-                    !selectedPoint.imageUrl && mode !== "profiles"
-                      ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
-                      : undefined,
+                  left: Math.min(Math.max(popupPos.x, 138), containerWidth - 138),
+                  top: Math.max(popupPos.y - 18, 8),
+                  transformOrigin: "bottom center",
                 }}
-                className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${
-                  mode === "profiles"
-                    ? selectedPoint.imageUrl
-                      ? "rounded-full bg-white"
-                      : "rounded-full bg-[#e4eaf0]"
-                    : "rounded-[10px]"
-                }`}
+                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
+                animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
+                transition={reducedMotion ? fadeTransition : springDefault}
+                className="absolute z-[600] w-[276px] -translate-x-1/2 -translate-y-full"
               >
-                {selectedPoint.imageUrl ? (
-                  <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
-                ) : mode === "profiles" ? (
-                  <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
-                    {initialsFor(selectedPoint.title)}
+                <Link
+                  href={selectedPoint.href}
+                  className="flex items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
+                >
+                  <div
+                    style={{
+                      backgroundImage:
+                        !selectedPoint.imageUrl && mode !== "profiles"
+                          ? "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)"
+                          : undefined,
+                    }}
+                    className={`relative h-11 w-11 flex-shrink-0 overflow-hidden ${
+                      mode === "profiles"
+                        ? selectedPoint.imageUrl
+                          ? "rounded-full bg-white"
+                          : "rounded-full bg-[#e4eaf0]"
+                        : "rounded-[10px]"
+                    }`}
+                  >
+                    {selectedPoint.imageUrl ? (
+                      <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
+                    ) : mode === "profiles" ? (
+                      <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
+                        {initialsFor(selectedPoint.title)}
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
-                    {selectedPoint.title}
-                  </span>
-                  {selectedPoint.reservation && (
-                    <span className="flex-shrink-0 rounded-full bg-[#f5ecd9] px-[7px] py-[1px] text-[10px] font-semibold text-[#7a5516]">
-                      {labels.reservation}
-                    </span>
-                  )}
-                </div>
-                {mode !== "profiles" && selectedPoint.price ? (
-                  <div className="truncate text-[13px] font-semibold text-[#1d2329]">{selectedPoint.price}</div>
-                ) : (
-                  <div className="truncate text-[11px] text-[#5d6670]">{selectedPoint.subtitle}</div>
-                )}
-              </div>
-              <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
-            </Link>
-          )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="truncate text-[13px] font-semibold leading-[1.25] text-[#1d2329]">
+                        {selectedPoint.title}
+                      </span>
+                      {selectedPoint.reservation && (
+                        <span className="flex-shrink-0 rounded-full bg-[#f5ecd9] px-[7px] py-[1px] text-[10px] font-semibold text-[#7a5516]">
+                          {labels.reservation}
+                        </span>
+                      )}
+                    </div>
+                    {mode !== "profiles" && selectedPoint.price ? (
+                      <div className="truncate text-[13px] font-semibold text-[#1d2329]">{selectedPoint.price}</div>
+                    ) : (
+                      <div className="truncate text-[11px] text-[#5d6670]">{selectedPoint.subtitle}</div>
+                    )}
+                  </div>
+                  <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Mobile-only tap hint, shown until a marker is selected */}
           {!(selectedPoint && popupPos) && (

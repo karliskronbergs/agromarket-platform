@@ -112,7 +112,7 @@ Implement this with a spring library (e.g. **Motion / Framer Motion**, `type:'sp
 
 ## 6. Checklist
 - [x] Shared tokens and components: glass header, segmented control with a sliding thumb, filled inputs, switch, press feedback, glass toast
-- [ ] Spring utilities (Motion) + reduced-motion fallback
+- [x] Spring utilities (Motion) + reduced-motion fallback
 - [ ] Home + quick look
 - [ ] Map: glass panel (desktop), 3-stop sheet (mobile), subcategory dropdown, pin cards
 - [ ] Back bar + routing that restores state (URL params)
