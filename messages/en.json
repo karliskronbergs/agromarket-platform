@@ -244,6 +244,7 @@
     "modeBuy": "Buy",
     "allCategories": "All categories",
     "allSubcategories": "All",
+    "showSubcategoryResults": "{count, plural, one {Show # result} other {Show # results}}",
     "filtri": "Filters",
     "closeSheet": "Close",
     "back": "Back",

@@ -244,6 +244,7 @@
     "modeBuy": "Pērk",
     "allCategories": "Visas kategorijas",
     "allSubcategories": "Visas",
+    "showSubcategoryResults": "{count, plural, one {Rādīt # rezultātu} other {Rādīt # rezultātus}}",
     "filtri": "Filtri",
     "closeSheet": "Aizvērt",
     "back": "Atpakaļ",

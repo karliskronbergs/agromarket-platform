@@ -70,7 +70,8 @@ export function MapView({
   points,
   categories,
   selectedCategory,
-  selectedSubcategory,
+  selectedSubcategories,
+  subcategoryCounts,
   locale,
   labels,
   livestockFilters,
@@ -84,7 +85,8 @@ export function MapView({
   points: MapPoint[];
   categories: Category[];
   selectedCategory?: string;
-  selectedSubcategory?: string;
+  selectedSubcategories: string[];
+  subcategoryCounts: Record<string, number>;
   locale: string;
   sort?: string;
   search?: string;
@@ -93,7 +95,6 @@ export function MapView({
     sell: string;
     buy: string;
     all: string;
-    allSubcategories: string;
     filtri: string;
     back: string;
     empty: string;
@@ -217,9 +218,10 @@ export function MapView({
     });
   }
 
-  // The most specific category id currently in effect -- a selected
-  // subcategory wins over the top-level category it belongs to.
-  const effectiveCategoryId = selectedSubcategory || selectedCategory;
+  // All of a top category's subcategories share the same specific-filter
+  // group (livestock/equipment/machinery/seeds), so the top category id
+  // alone is enough to pick which filter panel applies.
+  const effectiveCategoryId = selectedCategory;
 
   const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, effectiveCategoryId) : null;
   const isEquipment =
@@ -350,7 +352,7 @@ export function MapView({
   function categoryQuery(): Record<string, string> {
     const query: Record<string, string> = {};
     if (selectedCategory) query.category = selectedCategory;
-    if (selectedSubcategory) query.subcategory = selectedSubcategory;
+    if (selectedSubcategories.length > 0) query.subcategories = selectedSubcategories.join(",");
     return query;
   }
 
@@ -477,13 +479,14 @@ export function MapView({
       <CategoryFilterBar
         categories={categories}
         selectedCategory={selectedCategory}
-        selectedSubcategory={selectedSubcategory}
+        selectedSubcategories={selectedSubcategories}
+        counts={subcategoryCounts}
         locale={locale}
         allLabel={labels.all}
-        onSelect={(categoryId, subcategoryId) => {
+        onSelect={(categoryId, subcategoryIds) => {
           const query: Record<string, string> = { mode };
           if (categoryId) query.category = categoryId;
-          if (subcategoryId) query.subcategory = subcategoryId;
+          if (subcategoryIds.length > 0) query.subcategories = subcategoryIds.join(",");
           navigate(query);
         }}
       />

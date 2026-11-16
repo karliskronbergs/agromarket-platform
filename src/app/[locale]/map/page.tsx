@@ -15,7 +15,7 @@ export default async function MapPage({
   searchParams: Promise<{
     mode?: string;
     category?: string;
-    subcategory?: string;
+    subcategories?: string;
     breed?: string;
     ageMin?: string;
     ageMax?: string;
@@ -35,7 +35,7 @@ export default async function MapPage({
   const {
     mode: rawMode,
     category,
-    subcategory,
+    subcategories,
     breed,
     ageMin,
     ageMax,
@@ -51,6 +51,7 @@ export default async function MapPage({
     q,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
+  const selectedSubcategoryIds = subcategories ? subcategories.split(",").filter(Boolean) : [];
 
   const tListing = await getTranslations("Listing");
   const tProfile = await getTranslations("Profile");
@@ -64,8 +65,63 @@ export default async function MapPage({
     .order("name_lv");
 
   let points: MapPoint[] = [];
-  const effectiveCategoryId = subcategory || category;
-  const categoryIds = effectiveCategoryId ? getSelfAndDescendantIds(categories ?? [], effectiveCategoryId) : null;
+  const categoryIds =
+    selectedSubcategoryIds.length > 0
+      ? Array.from(
+          new Set(selectedSubcategoryIds.flatMap((id) => getSelfAndDescendantIds(categories ?? [], id))),
+        )
+      : category
+        ? getSelfAndDescendantIds(categories ?? [], category)
+        : null;
+
+  // Counts for the currently open top category's direct children, for the
+  // subcategory dropdown's per-row counts and its "Rādīt N rezultātus"
+  // preview. Each child's count includes its own descendants (a listing
+  // tagged two levels down under a child still counts toward that child's
+  // row). Scoped to mode + search only (not the other active filters),
+  // same as the chip row itself.
+  const subcategoryCounts: Record<string, number> = {};
+  if (category) {
+    const children = (categories ?? []).filter((c) => c.parent_id === category);
+    if (children.length > 0) {
+      const idToChild = new Map<string, string>();
+      for (const child of children) {
+        subcategoryCounts[child.id] = 0;
+        for (const id of getSelfAndDescendantIds(categories ?? [], child.id)) {
+          idToChild.set(id, child.id);
+        }
+      }
+      const allIds = Array.from(idToChild.keys());
+
+      if (mode === "profiles") {
+        let countQuery = supabase
+          .from("profile_categories")
+          .select("category_id, profiles!inner(status)")
+          .in("category_id", allIds)
+          .eq("profiles.status", "active");
+        if (q) countQuery = countQuery.ilike("profiles.business_name", `%${q}%`);
+        const { data: countRows } = await countQuery;
+        for (const row of countRows ?? []) {
+          const childId = idToChild.get(row.category_id);
+          if (childId) subcategoryCounts[childId] += 1;
+        }
+      } else {
+        let countQuery = supabase
+          .from("listings")
+          .select("category_id")
+          .in("category_id", allIds)
+          .eq("status", "active")
+          .eq("listing_type", mode)
+          .gt("expires_at", new Date().toISOString());
+        if (q) countQuery = countQuery.ilike("title", `%${q}%`);
+        const { data: countRows } = await countQuery;
+        for (const row of countRows ?? []) {
+          const childId = idToChild.get(row.category_id);
+          if (childId) subcategoryCounts[childId] += 1;
+        }
+      }
+    }
+  }
 
   if (mode === "profiles") {
     let profilesQuery = categoryIds
@@ -206,7 +262,8 @@ export default async function MapPage({
       points={points}
       categories={categories ?? []}
       selectedCategory={category}
-      selectedSubcategory={subcategory}
+      selectedSubcategories={selectedSubcategoryIds}
+      subcategoryCounts={subcategoryCounts}
       locale={locale}
       sort={sort}
       search={q}
@@ -227,7 +284,6 @@ export default async function MapPage({
         sell: t("modeSell"),
         buy: t("modeBuy"),
         all: t("allCategories"),
-        allSubcategories: t("allSubcategories"),
         filtri: t("filtri"),
         back: t("back"),
         filterBreed: t("filterBreed"),
