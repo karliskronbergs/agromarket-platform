@@ -1,21 +1,15 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildCategoryTree, type CategoryRow } from "@/lib/categories";
-import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 import { ATTRIBUTE_ICONS } from "@/components/attribute-badges";
 import { IconStar, CATEGORY_ICONS } from "@/components/icons";
 import { HeroSearch } from "@/components/hero-search";
 import { HomeMapPreview } from "@/components/home-map-preview";
+import { LatestListingsShelf, type QuickLookListing } from "@/components/latest-listings";
 
 export const dynamic = "force-dynamic";
-
-const STRIPE_BG = {
-  backgroundImage:
-    "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 10px, #e4e7e1 10px, #e4e7e1 20px)",
-};
 
 export default async function Home({
   params,
@@ -43,7 +37,7 @@ export default async function Home({
     supabase
       .from("listings")
       .select(
-        "id, title, price, price_unit, price_plus_vat, listing_type, availability, created_at, profiles(id, address), categories(name_lv, name_en), listing_images(url, sort_order)",
+        "id, title, description, price, price_unit, price_plus_vat, listing_type, availability, created_at, profiles(id, address, business_name), categories(name_lv, name_en), listing_images(url, sort_order)",
       )
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -73,6 +67,37 @@ export default async function Home({
     const BadgeIcon = badge ? (ATTRIBUTE_ICONS[badge.icon] ?? IconStar) : null;
     return { listing: l, profile, category, firstImage, isSell, badge, BadgeIcon };
   });
+
+  const quickLookListings: QuickLookListing[] = listingCards.map(
+    ({ listing: l, profile, category, firstImage, isSell, badge, BadgeIcon }) => ({
+      id: l.id,
+      title: l.title,
+      description: l.description,
+      price: l.price,
+      priceUnit: l.price_unit,
+      plusVat: !!l.price_plus_vat,
+      categoryName: category ? (locale === "lv" ? category.name_lv : category.name_en) : null,
+      isSell,
+      reservation: l.availability === "reservation",
+      imageUrl: firstImage?.url ?? null,
+      address: profile?.address ?? null,
+      createdAt: l.created_at,
+      sellerName: profile?.business_name ?? null,
+      badgeName: badge ? (locale === "lv" ? badge.name_lv : badge.name_en) : null,
+      badgeIcon: badge && BadgeIcon ? <BadgeIcon className="h-3.5 w-3.5" /> : null,
+    }),
+  );
+
+  const quickLookLabels = {
+    sell: tListing("sell"),
+    buy: tListing("buy"),
+    priceOnRequest: tListing("priceOnRequest"),
+    plusVat: tListing("plusVat"),
+    reservation: tListing("availabilityReservation"),
+    message: t("quickLookMessage"),
+    openListing: t("quickLookOpen"),
+    close: t("quickLookClose"),
+  };
 
   return (
     <main className="flex flex-1 flex-col">
@@ -148,46 +173,7 @@ export default async function Home({
                 {t("allListingsShort")}
               </Link>
             </div>
-            <div className="flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {listingCards.map(({ listing: l, firstImage, isSell, profile }) => (
-                <Link
-                  key={l.id}
-                  href={`/listings/${l.id}`}
-                  className="flex flex-shrink-0 basis-[220px] flex-col overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white"
-                >
-                  <div style={STRIPE_BG} className="relative h-[130px]">
-                    {firstImage && (
-                      <Image src={firstImage.url} alt="" fill sizes="220px" className="object-cover" />
-                    )}
-                    <span
-                      className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-[3px] text-[11px] font-semibold"
-                      style={isSell ? { background: "#e6efe6", color: "#2f5538" } : { background: "#f5ecd9", color: "#7a5516" }}
-                    >
-                      {isSell ? tListing("sell") : tListing("buy")}
-                    </span>
-                    {isSell && l.availability === "reservation" && (
-                      <span className="absolute bottom-2.5 right-2.5 rounded-full bg-[#f5ecd9] px-2.5 py-[3px] text-[11px] font-semibold text-[#7a5516]">
-                        {tListing("availabilityReservation")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col gap-1 p-3">
-                    <div className="line-clamp-2 text-sm font-medium leading-tight text-[#1d2329]">{l.title}</div>
-                    {l.price != null ? (
-                      <div className="text-base font-semibold text-[#1d2329]">
-                        €{l.price}
-                        <span className="ml-1 text-xs font-normal text-[#5d6670]">
-                          {priceUnitSuffix(l.price_unit, locale)}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-base font-semibold text-[#1d2329]">{tListing("priceOnRequest")}</div>
-                    )}
-                    <div className="mt-auto text-xs text-[#5d6670]">{profile?.address ?? ""}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <LatestListingsShelf variant="mobile" listings={quickLookListings} locale={locale} labels={quickLookLabels} />
           </section>
         )}
 
@@ -359,67 +345,7 @@ export default async function Home({
                 {t("allListings")}
               </Link>
             </div>
-            <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(250px,1fr))]">
-              {listingCards.map(({ listing: l, profile, category, firstImage, isSell, badge, BadgeIcon }) => (
-                <Link
-                  key={l.id}
-                  href={`/listings/${l.id}`}
-                  className="flex flex-col overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white transition hover:shadow-[0_10px_24px_rgba(29,35,41,0.08)]"
-                >
-                  <div style={STRIPE_BG} className="relative h-[170px]">
-                    {firstImage && (
-                      <Image src={firstImage.url} alt="" fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" />
-                    )}
-                    <span
-                      className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold"
-                      style={
-                        isSell
-                          ? { background: "#e6efe6", color: "#2f5538" }
-                          : { background: "#f5ecd9", color: "#7a5516" }
-                      }
-                    >
-                      {isSell ? tListing("sell") : tListing("buy")}
-                    </span>
-                    {badge && BadgeIcon && (
-                      <span
-                        title={locale === "lv" ? badge.name_lv : badge.name_en}
-                        className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[#2f5538]"
-                      >
-                        <BadgeIcon className="h-3.5 w-3.5" />
-                      </span>
-                    )}
-                    {isSell && l.availability === "reservation" && (
-                      <span className="absolute bottom-3 right-3 rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
-                        {tListing("availabilityReservation")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col gap-1.5 p-4">
-                    <div className="text-xs text-[#5d6670]">
-                      {category ? (locale === "lv" ? category.name_lv : category.name_en) : ""}
-                    </div>
-                    <div className="line-clamp-2 text-base font-medium leading-snug text-[#1d2329]">
-                      {l.title}
-                    </div>
-                    {l.price != null ? (
-                      <div className="mt-0.5 text-lg font-semibold text-[#1d2329]">
-                        €{l.price}
-                        <span className="ml-1 text-[13px] font-normal text-[#5d6670]">
-                          {priceUnitSuffix(l.price_unit, locale)}
-                          {l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="mt-0.5 text-lg font-semibold text-[#1d2329]">{tListing("priceOnRequest")}</div>
-                    )}
-                    <div className="mt-auto flex justify-between gap-2 border-t border-[#eef0f1] pt-2.5 text-[13px] text-[#5d6670]">
-                      <span className="truncate">{profile?.address ?? ""}</span>
-                      <span className="flex-shrink-0">{formatRelativeDays(l.created_at, locale)}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <LatestListingsShelf variant="desktop" listings={quickLookListings} locale={locale} labels={quickLookLabels} />
           </section>
         )}
 

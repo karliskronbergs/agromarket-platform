@@ -33,10 +33,17 @@ export function nearestSnapPoint(projectedValue: number, points: number[]): numb
   );
 }
 
-function subscribeToReducedMotion(onChange: () => void) {
-  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
+/** Subscribes to a media query, SSR-safe (reports `false` on the server/first paint). */
+export function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
 }
 
 /**
@@ -44,11 +51,7 @@ function subscribeToReducedMotion(onChange: () => void) {
  * slide/scale for a short opacity cross-fade (never no feedback at all).
  */
 export function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(
-    subscribeToReducedMotion,
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    () => false,
-  );
+  return useMediaQuery("(prefers-reduced-motion: reduce)");
 }
 
 /** A short cross-fade, used in place of a spring slide/scale under reduced motion. */

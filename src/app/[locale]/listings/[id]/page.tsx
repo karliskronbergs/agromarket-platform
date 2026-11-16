@@ -283,7 +283,7 @@ export default async function ListingDetailPage({
                 {[profile?.address, formatRelativeDays(listing.created_at, locale)].filter(Boolean).join(" · ")}
               </div>
               {sellerAttributes.length > 0 && <AttributeBadges attributes={sellerAttributes} locale={locale} />}
-              <div className="mt-1 flex flex-col gap-2">
+              <div id="contact" className="mt-1 flex flex-col gap-2 scroll-mt-24">
                 {profile && (
                   <MessageSellerButton
                     locale={locale}
