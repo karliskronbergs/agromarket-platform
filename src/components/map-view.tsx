@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useMotionValue, animate, type PanInfo } from "motion/react";
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -16,7 +16,15 @@ import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-p
 import { SortMenu } from "@/components/sort-menu";
 import { MapSearchBar } from "@/components/map-search-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import { springDefault, fadeTransition, usePrefersReducedMotion } from "@/lib/motion";
+import {
+  springDefault,
+  springMomentum,
+  fadeTransition,
+  usePrefersReducedMotion,
+  rubberband,
+  projectMomentum,
+  nearestSnapPoint,
+} from "@/lib/motion";
 import { AttributeIconRow, type AttributeInfo } from "@/components/attribute-badges";
 import { Spinner } from "@/components/spinner";
 import type { CategoryRow } from "@/lib/categories";
@@ -122,9 +130,6 @@ export function MapView({
     resultLabel: string;
     noResultsTitle: string;
     noResultsBody: string;
-    tapPointHint: string;
-    toggleShowMap: string;
-    toggleShowList: string;
     addListingCta: string;
     verifiedShort: string;
     reservation: string;
@@ -145,8 +150,66 @@ export function MapView({
   const [selected, setSelected] = useState<string | null>(null);
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
   const [containerWidth, setContainerWidth] = useState(390);
-  const [mobileView, setMobileView] = useState<"list" | "map">("list");
+  const [viewportHeight, setViewportHeight] = useState(800);
   const reducedMotion = usePrefersReducedMotion();
+
+  // Mobile 3-stop sheet (peek / half / full) -- design_handoff_v2/FLUID.md
+  // "Map" section. `sheetY` is how far the sheet is pushed down from its
+  // fully-open position; dragging/snapping only ever moves this value.
+  const sheetY = useMotionValue(0);
+  const sheetFullHeight = Math.max(320, viewportHeight - 72);
+  const sheetStops = {
+    full: 0,
+    half: Math.max(0, sheetFullHeight - viewportHeight * 0.5),
+    peek: Math.max(0, sheetFullHeight - 112),
+  };
+  const sheetStopValues = [sheetStops.full, sheetStops.half, sheetStops.peek];
+  const panStartY = useRef(0);
+
+  useEffect(() => {
+    sheetY.set(sheetStops.half);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    function onResize() {
+      setViewportHeight(window.innerHeight);
+    }
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  function snapSheetTo(stop: "full" | "half" | "peek", velocity = 0) {
+    // A little bounce, but only when the gesture itself carried momentum
+    // (a flick) -- a tap-triggered snap stays critically damped.
+    const spring = Math.abs(velocity) > 300 ? springMomentum : springDefault;
+    animate(sheetY, sheetStops[stop], { ...(reducedMotion ? fadeTransition : spring), velocity });
+  }
+
+  function handleSheetPanStart() {
+    panStartY.current = sheetY.get();
+  }
+
+  function handleSheetPan(_: unknown, info: PanInfo) {
+    let next = panStartY.current + info.offset.y;
+    if (next < sheetStops.full) next = sheetStops.full - rubberband(sheetStops.full - next, sheetFullHeight);
+    if (next > sheetStops.peek) next = sheetStops.peek + rubberband(next - sheetStops.peek, sheetFullHeight);
+    sheetY.set(next);
+  }
+
+  function handleSheetPanEnd(_: unknown, info: PanInfo) {
+    const projected = sheetY.get() + projectMomentum(info.velocity.y);
+    const target = nearestSnapPoint(projected, sheetStopValues);
+    const stop = (Object.keys(sheetStops) as (keyof typeof sheetStops)[]).find((k) => sheetStops[k] === target) ?? "half";
+    snapSheetTo(stop, info.velocity.y);
+  }
+
+  function stepSheetUp() {
+    const current = sheetY.get();
+    if (current > sheetStops.half + 4) snapSheetTo("half");
+    else snapSheetTo("full");
+  }
 
   function navigate(query: Record<string, string>) {
     startTransition(() => {
@@ -214,6 +277,16 @@ export function MapView({
         marker.on("click", () => {
           setSelected(point.id);
           cardRefs.current[point.id]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          // Desktop: the floating panel sits over the map's left ~430px --
+          // pan so a newly selected pin isn't hidden under it. Mobile: drop
+          // the sheet to peek so the map (and the pin's popup) is visible.
+          if (window.innerWidth >= 640) {
+            const panelRight = 16 + 400 + 24;
+            const pt = map.latLngToContainerPoint([point.lat, point.lng]);
+            if (pt.x < panelRight) map.panBy([-(panelRight - pt.x), 0], { animate: true });
+          } else {
+            snapSheetTo("peek");
+          }
         });
         markersRef.current[point.id] = marker;
       });
@@ -238,6 +311,10 @@ export function MapView({
     return () => {
       cancelled = true;
     };
+    // snapSheetTo intentionally omitted -- this effect should only
+    // re-create markers when the point set changes, not on every sheet
+    // layout change (viewport resize, reduced-motion toggle).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [points]);
 
   // Re-style markers (radius/color) when selection changes, without re-fitting bounds.
@@ -298,227 +375,198 @@ export function MapView({
     navigate(query);
   }
 
-  const filterBar = (
-    <div className="flex-shrink-0 border-b border-[#e3e6e8] bg-white">
-      <div className="mx-auto flex max-w-[1648px] flex-col gap-3 px-4 py-3 sm:gap-3.5 sm:px-6 sm:py-4">
-        <div className="flex items-center gap-3">
-          <SegmentedControl
-            className="flex-shrink-0"
-            fill={false}
-            items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
-            value={mode}
-            onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
-          />
-          <Spinner
-            className={`hidden h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity sm:block ${isPending ? "opacity-100" : "opacity-0"}`}
-          />
-          {!hasSpecificFilters && (
-            <div className="hidden sm:block sm:flex-1">
-              <MapSearchBar
-                value={search}
-                placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
-                onSearch={(q) => {
-                  const query: Record<string, string> = { mode, ...categoryQuery() };
-                  if (q) query.q = q;
-                  navigate(query);
-                }}
-              />
-            </div>
-          )}
-          {mode !== "profiles" && (
-            <div className="ml-auto hidden items-center gap-2 sm:flex">
-              <SortMenu
-                value={sort}
-                showAgeSort={!!animalGroup}
-                labels={labels}
-                onChange={(newSort) => {
-                  const query: Record<string, string> = { mode, ...categoryQuery() };
-                  if (animalGroup) {
-                    if (livestockFilters.breed) query.breed = livestockFilters.breed;
-                    if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
-                    if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
-                    if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
-                    if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
-                    if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
-                    if (livestockFilters.organic) query.organic = livestockFilters.organic;
-                  } else if (isEquipment) {
-                    if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
-                    if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
-                    if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
-                  } else if (isMachinery) {
-                    if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
-                    if (machineryFilters.model) query.model = machineryFilters.model;
-                    if (machineryFilters.condition) query.condition = machineryFilters.condition;
-                    if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
-                    if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
-                  } else if (isSeeds) {
-                    if (seedsFilters.title) query.title = seedsFilters.title;
-                    if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
-                    if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
-                    if (seedsFilters.organic) query.organic = seedsFilters.organic;
-                  }
-                  if (newSort) query.sort = newSort;
-                  navigate(query);
-                }}
-              />
-              <Link
-                href={`/${locale}/dashboard/listings/new`}
-                className="flex-shrink-0 whitespace-nowrap rounded-[10px] bg-[#3f6e4a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
-              >
-                {labels.addListingCta}
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {!hasSpecificFilters && (
-          <div className="sm:hidden">
-            <MapSearchBar
-              value={search}
-              placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
-              onSearch={(q) => {
-                const query: Record<string, string> = { mode, ...categoryQuery() };
-                if (q) query.q = q;
-                navigate(query);
-              }}
-            />
-          </div>
-        )}
-
-        <CategoryFilterBar
-          categories={categories}
-          selectedCategory={selectedCategory}
-          selectedSubcategory={selectedSubcategory}
+  const resultList =
+    points.length === 0 ? (
+      <EmptyState
+        title={labels.noResultsTitle}
+        body={labels.noResultsBody}
+        clearLabel={labels.clearFilters}
+        onClear={clearAllFilters}
+      />
+    ) : (
+      points.map((p) => (
+        <ResultCard
+          key={p.id}
+          p={p}
+          mode={mode}
+          selected={selected}
+          onHover={setSelected}
           locale={locale}
-          allLabel={labels.all}
-          onSelect={(categoryId, subcategoryId) => {
-            const query: Record<string, string> = { mode };
-            if (categoryId) query.category = categoryId;
-            if (subcategoryId) query.subcategory = subcategoryId;
+          verifiedLabel={labels.verifiedShort}
+          reservationLabel={labels.reservation}
+          cardRef={(el) => {
+            cardRefs.current[p.id] = el;
+          }}
+        />
+      ))
+    );
+
+  const filterContent = (
+    <div className="flex flex-col gap-3 p-4">
+      <div className="flex items-center gap-3">
+        <SegmentedControl
+          className="flex-shrink-0"
+          fill={false}
+          items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
+          value={mode}
+          onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
+        />
+        <Spinner
+          className={`h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
+        />
+      </div>
+
+      {!hasSpecificFilters && (
+        <MapSearchBar
+          value={search}
+          placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
+          onFocus={() => snapSheetTo("full")}
+          onSearch={(q) => {
+            const query: Record<string, string> = { mode, ...categoryQuery() };
+            if (q) query.q = q;
             navigate(query);
           }}
         />
+      )}
 
-        {animalGroup && (
-          <LivestockFilterPanel
-            key={effectiveCategoryId}
-            animalGroup={animalGroup}
-            locale={locale}
-            filters={livestockFilters}
+      {mode !== "profiles" && (
+        <div className="flex items-center gap-2">
+          <SortMenu
+            value={sort}
+            showAgeSort={!!animalGroup}
             labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.breed ? { breed: f.breed } : {}),
-                ...(f.ageMin ? { ageMin: f.ageMin } : {}),
-                ...(f.ageMax ? { ageMax: f.ageMax } : {}),
-                ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                ...(f.organic ? { organic: f.organic } : {}),
-              })
-            }
-            onClear={clearSpecificFilters}
+            onChange={(newSort) => {
+              const query: Record<string, string> = { mode, ...categoryQuery() };
+              if (animalGroup) {
+                if (livestockFilters.breed) query.breed = livestockFilters.breed;
+                if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
+                if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
+                if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
+                if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
+                if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
+                if (livestockFilters.organic) query.organic = livestockFilters.organic;
+              } else if (isEquipment) {
+                if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
+                if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
+                if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
+              } else if (isMachinery) {
+                if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
+                if (machineryFilters.model) query.model = machineryFilters.model;
+                if (machineryFilters.condition) query.condition = machineryFilters.condition;
+                if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
+                if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
+              } else if (isSeeds) {
+                if (seedsFilters.title) query.title = seedsFilters.title;
+                if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
+                if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
+                if (seedsFilters.organic) query.organic = seedsFilters.organic;
+              }
+              if (newSort) query.sort = newSort;
+              navigate(query);
+            }}
           />
-        )}
-        {isEquipment && (
-          <EquipmentFilterPanel
-            key={effectiveCategoryId}
-            locale={locale}
-            filters={equipmentFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.condition ? { condition: f.condition } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-              })
-            }
-            onClear={clearSpecificFilters}
-          />
-        )}
-        {isMachinery && (
-          <MachineryFilterPanel
-            key={effectiveCategoryId}
-            locale={locale}
-            filters={machineryFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
-                ...(f.model ? { model: f.model } : {}),
-                ...(f.condition ? { condition: f.condition } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-              })
-            }
-            onClear={clearSpecificFilters}
-          />
-        )}
-        {isSeeds && (
-          <SeedsFilterPanel
-            key={effectiveCategoryId}
-            filters={seedsFilters}
-            labels={labels}
-            onApply={(f) =>
-              applyFilterQuery({
-                ...(f.title ? { title: f.title } : {}),
-                ...(f.priceMin ? { priceMin: f.priceMin } : {}),
-                ...(f.priceMax ? { priceMax: f.priceMax } : {}),
-                ...(f.organic ? { organic: f.organic } : {}),
-              })
-            }
-            onClear={clearSpecificFilters}
-          />
-        )}
-      </div>
+          <Link
+            href={`/${locale}/dashboard/listings/new`}
+            className="flex-shrink-0 whitespace-nowrap rounded-[10px] bg-[#3f6e4a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
+          >
+            {labels.addListingCta}
+          </Link>
+        </div>
+      )}
+
+      <CategoryFilterBar
+        categories={categories}
+        selectedCategory={selectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        locale={locale}
+        allLabel={labels.all}
+        onSelect={(categoryId, subcategoryId) => {
+          const query: Record<string, string> = { mode };
+          if (categoryId) query.category = categoryId;
+          if (subcategoryId) query.subcategory = subcategoryId;
+          navigate(query);
+        }}
+      />
+
+      {animalGroup && (
+        <LivestockFilterPanel
+          key={effectiveCategoryId}
+          animalGroup={animalGroup}
+          locale={locale}
+          filters={livestockFilters}
+          labels={labels}
+          onApply={(f) =>
+            applyFilterQuery({
+              ...(f.breed ? { breed: f.breed } : {}),
+              ...(f.ageMin ? { ageMin: f.ageMin } : {}),
+              ...(f.ageMax ? { ageMax: f.ageMax } : {}),
+              ...(f.quantityMin ? { quantityMin: f.quantityMin } : {}),
+              ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+              ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              ...(f.organic ? { organic: f.organic } : {}),
+            })
+          }
+          onClear={clearSpecificFilters}
+        />
+      )}
+      {isEquipment && (
+        <EquipmentFilterPanel
+          key={effectiveCategoryId}
+          locale={locale}
+          filters={equipmentFilters}
+          labels={labels}
+          onApply={(f) =>
+            applyFilterQuery({
+              ...(f.condition ? { condition: f.condition } : {}),
+              ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+              ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+            })
+          }
+          onClear={clearSpecificFilters}
+        />
+      )}
+      {isMachinery && (
+        <MachineryFilterPanel
+          key={effectiveCategoryId}
+          locale={locale}
+          filters={machineryFilters}
+          labels={labels}
+          onApply={(f) =>
+            applyFilterQuery({
+              ...(f.manufacturer ? { manufacturer: f.manufacturer } : {}),
+              ...(f.model ? { model: f.model } : {}),
+              ...(f.condition ? { condition: f.condition } : {}),
+              ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+              ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+            })
+          }
+          onClear={clearSpecificFilters}
+        />
+      )}
+      {isSeeds && (
+        <SeedsFilterPanel
+          key={effectiveCategoryId}
+          filters={seedsFilters}
+          labels={labels}
+          onApply={(f) =>
+            applyFilterQuery({
+              ...(f.title ? { title: f.title } : {}),
+              ...(f.priceMin ? { priceMin: f.priceMin } : {}),
+              ...(f.priceMax ? { priceMax: f.priceMax } : {}),
+              ...(f.organic ? { organic: f.organic } : {}),
+            })
+          }
+          onClear={clearSpecificFilters}
+        />
+      )}
     </div>
   );
 
   return (
-    <div className="flex h-[calc(100dvh-56px)] flex-col overflow-hidden sm:h-[calc(100dvh-44px)]">
-      {filterBar}
-
-      <div className="relative flex flex-1 overflow-hidden">
-        {/* List pane */}
-        <div
-          className={`absolute inset-0 z-10 flex flex-col gap-2.5 overflow-y-auto bg-[#f5f6f4] p-4 pb-24 sm:static sm:z-auto sm:w-[440px] sm:flex-shrink-0 sm:border-r sm:border-[#e3e6e8] sm:pb-4 ${
-            mobileView === "map" ? "hidden sm:flex" : "flex"
-          }`}
-        >
-          <div className="px-1 pb-1 text-[13px] text-[#5d6670]">{resultLabel}</div>
-          {points.length === 0 ? (
-            <EmptyState
-              title={labels.noResultsTitle}
-              body={labels.noResultsBody}
-              clearLabel={labels.clearFilters}
-              onClear={clearAllFilters}
-            />
-          ) : (
-            points.map((p) => (
-              <ResultCard
-                key={p.id}
-                p={p}
-                mode={mode}
-                selected={selected}
-                onHover={setSelected}
-                locale={locale}
-                verifiedLabel={labels.verifiedShort}
-                reservationLabel={labels.reservation}
-                cardRef={(el) => {
-                  cardRefs.current[p.id] = el;
-                }}
-              />
-            ))
-          )}
-        </div>
-
-        {/* Map pane (always mounted to avoid Leaflet sizing issues when hidden) */}
-        <div
-          className={`absolute inset-0 bg-[#e8ece6] transition-opacity sm:relative sm:flex-1 sm:pointer-events-auto sm:opacity-100 ${
-            mobileView === "list" ? "pointer-events-none opacity-0" : "opacity-100"
-          }`}
-        >
-          <div ref={mapContainerRef} className="absolute inset-0" />
+    <div className="relative h-[calc(100dvh-56px)] overflow-hidden sm:h-[calc(100dvh-44px)]">
+      {/* Map pane -- always full-bleed, under the floating panel/sheet */}
+      <div className="absolute inset-0 bg-[#e8ece6]">
+        <div ref={mapContainerRef} className="absolute inset-0" />
 
           {/* Selected-marker card, shown on click at any screen size */}
           <AnimatePresence>
@@ -585,33 +633,39 @@ export function MapView({
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Mobile-only tap hint, shown until a marker is selected */}
-          {!(selectedPoint && popupPos) && (
-            <div className="absolute left-1/2 top-3 z-[600] -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3.5 py-2 text-[13px] text-[#5d6670] shadow-[0_4px_12px_rgba(29,35,41,0.12)] sm:hidden">
-              {resultLabel} · {labels.tapPointHint}
-            </div>
-          )}
         </div>
 
-        {/* Mobile-only floating controls */}
-        <button
-          type="button"
-          onClick={() => setMobileView((v) => (v === "list" ? "map" : "list"))}
-          className="absolute bottom-4 left-1/2 z-[700] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1d2329] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+        {/* Desktop: a frosted results panel floating over the full-bleed map */}
+        <div className="absolute inset-y-4 left-4 z-[500] hidden w-[400px] flex-col overflow-hidden rounded-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:flex">
+          <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
+          <div className="flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
+            <div className="px-2 pb-2 pt-3 text-[13px] font-medium text-[#4a535b]">{resultLabel}</div>
+            <div className="flex flex-col gap-2 px-0">{resultList}</div>
+          </div>
+        </div>
+
+        {/* Mobile: a draggable 3-stop sheet (peek / half / full) over the full-bleed map */}
+        <motion.div
+          style={{ y: sheetY, height: sheetFullHeight }}
+          className="fixed inset-x-0 bottom-0 z-[600] flex flex-col overflow-hidden rounded-t-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_-8px_30px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:hidden"
         >
-          {mobileView === "list" ? labels.toggleShowMap : labels.toggleShowList}
-        </button>
-        {mode !== "profiles" && (
-          <Link
-            href={`/${locale}/dashboard/listings/new`}
-            className="absolute bottom-4 right-4 z-[700] flex h-12 w-12 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl text-white shadow-[0_8px_20px_rgba(29,35,41,0.25)] sm:hidden"
+          <motion.div
+            onPanStart={handleSheetPanStart}
+            onPan={handleSheetPan}
+            onPanEnd={handleSheetPanEnd}
+            onClick={stepSheetUp}
+            className="flex flex-shrink-0 touch-none flex-col items-center gap-2 pb-1.5 pt-2"
+            style={{ cursor: "grab" }}
           >
-            +
-          </Link>
-        )}
+            <span className="h-[5px] w-10 rounded-full bg-black/[0.18]" />
+            <span className="self-stretch px-4 text-[13px] font-medium text-[#4a535b]">{resultLabel}</span>
+          </motion.div>
+          <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
+          <div className="flex-1 overflow-y-auto overscroll-contain px-2 pb-6">
+            <div className="flex flex-col gap-2">{resultList}</div>
+          </div>
+        </motion.div>
       </div>
-    </div>
   );
 }
 

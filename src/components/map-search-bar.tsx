@@ -7,10 +7,12 @@ export function MapSearchBar({
   value,
   placeholder,
   onSearch,
+  onFocus,
 }: {
   value?: string;
   placeholder: string;
   onSearch: (query: string) => void;
+  onFocus?: () => void;
 }) {
   const [draft, setDraft] = useState(value ?? "");
 
@@ -20,12 +22,13 @@ export function MapSearchBar({
         e.preventDefault();
         onSearch(draft.trim());
       }}
-      className="relative w-full flex-1 sm:max-w-[520px]"
+      className="relative w-full flex-1"
     >
       <input
         type="text"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
+        onFocus={onFocus}
         placeholder={placeholder}
         className="w-full rounded-xl border border-transparent bg-[#f5f6f4] px-4 py-[11px] text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a] focus:bg-white focus:shadow-[0_0_0_4px_rgba(63,110,74,0.12)]"
       />

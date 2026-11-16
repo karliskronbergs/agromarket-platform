@@ -280,9 +280,6 @@
     "resultCountListings": "{count, plural, one {# listing} other {# listings}}",
     "noResultsTitle": "Nothing found",
     "noResultsBody": "Try a different category or search term.",
-    "tapPointHint": "tap a point",
-    "toggleShowMap": "Show map",
-    "toggleShowList": "Show list",
     "addListingCta": "+ Add listing"
   },
   "Listing": {

@@ -280,9 +280,6 @@
     "resultCountListings": "{count, plural, one {# sludinājums} other {# sludinājumi}}",
     "noResultsTitle": "Nekas netika atrasts",
     "noResultsBody": "Pamēģini citu kategoriju vai meklēšanas vārdu.",
-    "tapPointHint": "pieskaries punktam",
-    "toggleShowMap": "Rādīt kartē",
-    "toggleShowList": "Rādīt sarakstu",
     "addListingCta": "+ Pievienot sludinājumu"
   },
   "Listing": {
