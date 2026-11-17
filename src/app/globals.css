@@ -67,10 +67,15 @@
   --font-body: var(--font-heading);
 }
 
+html {
+  overscroll-behavior-y: none;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  overscroll-behavior-y: none;
 }
 
 /* design_handoff_v2/FLUID.md "Press feedback": every tappable element
