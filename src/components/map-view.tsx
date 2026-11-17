@@ -387,9 +387,14 @@ export function MapView({
           markProgrammaticMove();
           if (points.length > 1) {
             const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
-            map.fitBounds(bounds.pad(0.2), { maxZoom: 12 });
+            // Capped lower than the "fits nicely" zoom would otherwise go:
+            // a tight, data-specific zoom/bbox is a tile combination almost
+            // nobody else requests, so it's cold at the tile server's own
+            // cache, unlike a zoomed-out view that overlaps what countless
+            // other map consumers already requested.
+            map.fitBounds(bounds.pad(0.2), { maxZoom: 10 });
           } else if (points.length === 1) {
-            map.setView([points[0].lat, points[0].lng], 11);
+            map.setView([points[0].lat, points[0].lng], 10);
           } else {
             map.setView(LATVIA_CENTER, 7);
           }
