@@ -121,4 +121,4 @@ Implement this with a spring library (e.g. **Motion / Framer Motion**, `type:'sp
 - [ ] "Rezervācijai" label everywhere + `availability` field in the create/edit form
 - [x] Dashboard: nav, swipe rows, delete with undo, action sheet, form sections
 - [x] Auctions: lot panel drag-to-close, bid sheet, dialogs
-- [ ] Screenshot comparison at 1440px and 390px against the Fluid files (VERIFY.md)
+- [x] Screenshot comparison at 1440px and 390px against the Fluid files (VERIFY.md)
