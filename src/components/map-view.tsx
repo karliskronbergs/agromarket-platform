@@ -190,6 +190,12 @@ export function MapView({
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(null);
   const [containerWidth, setContainerWidth] = useState(390);
   const [viewportHeight, setViewportHeight] = useState(800);
+  // Before we've measured the real viewport, the sheet renders with plain
+  // dvh-based CSS (see className below) that already matches the "half"
+  // stop pixel-for-pixel -- so flipping this to true and handing control
+  // to `sheetY`/`sheetFullHeight` is a no-op repaint, not a visible jump.
+  const [sheetReady, setSheetReady] = useState(false);
+  const sheetInitializedRef = useRef(false);
   const reducedMotion = usePrefersReducedMotion();
 
   // Mobile 3-stop sheet (peek / half / full) -- design_handoff_v2/FLUID.md
@@ -206,11 +212,6 @@ export function MapView({
   const panStartY = useRef(0);
 
   useEffect(() => {
-    sheetY.set(sheetStops.half);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") setSelected(null);
     }
@@ -220,11 +221,22 @@ export function MapView({
 
   useEffect(() => {
     function onResize() {
-      setViewportHeight(window.innerHeight);
+      const height = window.innerHeight;
+      setViewportHeight(height);
+      // Only force the sheet to "half" on the first real measurement --
+      // a later resize (rotation, keyboard) shouldn't yank it away from
+      // wherever the user has it.
+      if (!sheetInitializedRef.current) {
+        sheetInitializedRef.current = true;
+        const fullHeight = Math.max(320, height - 72);
+        sheetY.set(Math.max(0, fullHeight - height * 0.5));
+        setSheetReady(true);
+      }
     }
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function snapSheetTo(stop: "full" | "half" | "peek", velocity = 0) {
@@ -783,8 +795,11 @@ export function MapView({
 
         {/* Mobile: a draggable 3-stop sheet (peek / half / full) over the full-bleed map */}
         <motion.div
-          style={{ y: sheetY, height: sheetFullHeight }}
-          className="fixed inset-x-0 bottom-0 z-[600] flex flex-col overflow-hidden rounded-t-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_-8px_30px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:hidden"
+          style={sheetReady ? { y: sheetY, height: sheetFullHeight } : undefined}
+          className={
+            "fixed inset-x-0 bottom-0 z-[600] flex flex-col overflow-hidden rounded-t-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_-8px_30px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:hidden" +
+            (sheetReady ? "" : " h-[calc(100dvh_-_72px)] translate-y-[calc(50dvh_-_72px)]")
+          }
         >
           <motion.div
             onPanStart={handleSheetPanStart}
