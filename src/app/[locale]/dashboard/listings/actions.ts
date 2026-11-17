@@ -198,6 +198,10 @@ export async function saveListing(
   redirect(`/${locale}/dashboard/listings?toast=listingSaved`);
 }
 
+// No redirect: this is called directly (not via a <form action>) from the
+// dashboard listings list, which deletes the row immediately and offers a
+// client-side "Atsaukt" undo window before ever calling this -- by the time
+// it runs, the deletion is final and there's nothing left to navigate to.
 export async function deleteListing(locale: string, listingId: string) {
   const supabase = await createClient();
   const {
@@ -208,7 +212,6 @@ export async function deleteListing(locale: string, listingId: string) {
   await supabase.from("listings").delete().eq("id", listingId);
 
   revalidatePath(`/${locale}/dashboard/listings`);
-  redirect(`/${locale}/dashboard/listings?toast=listingDeleted`);
 }
 
 const LISTING_LIFETIME_DAYS = 21;

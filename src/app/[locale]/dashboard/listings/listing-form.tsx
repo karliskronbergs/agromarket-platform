@@ -311,7 +311,7 @@ export function ListingForm({
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-      <div className="flex flex-wrap justify-end gap-2.5">
+      <div className="sticky bottom-0 -mx-4 flex flex-wrap justify-end gap-2.5 bg-white/[0.86] px-4 py-3 shadow-[0_-1px_0_rgba(20,26,32,0.08)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:-mx-6 sm:px-6">
         <Link
           href="/dashboard/listings"
           className="rounded-[10px] border border-[#d9dee2] bg-white px-[18px] py-3 text-[15px] font-medium text-[#1d2329] transition hover:border-[#3f6e4a]"

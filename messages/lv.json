@@ -212,6 +212,7 @@
     "deleteProfileText": "Profils un visi tavi sludinājumi tiks neatgriezeniski dzēsti. Šo darbību nevar atsaukt.",
     "deleteProfileCta": "Jā, dzēst profilu",
     "modalCancel": "Atcelt",
+    "undo": "Atsaukt",
     "toastListingHidden": "Sludinājums paslēpts",
     "toastListingShown": "Sludinājums atkal redzams",
     "toastListingDeleted": "Sludinājums dzēsts",

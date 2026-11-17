@@ -212,6 +212,7 @@
     "deleteProfileText": "Your profile and all your listings will be permanently deleted. This can't be undone.",
     "deleteProfileCta": "Yes, delete my profile",
     "modalCancel": "Cancel",
+    "undo": "Undo",
     "toastListingHidden": "Listing hidden",
     "toastListingShown": "Listing visible again",
     "toastListingDeleted": "Listing deleted",

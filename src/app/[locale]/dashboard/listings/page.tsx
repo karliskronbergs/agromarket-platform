@@ -1,22 +1,12 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DeleteButton } from "./delete-button";
-import { ReactivateButton } from "./reactivate-button";
-import { HideButton } from "./hide-button";
-import { AutoRenewCheckbox } from "./auto-renew-checkbox";
 import { DashboardToast } from "@/components/dashboard-toast";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
+import { ListingRows, type DashboardListingRow } from "./listing-rows";
 
 export const dynamic = "force-dynamic";
-
-const STRIPE_BG = {
-  backgroundImage:
-    "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)",
-};
 
 function isPast(dateString: string) {
   return new Date(dateString).getTime() < Date.now();
@@ -71,10 +61,43 @@ export default async function ListingsPage({
   });
 
   const filterTabs: { id: Filter; label: string }[] = [
-    { id: "all", label: t("filterAll") },
-    { id: "active", label: t("filterActive") },
-    { id: "hidden", label: t("filterHidden") },
+    { id: "all", label: `${t("filterAll")} (${decorated.length})` },
+    { id: "active", label: `${t("filterActive")} (${decorated.filter((l) => l.active).length})` },
+    { id: "hidden", label: `${t("filterHidden")} (${decorated.filter((l) => l.expired).length})` },
   ];
+
+  const rows: DashboardListingRow[] = filtered.map((l) => {
+    const images = (l.listing_images ?? []) as { url: string; sort_order: number }[];
+    const firstImage = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
+    const catRaw = l.categories as unknown as
+      | { name_lv: string; name_en: string }
+      | { name_lv: string; name_en: string }[]
+      | null;
+    const cat = Array.isArray(catRaw) ? (catRaw[0] ?? null) : catRaw;
+    const removed = l.status === "removed";
+    return {
+      id: l.id,
+      title: l.title,
+      price: l.price,
+      priceUnit: l.price_unit,
+      plusVat: !!l.price_plus_vat,
+      createdAt: l.created_at,
+      autoRenew: l.auto_renew,
+      isSell: l.listing_type === "sell",
+      active: l.active,
+      expired: l.expired,
+      removed,
+      statusLabel: removed
+        ? tListing("statusRemoved")
+        : l.status === "pending"
+          ? tListing("statusPending")
+          : l.active
+            ? tListing("statusActive")
+            : t("statusHiddenDashboard"),
+      categoryName: cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : null,
+      imageUrl: firstImage?.url ?? null,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -123,88 +146,20 @@ export default async function ListingsPage({
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5">
-          {filtered.map((l) => {
-            const images = (l.listing_images ?? []) as { url: string; sort_order: number }[];
-            const firstImage = [...images].sort((a, b) => a.sort_order - b.sort_order)[0];
-            const catRaw = l.categories as unknown as
-              | { name_lv: string; name_en: string }
-              | { name_lv: string; name_en: string }[]
-              | null;
-            const cat = Array.isArray(catRaw) ? (catRaw[0] ?? null) : catRaw;
-            const catName = cat ? (locale === "lv" ? cat.name_lv : cat.name_en) : null;
-            const isSell = l.listing_type === "sell";
-            const statusLabel =
-              l.status === "removed"
-                ? tListing("statusRemoved")
-                : l.status === "pending"
-                  ? tListing("statusPending")
-                  : l.active
-                    ? tListing("statusActive")
-                    : t("statusHiddenDashboard");
-
-            return (
-              <div
-                key={l.id}
-                className="flex flex-wrap items-center gap-3.5 rounded-[14px] border border-[#e3e6e8] bg-white p-3.5"
-              >
-                <div
-                  style={!firstImage ? STRIPE_BG : undefined}
-                  className="relative h-[88px] w-[88px] flex-shrink-0 overflow-hidden rounded-[10px]"
-                >
-                  {firstImage && <Image src={firstImage.url} alt="" fill sizes="88px" className="object-cover" />}
-                </div>
-                <div className="flex min-w-[180px] flex-1 flex-col gap-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span
-                      className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                      style={isSell ? { background: "#e6efe6", color: "#2f5538" } : { background: "#f5ecd9", color: "#7a5516" }}
-                    >
-                      {isSell ? tListing("sell") : tListing("buy")}
-                    </span>
-                    <span
-                      className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                      style={
-                        l.active
-                          ? { background: "#eef3ee", color: "#2f5538" }
-                          : { background: "#eceeeb", color: "#5d6670" }
-                      }
-                    >
-                      {statusLabel}
-                    </span>
-                  </div>
-                  <div className="text-base font-medium leading-[1.3] text-[#1d2329]">{l.title}</div>
-                  <div className="text-sm text-[#5d6670]">
-                    {l.price != null && (
-                      <span className="font-semibold text-[#1d2329]">
-                        €{l.price}
-                        {priceUnitSuffix(l.price_unit, locale)}
-                        {l.price_plus_vat ? ` ${tListing("plusVat")}` : ""}
-                      </span>
-                    )}
-                    {[catName, formatRelativeDays(l.created_at, locale)].filter(Boolean).length > 0 &&
-                      (l.price != null ? " · " : "")}
-                    {[catName, formatRelativeDays(l.created_at, locale)].filter(Boolean).join(" · ")}
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  <Link
-                    href={`/dashboard/listings/${l.id}`}
-                    className="rounded-[9px] border border-[#d9dee2] bg-white px-3.5 py-2 text-sm font-medium text-[#1d2329] transition hover:border-[#3f6e4a]"
-                  >
-                    {t("editListing")}
-                  </Link>
-                  {l.active && <HideButton locale={locale} listingId={l.id} />}
-                  {l.expired && <ReactivateButton locale={locale} listingId={l.id} />}
-                  {l.status !== "removed" && (
-                    <AutoRenewCheckbox locale={locale} listingId={l.id} initialChecked={l.auto_renew} />
-                  )}
-                  <DeleteButton locale={locale} listingId={l.id} title={l.title} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ListingRows
+          listings={rows}
+          locale={locale}
+          labels={{
+            sell: tListing("sell"),
+            buy: tListing("buy"),
+            editListing: t("editListing"),
+            hideListing: t("hideListing"),
+            reactivate: tListing("reactivate"),
+            deleteCta: t("deleteListingCta"),
+            deletedMessage: t("toastListingDeleted"),
+            undo: t("undo"),
+          }}
+        />
       )}
     </div>
   );
