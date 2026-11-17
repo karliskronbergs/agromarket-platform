@@ -174,7 +174,7 @@ export default async function ListingDetailPage({
                 <div className="text-[26px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
               )}
               {isSell && listing.availability === "reservation" && (
-                <span className="w-fit rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
+                <span className="w-fit rounded-full bg-[#3b5166] px-2.5 py-1 text-xs font-semibold text-white">
                   {t("availabilityReservation")}
                 </span>
               )}
@@ -260,7 +260,7 @@ export default async function ListingDetailPage({
                 <div className="text-[30px] font-bold tracking-[-0.01em] text-[#1d2329]">{priceText}</div>
               )}
               {isSell && listing.availability === "reservation" && (
-                <span className="w-fit rounded-full bg-[#f5ecd9] px-2.5 py-1 text-xs font-semibold text-[#7a5516]">
+                <span className="w-fit rounded-full bg-[#3b5166] px-2.5 py-1 text-xs font-semibold text-white">
                   {t("availabilityReservation")}
                 </span>
               )}

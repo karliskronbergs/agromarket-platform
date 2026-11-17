@@ -337,6 +337,7 @@ export default async function MapPage({
         addListingCta: t("addListingCta"),
         verifiedShort: tProfile("verifiedShort"),
         reservation: tListing("availabilityReservation"),
+        closePin: t("closePin"),
       }}
     />
   );

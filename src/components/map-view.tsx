@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useMotionValue, animate, type PanInfo } from "
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { IconCheck, IconShield } from "@/components/icons";
+import { IconCheck, IconClose, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
 import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
@@ -136,6 +136,7 @@ export function MapView({
     addListingCta: string;
     verifiedShort: string;
     reservation: string;
+    closePin: string;
   };
   livestockFilters: LivestockFilters;
   equipmentFilters: EquipmentFilters;
@@ -190,6 +191,14 @@ export function MapView({
   useEffect(() => {
     sheetY.set(sheetStops.half);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setSelected(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   useEffect(() => {
@@ -303,6 +312,11 @@ export function MapView({
             window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
           }, 400);
         });
+
+        // Tapping empty map closes the pin card, per FLUID.md's pin card
+        // spec (marker clicks have bubblingMouseEvents:false, so they don't
+        // reach this handler and immediately re-close what they just opened).
+        leafletMapRef.current.on("click", () => setSelected(null));
       }
 
       const map = leafletMapRef.current;
@@ -317,6 +331,10 @@ export function MapView({
           weight: 3,
           fillColor: PIN,
           fillOpacity: 1,
+          // Path layers bubble mouse events to the map by default, which
+          // would fire the map's own "click closes the pin card" handler
+          // right after this marker's click opened it.
+          bubblingMouseEvents: false,
         }).addTo(map);
         marker.on("click", () => {
           setSelected(point.id);
@@ -673,6 +691,14 @@ export function MapView({
                 transition={reducedMotion ? fadeTransition : springDefault}
                 className="absolute z-[600] w-[276px] -translate-x-1/2 -translate-y-full"
               >
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  aria-label={labels.closePin}
+                  className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#5d6670] shadow-[0_2px_6px_rgba(29,35,41,0.25)] transition active:scale-90"
+                >
+                  <IconClose className="h-3 w-3" />
+                </button>
                 <Link
                   href={selectedPoint.href}
                   className="flex items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
@@ -706,7 +732,7 @@ export function MapView({
                         {selectedPoint.title}
                       </span>
                       {selectedPoint.reservation && (
-                        <span className="flex-shrink-0 rounded-full bg-[#f5ecd9] px-[7px] py-[1px] text-[10px] font-semibold text-[#7a5516]">
+                        <span className="flex-shrink-0 rounded-full bg-[#3b5166] px-[7px] py-[1px] text-[10px] font-semibold text-white">
                           {labels.reservation}
                         </span>
                       )}
@@ -847,7 +873,7 @@ function ResultCard({
         >
           {p.imageUrl && <Image src={p.imageUrl} alt="" fill sizes="92px" className="object-cover" />}
           {p.reservation && (
-            <span className="absolute bottom-1 right-1 rounded-full bg-[#f5ecd9] px-[7px] py-[2px] text-[9px] font-semibold text-[#7a5516]">
+            <span className="absolute bottom-1 right-1 rounded-full bg-[#3b5166] px-[7px] py-[2px] text-[9px] font-semibold text-white">
               {reservationLabel}
             </span>
           )}

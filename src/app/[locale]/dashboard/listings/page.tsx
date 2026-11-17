@@ -42,7 +42,7 @@ export default async function ListingsPage({
   const { data: listings } = await supabase
     .from("listings")
     .select(
-      "id, title, listing_type, price, price_unit, price_plus_vat, status, expires_at, created_at, auto_renew, categories(name_lv, name_en), listing_images(url, sort_order)",
+      "id, title, listing_type, price, price_unit, price_plus_vat, availability, status, expires_at, created_at, auto_renew, categories(name_lv, name_en), listing_images(url, sort_order)",
     )
     .eq("profile_id", profile.id)
     .order("created_at", { ascending: false });
@@ -84,6 +84,7 @@ export default async function ListingsPage({
       createdAt: l.created_at,
       autoRenew: l.auto_renew,
       isSell: l.listing_type === "sell",
+      reservation: l.listing_type === "sell" && l.availability === "reservation",
       active: l.active,
       expired: l.expired,
       removed,
@@ -152,6 +153,7 @@ export default async function ListingsPage({
           labels={{
             sell: tListing("sell"),
             buy: tListing("buy"),
+            reservation: tListing("availabilityReservation"),
             editListing: t("editListing"),
             hideListing: t("hideListing"),
             reactivate: tListing("reactivate"),

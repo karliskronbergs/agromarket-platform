@@ -118,7 +118,7 @@ Implement this with a spring library (e.g. **Motion / Framer Motion**, `type:'sp
 - [x] Back bar + routing that restores state (URL params)
 - [x] Listing page: swipe gallery, sticky panel / mobile action bar
 - [x] Profile page, login/register with inline validation
-- [ ] "Rezervācijai" label everywhere + `availability` field in the create/edit form
+- [x] "Rezervācijai" label everywhere + `availability` field in the create/edit form
 - [x] Dashboard: nav, swipe rows, delete with undo, action sheet, form sections
 - [x] Auctions: lot panel drag-to-close, bid sheet, dialogs
 - [x] Screenshot comparison at 1440px and 390px against the Fluid files (VERIFY.md)

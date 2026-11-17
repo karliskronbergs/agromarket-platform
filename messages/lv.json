@@ -285,7 +285,8 @@
     "resultCountListings": "{count, plural, one {# sludinājums} other {# sludinājumi}}",
     "noResultsTitle": "Nekas netika atrasts",
     "noResultsBody": "Pamēģini citu kategoriju vai meklēšanas vārdu.",
-    "addListingCta": "+ Pievienot sludinājumu"
+    "addListingCta": "+ Pievienot sludinājumu",
+    "closePin": "Aizvērt"
   },
   "Listing": {
     "myListings": "Sludinājumi",

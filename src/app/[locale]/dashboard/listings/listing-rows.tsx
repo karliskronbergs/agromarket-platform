@@ -28,6 +28,7 @@ export type DashboardListingRow = {
   createdAt: string;
   autoRenew: boolean;
   isSell: boolean;
+  reservation: boolean;
   active: boolean;
   expired: boolean;
   removed: boolean;
@@ -46,6 +47,7 @@ export function ListingRows({
   labels: {
     sell: string;
     buy: string;
+    reservation: string;
     editListing: string;
     hideListing: string;
     reactivate: string;
@@ -143,6 +145,7 @@ function ListingRow({
   labels: {
     sell: string;
     buy: string;
+    reservation: string;
     editListing: string;
     hideListing: string;
     reactivate: string;
@@ -202,6 +205,11 @@ function ListingRow({
         >
           {l.isSell ? labels.sell : labels.buy}
         </span>
+        {l.reservation && (
+          <span className="rounded-full bg-[#3b5166] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+            {labels.reservation}
+          </span>
+        )}
         <span
           className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
           style={l.active ? { background: "#eef3ee", color: "#2f5538" } : { background: "#eceeeb", color: "#5d6670" }}

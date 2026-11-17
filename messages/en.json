@@ -285,7 +285,8 @@
     "resultCountListings": "{count, plural, one {# listing} other {# listings}}",
     "noResultsTitle": "Nothing found",
     "noResultsBody": "Try a different category or search term.",
-    "addListingCta": "+ Add listing"
+    "addListingCta": "+ Add listing",
+    "closePin": "Close"
   },
   "Listing": {
     "myListings": "Listings",

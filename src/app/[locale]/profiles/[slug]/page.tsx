@@ -76,7 +76,9 @@ export default async function PublicProfilePage({
       .eq("profile_id", profile.id),
     supabase
       .from("listings")
-      .select("id, title, listing_type, price, price_unit, price_plus_vat, created_at, listing_images(url, sort_order)")
+      .select(
+        "id, title, listing_type, price, price_unit, price_plus_vat, availability, created_at, listing_images(url, sort_order)",
+      )
       .eq("profile_id", profile.id)
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -114,6 +116,11 @@ export default async function PublicProfilePage({
                 >
                   {isSell ? t("sell") : t("buy")}
                 </span>
+                {isSell && l.availability === "reservation" && (
+                  <span className="absolute bottom-2.5 right-2.5 rounded-full bg-[#3b5166] px-2.5 py-[3px] text-xs font-semibold text-white">
+                    {t("availabilityReservation")}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-1 p-3.5">
                 <div className="line-clamp-2 text-[15px] font-medium text-[#1d2329]">{l.title}</div>
