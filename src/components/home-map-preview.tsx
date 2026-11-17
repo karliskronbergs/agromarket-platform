@@ -28,7 +28,7 @@ export function HomeMapPreview({ points }: { points: { lat: number; lng: number 
       }).setView(LATVIA_CENTER, 7);
       mapRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+      L.tileLayer("/api/tiles/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
 
       points.forEach((p) => {
         L.circleMarker([p.lat, p.lng], {

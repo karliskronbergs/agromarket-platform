@@ -292,7 +292,7 @@ export function MapView({
           initialView ? [initialView.lat, initialView.lng] : LATVIA_CENTER,
           initialView ? initialView.zoom : 7,
         );
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("/api/tiles/{z}/{x}/{y}.png", {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19,
         }).addTo(leafletMapRef.current);
