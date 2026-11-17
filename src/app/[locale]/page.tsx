@@ -267,27 +267,6 @@ export default async function Home({
           </div>
         </section>
 
-        {/* How it works */}
-        <section id="how" className="mx-auto max-w-[1328px] px-6 pb-6 pt-[72px]">
-          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <div className="mb-2 text-sm font-medium text-[#3f6e4a]">{t("howEyebrow")}</div>
-              <h2 className="m-0 text-[32px] font-semibold tracking-[-0.01em] text-[#1d2329]">{t("howTitle")}</h2>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 min-[900px]:grid-cols-3">
-            <HowCard number={1} title={t("how1Title")} body={t("how1Body")} cta={t("how1Cta")} href="/auth/sign-up" />
-            <HowCard
-              number={2}
-              title={t("how2Title")}
-              body={t("how2Body")}
-              cta={t("how2Cta")}
-              href={{ pathname: "/map", query: { mode: "sell" } }}
-            />
-            <HowCard number={3} title={t("how3Title")} body={t("how3Body")} cta={t("how3Cta")} href="/map" />
-          </div>
-        </section>
-
         {/* Browse by industry */}
         {topCategories.length > 0 && (
           <section className="mx-auto max-w-[1328px] px-6 pb-6 pt-14">
@@ -350,6 +329,27 @@ export default async function Home({
             <LatestListingsShelf variant="desktop" listings={quickLookListings} locale={locale} labels={quickLookLabels} />
           </section>
         )}
+
+        {/* How it works */}
+        <section id="how" className="mx-auto max-w-[1328px] px-6 pb-6 pt-14">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="mb-2 text-sm font-medium text-[#3f6e4a]">{t("howEyebrow")}</div>
+              <h2 className="m-0 text-[32px] font-semibold tracking-[-0.01em] text-[#1d2329]">{t("howTitle")}</h2>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 min-[900px]:grid-cols-3">
+            <HowCard number={1} title={t("how1Title")} body={t("how1Body")} cta={t("how1Cta")} href="/auth/sign-up" />
+            <HowCard
+              number={2}
+              title={t("how2Title")}
+              body={t("how2Body")}
+              cta={t("how2Cta")}
+              href={{ pathname: "/map", query: { mode: "sell" } }}
+            />
+            <HowCard number={3} title={t("how3Title")} body={t("how3Body")} cta={t("how3Cta")} href="/map" />
+          </div>
+        </section>
 
         {/* CTA band */}
         <section className="mx-auto max-w-[1328px] px-6 pb-20 pt-14">
