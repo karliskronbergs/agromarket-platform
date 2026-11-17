@@ -58,6 +58,18 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${lexend.variable} h-full antialiased`}
     >
+      <head>
+        {/* The map page fetches OpenStreetMap tiles across these three
+            subdomains (Leaflet's default {s} rotation) -- warming up the
+            connection ahead of the first tile request shaves the DNS/TLS
+            handshake off the map's largest-contentful-paint path. */}
+        <link rel="preconnect" href="https://a.tile.openstreetmap.org" />
+        <link rel="preconnect" href="https://b.tile.openstreetmap.org" />
+        <link rel="preconnect" href="https://c.tile.openstreetmap.org" />
+        <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org" />
+        <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org" />
+        <link rel="dns-prefetch" href="https://c.tile.openstreetmap.org" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#f5f6f4]">
         <NextIntlClientProvider>
           <SiteHeader locale={locale} />

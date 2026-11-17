@@ -3,16 +3,33 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion, useMotionValue, animate, type PanInfo } from "motion/react";
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IconCheck, IconClose, IconShield } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
-import { LivestockFilterPanel, type LivestockFilters } from "@/components/livestock-filter-panel";
-import { EquipmentFilterPanel, type EquipmentFilters } from "@/components/equipment-filter-panel";
-import { MachineryFilterPanel, type MachineryFilters } from "@/components/machinery-filter-panel";
-import { SeedsFilterPanel, type SeedsFilters } from "@/components/seeds-filter-panel";
+import type { LivestockFilters } from "@/components/livestock-filter-panel";
+import type { EquipmentFilters } from "@/components/equipment-filter-panel";
+import type { MachineryFilters } from "@/components/machinery-filter-panel";
+import type { SeedsFilters } from "@/components/seeds-filter-panel";
+
+// Only one of these four ever renders at a time (by category), and on the
+// common first load (no category drilled into) none of them do -- loading
+// them on demand keeps their code out of the map page's initial bundle.
+const LivestockFilterPanel = dynamic(() =>
+  import("@/components/livestock-filter-panel").then((m) => m.LivestockFilterPanel),
+);
+const EquipmentFilterPanel = dynamic(() =>
+  import("@/components/equipment-filter-panel").then((m) => m.EquipmentFilterPanel),
+);
+const MachineryFilterPanel = dynamic(() =>
+  import("@/components/machinery-filter-panel").then((m) => m.MachineryFilterPanel),
+);
+const SeedsFilterPanel = dynamic(() =>
+  import("@/components/seeds-filter-panel").then((m) => m.SeedsFilterPanel),
+);
 import { SortMenu } from "@/components/sort-menu";
 import { MapSearchBar } from "@/components/map-search-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
