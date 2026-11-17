@@ -242,21 +242,10 @@ export default async function ListingDetailPage({
             <div className="rounded-xl bg-[#f0f2f0] px-3.5 py-3 text-[13px] leading-[1.5] text-[#4a535b] sm:hidden">
               {t("safetyTip")}
             </div>
-
-            {similar.length > 0 && (
-              <div className="flex flex-col gap-3">
-                <h2 className="m-0 text-lg font-semibold text-[#1d2329] sm:text-2xl">{t("similarListings")}</h2>
-                <div className="flex flex-col gap-2.5 sm:hidden">
-                  {similar.map((l) => (
-                    <SimilarRow key={l.id} listing={l} locale={locale} thumbSize={72} />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Desktop sticky sidebar */}
-          <div className="hidden w-full flex-col gap-3.5 sm:sticky sm:top-[88px] sm:flex sm:w-full sm:max-w-[400px] sm:flex-1">
+          <div className="hidden w-full flex-col gap-3.5 sm:sticky sm:top-[132px] sm:flex sm:w-full sm:max-w-[400px] sm:flex-1">
             <div className="flex flex-col gap-3.5 rounded-[18px] border border-[#e3e6e8] bg-white p-6">
               <TypeAndCategoryRow
                 isSell={isSell}
@@ -355,16 +344,21 @@ export default async function ListingDetailPage({
         </div>
 
         {similar.length > 0 && (
-          <div className="hidden grid-cols-1 gap-4 [grid-template-columns:repeat(auto-fill,minmax(250px,1fr))] sm:grid">
-            {similar.map((l) => (
-              <SimilarRow key={l.id} listing={l} locale={locale} thumbSize={80} />
-            ))}
+          <div className="flex flex-col gap-3">
+            <h2 className="m-0 text-lg font-semibold text-[#1d2329] sm:text-2xl">{t("similarListings")}</h2>
+            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:gap-4 sm:px-6 [&::-webkit-scrollbar]:hidden">
+              {similar.map((l) => (
+                <SimilarCard key={l.id} listing={l} locale={locale} />
+              ))}
+            </div>
           </div>
         )}
       </div>
 
       {profile && (
         <MobileActionBar
+          typeLabel={isSell ? t("sell") : t("buy")}
+          price={priceText}
           phone={profile.phone}
           phoneLabel={t("callSeller")}
           message={
@@ -451,10 +445,9 @@ function SellerAvatar({ profile, size }: { profile: SellerLite; size: number }) 
   );
 }
 
-function SimilarRow({
+function SimilarCard({
   listing,
   locale,
-  thumbSize,
 }: {
   listing: {
     id: string;
@@ -465,30 +458,26 @@ function SimilarRow({
     profiles: { address: string | null } | { address: string | null }[] | null;
   };
   locale: string;
-  thumbSize: number;
 }) {
   const thumb = listing.listing_images?.[0]?.url;
   const p = Array.isArray(listing.profiles) ? listing.profiles[0] : listing.profiles;
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="flex gap-3 rounded-2xl border border-[#e3e6e8] bg-white p-2.5 transition hover:shadow-[0_8px_20px_rgba(29,35,41,0.08)]"
+      className="flex w-[180px] flex-shrink-0 snap-start flex-col overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white transition hover:shadow-[0_8px_20px_rgba(29,35,41,0.08)] sm:w-[210px]"
     >
-      <div
-        style={{ ...(!thumb ? STRIPE_BG : {}), width: thumbSize, height: thumbSize }}
-        className="relative flex-shrink-0 overflow-hidden rounded-[10px]"
-      >
-        {thumb && <Image src={thumb} alt="" fill sizes={`${thumbSize}px`} className="object-cover" />}
+      <div style={!thumb ? STRIPE_BG : undefined} className="relative aspect-[4/3]">
+        {thumb && <Image src={thumb} alt="" fill sizes="210px" className="object-cover" />}
       </div>
-      <div className="flex min-w-0 flex-col justify-center gap-1">
-        <div className="line-clamp-2 text-[15px] font-medium leading-[1.3] text-[#1d2329]">{listing.title}</div>
+      <div className="flex flex-1 flex-col gap-1 p-3">
+        <div className="line-clamp-2 text-sm font-medium leading-tight text-[#1d2329]">{listing.title}</div>
         {listing.price != null && (
-          <div className="text-[15px] font-semibold text-[#1d2329]">
+          <div className="text-sm font-semibold text-[#1d2329]">
             €{listing.price}
             <span className="ml-1 text-xs font-normal text-[#5d6670]">{priceUnitSuffix(listing.price_unit, locale)}</span>
           </div>
         )}
-        {p?.address && <div className="truncate text-xs text-[#5d6670]">{p.address}</div>}
+        {p?.address && <div className="mt-auto truncate text-xs text-[#5d6670]">{p.address}</div>}
       </div>
     </Link>
   );

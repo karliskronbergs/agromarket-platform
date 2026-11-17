@@ -116,7 +116,7 @@ Implement this with a spring library (e.g. **Motion / Framer Motion**, `type:'sp
 - [x] Home + quick look
 - [x] Map: glass panel (desktop), 3-stop sheet (mobile), subcategory dropdown, pin cards
 - [x] Back bar + routing that restores state (URL params)
-- [ ] Listing page: swipe gallery, sticky panel / mobile action bar
+- [x] Listing page: swipe gallery, sticky panel / mobile action bar
 - [ ] Profile page, login/register with inline validation
 - [ ] "Rezervācijai" label everywhere + `availability` field in the create/edit form
 - [ ] Dashboard: nav, swipe rows, delete with undo, action sheet, form sections
