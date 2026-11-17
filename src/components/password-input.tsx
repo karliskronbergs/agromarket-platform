@@ -8,11 +8,17 @@ export function PasswordInput({
   name,
   className,
   minLength,
+  value,
+  onChange,
+  onBlur,
 }: {
   id: string;
   name: string;
   className: string;
   minLength?: number;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
 }) {
   const [show, setShow] = useState(false);
 
@@ -24,6 +30,9 @@ export function PasswordInput({
         type={show ? "text" : "password"}
         required
         minLength={minLength}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
         className={`${className} pr-10`}
       />
       <button

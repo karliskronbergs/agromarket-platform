@@ -94,6 +94,8 @@
     "confirmPassword": "Confirm password",
     "passwordHint": "At least 8 characters",
     "passwordsDontMatch": "Passwords don't match.",
+    "invalidEmail": "Enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
     "signInSubmit": "Sign in",
     "signUpSubmit": "Sign up",
     "noAccount": "Don't have an account?",

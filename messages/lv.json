@@ -94,6 +94,8 @@
     "confirmPassword": "Apstiprini paroli",
     "passwordHint": "Vismaz 8 rakstzīmes",
     "passwordsDontMatch": "Paroles nesakrīt.",
+    "invalidEmail": "Ievadi derīgu e-pasta adresi",
+    "passwordTooShort": "Parolei jābūt vismaz 8 rakstzīmēm",
     "signInSubmit": "Ieiet",
     "signUpSubmit": "Reģistrēties",
     "noAccount": "Nav konta?",
