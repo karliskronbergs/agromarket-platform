@@ -4,7 +4,6 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/auth/actions";
-import { MobileBackButton } from "@/components/mobile-header-extras";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
 
 function initialsFor(name: string): string {
@@ -101,7 +100,6 @@ export async function SiteHeader({ locale }: { locale: string }) {
     <header className="sticky top-0 z-[2000] bg-[rgba(59,81,102,.95)] shadow-[0_1px_0_rgba(20,26,32,.08)] backdrop-blur-[20px] backdrop-saturate-[1.8]">
       {/* Mobile row */}
       <div className="flex h-14 items-center gap-2.5 px-4 sm:hidden">
-        <MobileBackButton />
         <Link href="/" className="flex flex-shrink-0 items-center">
           {logoUrl ? (
             <Image src={logoUrl} alt="lauks24.lv" width={120} height={26} className="h-[26px] w-auto" priority />

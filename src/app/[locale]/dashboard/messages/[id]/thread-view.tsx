@@ -114,7 +114,7 @@ export function ThreadView({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 rounded-full border border-[#d9dee2] px-4 py-2.5 text-base sm:text-sm outline-none transition focus:border-[#3f6e4a]"
+          className="flex-1 rounded-full border border-transparent bg-[#f5f6f4] px-4 py-2.5 text-base sm:text-sm outline-none transition focus:border-[#3f6e4a] focus:bg-white focus:shadow-[0_0_0_4px_rgba(63,110,74,0.12)]"
         />
         <button
           type="submit"

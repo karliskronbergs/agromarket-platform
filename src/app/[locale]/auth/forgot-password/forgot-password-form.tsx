@@ -7,7 +7,7 @@ import { Spinner } from "@/components/spinner";
 import { requestPasswordReset, type AuthState } from "../actions";
 
 const inputClass =
-  "rounded-[10px] border border-[#d9dee2] bg-white px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a]";
+  "rounded-xl border border-transparent bg-[#f5f6f4] px-3.5 py-3 text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a] focus:bg-white focus:shadow-[0_0_0_4px_rgba(63,110,74,0.12)]";
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
   const t = useTranslations("Auth");

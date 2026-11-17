@@ -32,8 +32,8 @@ export async function AuthShell({
 
   return (
     <div className="flex flex-1 flex-col items-center px-4 pb-8 pt-6 sm:px-6 sm:py-12">
-      <div className="w-full max-w-[1040px] overflow-hidden sm:rounded-[24px] sm:border sm:border-[#e3e6e8] sm:bg-white sm:[grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))] sm:grid">
-        <div className="flex flex-col gap-[18px] sm:p-10">
+      <div className="w-full max-w-[1040px] overflow-hidden rounded-[20px] bg-white shadow-[0_1px_2px_rgba(20,26,32,0.05)] sm:rounded-[24px] sm:shadow-[0_12px_28px_rgba(20,26,32,0.08)] sm:[grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))] sm:grid">
+        <div className="flex flex-col gap-[18px] p-5 sm:p-10">
           <SegmentedControl
             className="w-full self-start sm:w-fit"
             items={[
