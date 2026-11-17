@@ -13,6 +13,7 @@ import { getAttributesByProfileIds } from "@/lib/attributes";
 import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { ProfileTabs } from "@/components/profile-tabs";
 import { MobileActionBar } from "@/components/mobile-action-bar";
+import { BackBar } from "@/components/back-bar";
 
 export const dynamic = "force-dynamic";
 
@@ -174,21 +175,12 @@ export default async function PublicProfilePage({
   return (
     <div className="pb-24 sm:pb-0">
       <ViewTracker profileId={profile.id} />
+      <BackBar
+        fallbackHref={`/${locale}/map?mode=profiles`}
+        fallbackLabel={tNav("map")}
+        labels={{ map: tNav("map"), listings: tNav("listings"), home: tNav("tabHome") }}
+      />
       <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6">
-        <div className="hidden flex-wrap gap-2 text-sm text-[#5d6670] sm:flex">
-          <Link href="/map" className="text-[#3f6e4a]">
-            {tNav("map")}
-          </Link>
-          {primaryCategoryName && (
-            <>
-              <span>/</span>
-              <span>{primaryCategoryName}</span>
-            </>
-          )}
-          <span>/</span>
-          <span className="text-[#1d2329]">{profile.business_name}</span>
-        </div>
-
         <div className="overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white sm:rounded-[20px]">
           <div
             style={!profile.cover_url ? STRIPE_BG : undefined}

@@ -13,6 +13,7 @@ import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
 import { conditionLabel } from "@/lib/equipment";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
+import { BackBar } from "@/components/back-bar";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 
@@ -141,6 +142,11 @@ export default async function ListingDetailPage({
   return (
     <div className="pb-24 sm:pb-0">
       <ViewTracker listingId={listing.id} />
+      <BackBar
+        fallbackHref={`/${locale}/map?mode=${listing.listing_type}`}
+        fallbackLabel={tNav("listings")}
+        labels={{ map: tNav("map"), listings: tNav("listings"), home: tNav("tabHome") }}
+      />
       <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6">
         {isAdmin && (listing.status !== "active" || rawProfile?.status !== "active") && (
           <div className="rounded-lg bg-[#fbe9dd] px-3.5 py-2.5 text-xs font-medium text-[#8a4a26]">
@@ -148,16 +154,6 @@ export default async function ListingDetailPage({
             {rawProfile?.status !== "active" ? `, ${rawProfile?.status}` : ""})
           </div>
         )}
-
-        <div className="hidden flex-wrap gap-2 text-sm text-[#5d6670] sm:flex">
-          <Link href={{ pathname: "/map", query: { mode: listing.listing_type } }} className="text-[#3f6e4a]">
-            {tNav("listings")}
-          </Link>
-          <span>/</span>
-          <span>{categoryLabel}</span>
-          <span>/</span>
-          <span className="text-[#1d2329]">{listing.title}</span>
-        </div>
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
           <div className="min-w-0 flex-1 sm:flex sm:flex-col sm:gap-5">

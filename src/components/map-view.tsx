@@ -72,6 +72,7 @@ export function MapView({
   selectedCategory,
   selectedSubcategories,
   subcategoryCounts,
+  initialView,
   locale,
   labels,
   livestockFilters,
@@ -87,6 +88,7 @@ export function MapView({
   selectedCategory?: string;
   selectedSubcategories: string[];
   subcategoryCounts: Record<string, number>;
+  initialView?: { lat: number; lng: number; zoom: number };
   locale: string;
   sort?: string;
   search?: string;
@@ -146,6 +148,24 @@ export function MapView({
   const cardRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const prevPointIdsRef = useRef<string>("");
   const selectedRef = useRef<string | null>(null);
+  const skippedInitialFitRef = useRef(false);
+  const programmaticMoveRef = useRef(false);
+  const viewSyncTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // A single programmatic view change (fitBounds, setView, panBy) can fire
+  // both "moveend" and "zoomend", and -- since these are animated -- only
+  // once the animation settles, not synchronously. Clearing the flag after
+  // a delay comfortably longer than Leaflet's default animation (instead of
+  // the first handler call consuming it immediately) makes sure every event
+  // from this one change sees it.
+  function markProgrammaticMove() {
+    programmaticMoveRef.current = true;
+    setTimeout(() => {
+      programmaticMoveRef.current = false;
+    }, 600);
+  }
+  const desktopListRef = useRef<HTMLDivElement | null>(null);
+  const mobileListRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<string | null>(null);
@@ -241,9 +261,10 @@ export function MapView({
       if (cancelled || !mapContainerRef.current) return;
 
       if (!leafletMapRef.current) {
+        markProgrammaticMove();
         leafletMapRef.current = L.map(mapContainerRef.current, { zoomControl: true }).setView(
-          LATVIA_CENTER,
-          7,
+          initialView ? [initialView.lat, initialView.lng] : LATVIA_CENTER,
+          initialView ? initialView.zoom : 7,
         );
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -260,6 +281,27 @@ export function MapView({
           const pt = m.latLngToContainerPoint(marker.getLatLng());
           setPopupPos({ x: pt.x, y: pt.y });
           if (mapContainerRef.current) setContainerWidth(mapContainerRef.current.clientWidth);
+        });
+
+        // design_handoff_v2/FLUID.md "Back navigation": keep the map center
+        // and zoom in the URL (via replaceState, so panning never triggers a
+        // server round-trip) so the browser's Back button restores the exact
+        // view. Programmatic moves (fitBounds, the initial setView, the
+        // marker-click pan) set programmaticMoveRef first and are excluded --
+        // only moves the user actually drove get written back.
+        leafletMapRef.current.on("moveend zoomend", () => {
+          if (programmaticMoveRef.current) return;
+          clearTimeout(viewSyncTimeoutRef.current);
+          viewSyncTimeoutRef.current = setTimeout(() => {
+            const m = leafletMapRef.current;
+            if (!m) return;
+            const center = m.getCenter();
+            const params = new URLSearchParams(window.location.search);
+            params.set("lat", center.lat.toFixed(5));
+            params.set("lng", center.lng.toFixed(5));
+            params.set("zoom", String(m.getZoom()));
+            window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+          }, 400);
         });
       }
 
@@ -285,7 +327,10 @@ export function MapView({
           if (window.innerWidth >= 640) {
             const panelRight = 16 + 400 + 24;
             const pt = map.latLngToContainerPoint([point.lat, point.lng]);
-            if (pt.x < panelRight) map.panBy([-(panelRight - pt.x), 0], { animate: true });
+            if (pt.x < panelRight) {
+              markProgrammaticMove();
+              map.panBy([-(panelRight - pt.x), 0], { animate: true });
+            }
           } else {
             snapSheetTo("peek");
           }
@@ -298,13 +343,21 @@ export function MapView({
         .sort()
         .join(",");
       if (ids !== prevPointIdsRef.current) {
-        if (points.length > 1) {
-          const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
-          map.fitBounds(bounds.pad(0.2), { maxZoom: 12 });
-        } else if (points.length === 1) {
-          map.setView([points[0].lat, points[0].lng], 11);
+        // A restored view from the URL wins once, on the very first point
+        // set -- after that (the user changed a filter), fit the new
+        // results as usual.
+        if (initialView && !skippedInitialFitRef.current) {
+          skippedInitialFitRef.current = true;
         } else {
-          map.setView(LATVIA_CENTER, 7);
+          markProgrammaticMove();
+          if (points.length > 1) {
+            const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
+            map.fitBounds(bounds.pad(0.2), { maxZoom: 12 });
+          } else if (points.length === 1) {
+            map.setView([points[0].lat, points[0].lng], 11);
+          } else {
+            map.setView(LATVIA_CENTER, 7);
+          }
         }
         prevPointIdsRef.current = ids;
       }
@@ -318,6 +371,39 @@ export function MapView({
     // layout change (viewport resize, reduced-motion toggle).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [points]);
+
+  // design_handoff_v2/FLUID.md "Back navigation": remember this as the
+  // list page a listing/profile's back bar should return to.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("lastListHref", `${window.location.pathname}${window.location.search}`);
+    } catch {}
+  });
+
+  // design_handoff_v2/FLUID.md "Back navigation": restore the results
+  // list's scroll position when returning to this exact filtered view.
+  // A fresh MapView instance mounts on every navigation (the server
+  // component re-renders), so this has to be sessionStorage, keyed by the
+  // full URL, rather than state that would just survive on its own.
+  useEffect(() => {
+    const key = `mapScroll:${window.location.pathname}${window.location.search}`;
+    const saved = Number(sessionStorage.getItem(key) ?? "");
+    const els = [desktopListRef.current, mobileListRef.current].filter(
+      (el): el is HTMLDivElement => !!el,
+    );
+    if (!Number.isNaN(saved)) {
+      for (const el of els) el.scrollTop = saved;
+    }
+    function onScroll(e: Event) {
+      sessionStorage.setItem(key, String((e.currentTarget as HTMLDivElement).scrollTop));
+    }
+    for (const el of els) el.addEventListener("scroll", onScroll);
+    return () => {
+      for (const el of els) el.removeEventListener("scroll", onScroll);
+    };
+    // Runs once per mount (a fresh instance per navigation) -- re-running
+    // on every point/selection change would thrash the saved value.
+  }, []);
 
   // Re-style markers (radius/color) when selection changes, without re-fitting bounds.
   useEffect(() => {
@@ -641,7 +727,7 @@ export function MapView({
         {/* Desktop: a frosted results panel floating over the full-bleed map */}
         <div className="absolute inset-y-4 left-4 z-[500] hidden w-[400px] flex-col overflow-hidden rounded-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:flex">
           <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
-          <div className="flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
+          <div ref={desktopListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
             <div className="px-2 pb-2 pt-3 text-[13px] font-medium text-[#4a535b]">{resultLabel}</div>
             <div className="flex flex-col gap-2 px-0">{resultList}</div>
           </div>
@@ -664,7 +750,7 @@ export function MapView({
             <span className="self-stretch px-4 text-[13px] font-medium text-[#4a535b]">{resultLabel}</span>
           </motion.div>
           <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
-          <div className="flex-1 overflow-y-auto overscroll-contain px-2 pb-6">
+          <div ref={mobileListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-6">
             <div className="flex flex-col gap-2">{resultList}</div>
           </div>
         </motion.div>

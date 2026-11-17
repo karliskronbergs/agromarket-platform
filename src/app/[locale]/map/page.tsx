@@ -29,6 +29,9 @@ export default async function MapPage({
     organic?: string;
     sort?: string;
     q?: string;
+    lat?: string;
+    lng?: string;
+    zoom?: string;
   }>;
 }) {
   const { locale } = await params;
@@ -49,9 +52,16 @@ export default async function MapPage({
     organic,
     sort,
     q,
+    lat,
+    lng,
+    zoom,
   } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
   const selectedSubcategoryIds = subcategories ? subcategories.split(",").filter(Boolean) : [];
+  const initialView =
+    lat && lng && zoom && !Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng)) && !Number.isNaN(Number(zoom))
+      ? { lat: Number(lat), lng: Number(lng), zoom: Number(zoom) }
+      : undefined;
 
   const tListing = await getTranslations("Listing");
   const tProfile = await getTranslations("Profile");
@@ -264,6 +274,7 @@ export default async function MapPage({
       selectedCategory={category}
       selectedSubcategories={selectedSubcategoryIds}
       subcategoryCounts={subcategoryCounts}
+      initialView={initialView}
       locale={locale}
       sort={sort}
       search={q}

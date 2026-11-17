@@ -8,6 +8,7 @@ import { IconStar, CATEGORY_ICONS } from "@/components/icons";
 import { HeroSearch } from "@/components/hero-search";
 import { HomeMapPreview } from "@/components/home-map-preview";
 import { LatestListingsShelf, type QuickLookListing } from "@/components/latest-listings";
+import { RememberListContext } from "@/components/remember-list-context";
 
 export const dynamic = "force-dynamic";
 
@@ -101,6 +102,7 @@ export default async function Home({
 
   return (
     <main className="flex flex-1 flex-col">
+      <RememberListContext />
       {/* ======================= MOBILE ======================= */}
       <div className="sm:hidden">
         <section className="flex flex-col gap-4 border-b border-[#e3e6e8] bg-white px-4 pb-7 pt-6">
