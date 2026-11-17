@@ -49,6 +49,7 @@ export default async function DashboardLayout({
         avatarUrl={profile?.avatar_url ?? null}
         listingsCount={listingsCount ?? 0}
         signOutLabel={t("signOut")}
+        newListingLabel={t("addListingFab")}
         nav={nav}
       >
         {children}

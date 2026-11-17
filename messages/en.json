@@ -239,7 +239,8 @@
     "formSaveChanges": "Save changes",
     "profileMapTitle": "Location on the map",
     "profileMapHint": "Determined automatically from the address.",
-    "profileCancel": "Cancel"
+    "profileCancel": "Cancel",
+    "addListingFab": "Add listing"
   },
   "Map": {
     "modeProfiles": "Profiles",
@@ -327,6 +328,8 @@
     "availability": "Availability",
     "availabilityImmediate": "Available now",
     "availabilityReservation": "By reservation",
+    "availabilityImmediateHint": "The item is available and ready to sell.",
+    "availabilityReservationHint": "The item isn't ready yet — buyers can reserve it in advance. The card will show a \"By reservation\" tag.",
     "location": "Location",
     "postedLabel": "Posted",
     "listingNumber": "Listing no.",

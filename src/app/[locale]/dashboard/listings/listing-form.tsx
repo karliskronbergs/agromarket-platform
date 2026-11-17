@@ -101,34 +101,19 @@ export function ListingForm({
       <div className="flex flex-col gap-[22px] rounded-2xl border border-[#e3e6e8] bg-white p-4 sm:p-6">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-[#1d2329]">{td("formWhatToDo")}</span>
-          <div className="grid grid-cols-2 gap-2.5">
-            {(
-              [
-                ["sell", td("formTypeSellTitle"), td("formTypeSellSub")],
-                ["buy", td("formTypeBuyTitle"), td("formTypeBuySub")],
-              ] as const
-            ).map(([value, label, sub]) => (
-              <label
-                key={value}
-                className="flex cursor-pointer flex-col gap-0.5 rounded-xl border-2 p-3.5 transition"
-                style={{
-                  borderColor: listingType === value ? "#3f6e4a" : "#e3e6e8",
-                  background: listingType === value ? "#f3f7f3" : "#fff",
-                }}
-              >
-                <input
-                  type="radio"
-                  name="listingType"
-                  value={value}
-                  checked={listingType === value}
-                  onChange={() => setListingType(value)}
-                  className="sr-only"
-                />
-                <span className="text-[15px] font-semibold text-[#1d2329]">{label}</span>
-                <span className="text-[13px] leading-[1.35] text-[#5d6670]">{sub}</span>
-              </label>
-            ))}
-          </div>
+          <SegmentedControl
+            fill={false}
+            name="listingType"
+            value={listingType}
+            onChange={setListingType}
+            items={[
+              { value: "sell", label: td("formTypeSellTitle") },
+              { value: "buy", label: td("formTypeBuyTitle") },
+            ]}
+          />
+          <span className="text-[13px] leading-[1.45] text-[#5d6670]">
+            {listingType === "sell" ? td("formTypeSellSub") : td("formTypeBuySub")}
+          </span>
         </div>
 
         <Field label={t("title")}>
@@ -260,6 +245,9 @@ export function ListingForm({
                 { value: "reservation", label: t("availabilityReservation") },
               ]}
             />
+            <span className="text-[13px] leading-[1.45] text-[#5d6670]">
+              {availability === "immediate" ? t("availabilityImmediateHint") : t("availabilityReservationHint")}
+            </span>
           </Field>
         )}
 

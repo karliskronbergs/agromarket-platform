@@ -14,6 +14,7 @@ export function DashboardShell({
   avatarUrl,
   listingsCount,
   signOutLabel,
+  newListingLabel,
   nav,
   children,
 }: {
@@ -23,6 +24,7 @@ export function DashboardShell({
   avatarUrl: string | null;
   listingsCount: number;
   signOutLabel: string;
+  newListingLabel: string;
   nav: { id: NavId; label: string; href: string }[];
   children: React.ReactNode;
 }) {
@@ -105,6 +107,16 @@ export function DashboardShell({
 
         <main className="flex min-w-0 flex-1 flex-col gap-5">{children}</main>
       </div>
+
+      {(active === "overview" || active === "listings") && (
+        <Link
+          href="/dashboard/listings/new"
+          aria-label={newListingLabel}
+          className="fixed bottom-6 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#3f6e4a] text-2xl font-semibold text-white shadow-[0_8px_20px_rgba(20,26,32,0.25)] transition active:scale-[0.94] sm:hidden"
+        >
+          +
+        </Link>
+      )}
     </>
   );
 }

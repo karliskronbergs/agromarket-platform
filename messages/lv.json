@@ -239,7 +239,8 @@
     "formSaveChanges": "Saglabāt izmaiņas",
     "profileMapTitle": "Atrašanās vieta kartē",
     "profileMapHint": "Vieta tiek noteikta automātiski pēc adreses.",
-    "profileCancel": "Atcelt"
+    "profileCancel": "Atcelt",
+    "addListingFab": "Pievienot sludinājumu"
   },
   "Map": {
     "modeProfiles": "Profili",
@@ -327,6 +328,8 @@
     "availability": "Pieejamība",
     "availabilityImmediate": "Pieejams uzreiz",
     "availabilityReservation": "Rezervācijai",
+    "availabilityImmediateHint": "Prece ir pieejama un gatava pārdošanai.",
+    "availabilityReservationHint": "Prece vēl nav gatava — pircēji var to rezervēt iepriekš. Uz kartītes būs zīme „Rezervācijai”.",
     "location": "Atrašanās vieta",
     "postedLabel": "Publicēts",
     "listingNumber": "Sludinājuma nr.",

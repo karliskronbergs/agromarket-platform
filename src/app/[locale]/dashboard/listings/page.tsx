@@ -117,7 +117,7 @@ export default async function ListingsPage({
         </h1>
         <Link
           href="/dashboard/listings/new"
-          className="rounded-[10px] bg-[#3f6e4a] px-[18px] py-3 text-[15px] font-semibold text-white transition hover:bg-[#355d3e]"
+          className="hidden rounded-[10px] bg-[#3f6e4a] px-[18px] py-3 text-[15px] font-semibold text-white transition hover:bg-[#355d3e] sm:inline-block"
         >
           {t("addListing")}
         </Link>
