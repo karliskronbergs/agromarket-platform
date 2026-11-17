@@ -300,7 +300,10 @@ export function MapView({
 
       if (!leafletMapRef.current) {
         markProgrammaticMove();
-        leafletMapRef.current = L.map(mapContainerRef.current, { zoomControl: true }).setView(
+        // Zoom control goes top-right, not Leaflet's default top-left -- the
+        // desktop filter sidebar and the mobile sheet's handle both sit over
+        // the map's top-left corner, so a top-left control would overlap them.
+        leafletMapRef.current = L.map(mapContainerRef.current, { zoomControl: false }).setView(
           initialView ? [initialView.lat, initialView.lng] : LATVIA_CENTER,
           initialView ? initialView.zoom : 7,
         );
@@ -308,6 +311,7 @@ export function MapView({
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19,
         }).addTo(leafletMapRef.current);
+        L.control.zoom({ position: "topright" }).addTo(leafletMapRef.current);
 
         // Keep the mobile selected-marker popup anchored to its marker as the
         // map pans/zooms, instead of recomputing only on selection change.
