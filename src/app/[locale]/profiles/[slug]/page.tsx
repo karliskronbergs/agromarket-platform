@@ -14,8 +14,11 @@ import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { ProfileTabs } from "@/components/profile-tabs";
 import { MobileActionBar } from "@/components/mobile-action-bar";
 import { BackBar } from "@/components/back-bar";
+import { buildProfileLocalBusinessJsonLd, buildBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
 
 const STRIPE_BG = {
   backgroundImage:
@@ -53,12 +56,13 @@ export default async function PublicProfilePage({
   const tReport = await getTranslations("Report");
   const tAuth = await getTranslations("Auth");
   const tNav = await getTranslations("Nav");
+  const tMap = await getTranslations("Map");
   const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "id, user_id, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, admin_badge, lat, lng, created_at",
+      "id, user_id, slug, business_name, description, phone, contact_email, website, address, avatar_url, cover_url, verified, admin_badge, lat, lng, created_at",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -94,6 +98,18 @@ export default async function PublicProfilePage({
     .filter((c): c is { name_lv: string; name_en: string } => !!c);
   const primaryCategoryName = categories[0] ? (locale === "lv" ? categories[0].name_lv : categories[0].name_en) : "";
   const initials = profile.business_name.slice(0, 1).toUpperCase();
+
+  const localBusinessJsonLd = buildProfileLocalBusinessJsonLd({
+    profile,
+    categoryName: primaryCategoryName || null,
+    locale,
+  });
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav("tabHome"), url: `${SITE_URL}/${locale}` },
+    { name: tMap("modeProfiles"), url: `${SITE_URL}/${locale}/map?mode=profiles` },
+    { name: profile.business_name, url: `${SITE_URL}/${locale}/profiles/${profile.slug}` },
+  ]);
 
   const listingsTabContent =
     listings && listings.length > 0 ? (
@@ -181,6 +197,14 @@ export default async function PublicProfilePage({
 
   return (
     <div className="pb-24 sm:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
       <ViewTracker profileId={profile.id} />
       <BackBar
         fallbackHref={`/${locale}/map?mode=profiles`}

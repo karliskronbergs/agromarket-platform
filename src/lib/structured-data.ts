@@ -64,6 +64,48 @@ export function buildListingProductJsonLd({
   };
 }
 
+type ProfileForLocalBusiness = {
+  slug: string;
+  business_name: string;
+  description: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  avatar_url: string | null;
+  cover_url: string | null;
+};
+
+// Phone/email are deliberately left out: the UI gates them behind login
+// (ContactsCard) as a signup incentive, and JSON-LD lives in the raw server
+// HTML, so including them here would bypass that gate for anyone reading
+// page source. Address is already shown publicly in the page header, so
+// it carries no equivalent tradeoff.
+export function buildProfileLocalBusinessJsonLd({
+  profile,
+  categoryName,
+  locale,
+}: {
+  profile: ProfileForLocalBusiness;
+  categoryName: string | null;
+  locale: string;
+}): Record<string, unknown> {
+  const images = [profile.avatar_url, profile.cover_url].filter((u): u is string => !!u);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: profile.business_name,
+    url: `${SITE_URL}/${locale}/profiles/${profile.slug}`,
+    ...(profile.description ? { description: profile.description } : {}),
+    ...(images.length > 0 ? { image: images } : {}),
+    ...(profile.address ? { address: profile.address } : {}),
+    ...(profile.lat != null && profile.lng != null
+      ? { geo: { "@type": "GeoCoordinates", latitude: profile.lat, longitude: profile.lng } }
+      : {}),
+    ...(categoryName ? { knowsAbout: categoryName } : {}),
+  };
+}
+
 export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
