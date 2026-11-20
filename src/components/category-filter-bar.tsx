@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
-import { CATEGORY_ICONS, IconChevronDown, IconCheckmark } from "@/components/icons";
+import { CATEGORY_ICONS, IconChevronDown, IconChevronLeft, IconCheckmark } from "@/components/icons";
 
+// design_handoff_v2/FLUID.md "Category chip carousel": the selected chip is
+// solid green with a white icon/label, not just tinted -- everything else
+// stays neutral.
 const chipClass = (active: boolean) =>
-  `flex flex-shrink-0 snap-start items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-medium shadow-sm transition ${
-    active
-      ? "border-[#3f6e4a] bg-[#eef3ee] text-[#1d2329]"
-      : "border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]"
+  `flex flex-shrink-0 items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium shadow-sm transition ${
+    active ? "bg-[#3f6e4a] text-white" : "border border-[#e3e6e8] bg-white text-[#5d6670] hover:border-[#3f6e4a]"
   }`;
 
 function RootChip({
@@ -65,8 +66,8 @@ function RootChip({
 
   if (root.children.length === 0) {
     return (
-      <button type="button" onClick={() => onSelect(root.id, [])} className={chipClass(isActive)}>
-        {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
+      <button data-chip={root.id} type="button" onClick={() => onSelect(root.id, [])} className={chipClass(isActive)}>
+        {CategoryIcon && <CategoryIcon className="h-4 w-4 flex-shrink-0" />}
         {label(root)}
       </button>
     );
@@ -106,8 +107,8 @@ function RootChip({
 
   return (
     <>
-      <button ref={buttonRef} type="button" onClick={toggle} className={chipClass(isActive)}>
-        {CategoryIcon && <CategoryIcon className="h-[18px] w-[18px]" />}
+      <button data-chip={root.id} ref={buttonRef} type="button" onClick={toggle} className={chipClass(isActive)}>
+        {CategoryIcon && <CategoryIcon className="h-4 w-4 flex-shrink-0" />}
         {chipLabel}
         <IconChevronDown className={`h-3.5 w-3.5 flex-shrink-0 opacity-60 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -216,24 +217,125 @@ export function CategoryFilterBar({
   onSelect: (category: string | null, subcategoryIds: string[]) => void;
 }) {
   const tree = buildCategoryTree(categories);
+  const rowRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollL, setCanScrollL] = useState(false);
+  const [canScrollR, setCanScrollR] = useState(false);
+  const firstRevealRef = useRef(true);
+
+  const updateEdges = useCallback(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    setCanScrollL(el.scrollLeft > 4);
+    setCanScrollR(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    updateEdges();
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    const ro = new ResizeObserver(updateEdges);
+    ro.observe(el);
+    Array.from(el.children).forEach((child) => ro.observe(child));
+    window.addEventListener("resize", updateEdges);
+    return () => {
+      el.removeEventListener("scroll", updateEdges);
+      ro.disconnect();
+      window.removeEventListener("resize", updateEdges);
+    };
+  }, [updateEdges, tree.length]);
+
+  // Keep the selected chip in view -- on first mount (e.g. a category is
+  // already selected from the URL) this is instant; after that, a user
+  // picking a different chip scrolls smoothly.
+  useLayoutEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const id = selectedCategory ?? "all";
+    const chip = el.querySelector<HTMLElement>(`[data-chip="${id}"]`);
+    if (!chip) return;
+    chip.scrollIntoView({
+      behavior: firstRevealRef.current ? "auto" : "smooth",
+      inline: "nearest",
+      block: "nearest",
+    });
+    firstRevealRef.current = false;
+  }, [selectedCategory]);
+
+  function step(dir: 1 | -1) {
+    const el = rowRef.current;
+    if (!el) return;
+    const chips = Array.from(el.querySelectorAll<HTMLElement>("[data-chip]"));
+    const vw = el.clientWidth;
+    const sl = el.scrollLeft;
+    let target: number;
+    if (dir > 0) {
+      const next = chips.find((c) => c.offsetLeft + c.offsetWidth > sl + vw - 40);
+      target = next ? next.offsetLeft - 40 : el.scrollWidth;
+    } else {
+      const prev = [...chips].reverse().find((c) => c.offsetLeft < sl + 40);
+      target = prev ? prev.offsetLeft + prev.offsetWidth + 40 - vw : 0;
+    }
+    el.scrollTo({ left: target, behavior: "smooth" });
+  }
+
+  // Edges fade out only on the side where more chips are hidden, so people
+  // can tell the row continues -- design_handoff_v2/FLUID.md "Category chip
+  // carousel".
+  const mask = `linear-gradient(to right,${canScrollL ? "transparent 0,transparent 8px,#000 28px" : "#000 0"},${
+    canScrollR ? "#000 calc(100% - 28px),transparent calc(100% - 8px),transparent 100%" : "#000 100%"
+  })`;
 
   return (
-    <div className="-mx-6 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-6 pb-1 scroll-pl-6 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:snap-none sm:overflow-visible sm:px-0 sm:pb-0 sm:scroll-pl-0 [&::-webkit-scrollbar]:hidden">
-      <button type="button" onClick={() => onSelect(null, [])} className={chipClass(!selectedCategory)}>
-        {allLabel}
-      </button>
-      {tree.map((root) => (
-        <div key={root.id} className="flex flex-shrink-0 snap-start">
-          <RootChip
-            root={root}
-            selectedCategory={selectedCategory}
-            selectedSubcategories={selectedCategory === root.id ? selectedSubcategories : []}
-            counts={selectedCategory === root.id ? counts : {}}
-            locale={locale}
-            onSelect={onSelect}
-          />
-        </div>
-      ))}
+    <div className="relative -mx-6 sm:mx-0">
+      <div
+        ref={rowRef}
+        onWheel={(e) => {
+          const el = rowRef.current;
+          if (!el || el.scrollWidth <= el.clientWidth) return;
+          if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+          e.preventDefault();
+          el.scrollLeft += e.deltaY;
+        }}
+        style={{ WebkitMaskImage: mask, maskImage: mask }}
+        className="flex gap-2.5 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden"
+      >
+        <button data-chip="all" type="button" onClick={() => onSelect(null, [])} className={chipClass(!selectedCategory)}>
+          {allLabel}
+        </button>
+        {tree.map((root) => (
+          <div key={root.id} className="flex flex-shrink-0">
+            <RootChip
+              root={root}
+              selectedCategory={selectedCategory}
+              selectedSubcategories={selectedCategory === root.id ? selectedSubcategories : []}
+              counts={selectedCategory === root.id ? counts : {}}
+              locale={locale}
+              onSelect={onSelect}
+            />
+          </div>
+        ))}
+      </div>
+      {canScrollL && (
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label="Iepriekšējās kategorijas"
+          className="absolute left-2 top-1/2 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full bg-white/[0.92] text-[#1d2329] shadow-[0_1px_2px_rgba(20,26,32,0.1),0_4px_12px_rgba(20,26,32,0.12)] backdrop-blur-[12px] transition hover:bg-white active:scale-90 sm:flex"
+        >
+          <IconChevronLeft className="h-3 w-3" />
+        </button>
+      )}
+      {canScrollR && (
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label="Vairāk kategoriju"
+          className="absolute right-2 top-1/2 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full bg-white/[0.92] text-[#1d2329] shadow-[0_1px_2px_rgba(20,26,32,0.1),0_4px_12px_rgba(20,26,32,0.12)] backdrop-blur-[12px] transition hover:bg-white active:scale-90 sm:flex"
+        >
+          <IconChevronLeft className="h-3 w-3 rotate-180" />
+        </button>
+      )}
     </div>
   );
 }
