@@ -15,6 +15,7 @@ import { ProfileTabs } from "@/components/profile-tabs";
 import { MobileActionBar } from "@/components/mobile-action-bar";
 import { BackBar } from "@/components/back-bar";
 import { buildProfileLocalBusinessJsonLd, buildBreadcrumbJsonLd } from "@/lib/structured-data";
+import { buildLanguageAlternates } from "@/lib/alternates";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export async function generateMetadata({
   return {
     title: profile.business_name,
     description: profile.description ?? undefined,
+    alternates: { languages: buildLanguageAlternates(`/profiles/${slug}`) },
   };
 }
 

@@ -5,6 +5,7 @@ import { getSelfAndDescendantIds } from "@/lib/categories";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
+import { buildLanguageAlternates } from "@/lib/alternates";
 
 export const dynamic = "force-dynamic";
 
@@ -53,9 +54,17 @@ export async function generateMetadata({
   const { mode: rawMode, category } = await searchParams;
   const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
   const { h1, description, metaTitle } = await resolveSeo(mode, category, locale);
+
+  const query = new URLSearchParams();
+  if (rawMode) query.set("mode", rawMode);
+  if (category) query.set("category", category);
+  const queryString = query.toString();
+  const pathAndQuery = `/map${queryString ? `?${queryString}` : ""}`;
+
   return {
     title: metaTitle ?? h1,
     description,
+    alternates: { languages: buildLanguageAlternates(pathAndQuery) },
   };
 }
 

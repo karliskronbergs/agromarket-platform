@@ -17,6 +17,7 @@ import { BackBar } from "@/components/back-bar";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
 import { getAttributesByProfileIds } from "@/lib/attributes";
 import { buildListingProductJsonLd, buildBreadcrumbJsonLd } from "@/lib/structured-data";
+import { buildLanguageAlternates } from "@/lib/alternates";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ export async function generateMetadata({
   return {
     title: listing.title,
     description: listing.description ?? undefined,
+    alternates: { languages: buildLanguageAlternates(`/listings/${id}`) },
   };
 }
 

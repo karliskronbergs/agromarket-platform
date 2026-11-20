@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -9,8 +10,13 @@ import { HeroSearch } from "@/components/hero-search";
 import { HomeMapPreview } from "@/components/home-map-preview";
 import { LatestListingsShelf, type QuickLookListing } from "@/components/latest-listings";
 import { RememberListContext } from "@/components/remember-list-context";
+import { buildLanguageAlternates } from "@/lib/alternates";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: { languages: buildLanguageAlternates("") } };
+}
 
 export default async function Home({
   params,
