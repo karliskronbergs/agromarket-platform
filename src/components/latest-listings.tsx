@@ -97,7 +97,7 @@ export function LatestListingsShelf({
               className="flex flex-shrink-0 basis-[220px] flex-col overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white text-left"
             >
               <div style={STRIPE_BG} className="relative h-[130px]">
-                {l.imageUrl && <Image src={l.imageUrl} alt="" fill sizes="220px" className="object-cover" />}
+                {l.imageUrl && <Image src={l.imageUrl} alt={l.title} fill sizes="220px" className="object-cover" />}
                 <span
                   className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-[3px] text-[11px] font-semibold"
                   style={l.isSell ? { background: "#e6efe6", color: "#2f5538" } : { background: "#f5ecd9", color: "#7a5516" }}
@@ -129,7 +129,7 @@ export function LatestListingsShelf({
             >
               <div style={STRIPE_BG} className="relative h-[170px]">
                 {l.imageUrl && (
-                  <Image src={l.imageUrl} alt="" fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" />
+                  <Image src={l.imageUrl} alt={l.title} fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" />
                 )}
                 <span
                   className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold"
@@ -220,7 +220,7 @@ function QuickLookSheet({
               <div className="flex-1 overflow-y-auto overscroll-contain">
                 <div style={STRIPE_BG} className="relative aspect-[16/10]">
                   {listing.imageUrl && (
-                    <Image src={listing.imageUrl} alt="" fill sizes="480px" className="object-cover" />
+                    <Image src={listing.imageUrl} alt={listing.title} fill sizes="480px" className="object-cover" />
                   )}
                   <span
                     className="absolute left-3.5 top-3.5 rounded-full px-2.5 py-1 text-xs font-semibold"

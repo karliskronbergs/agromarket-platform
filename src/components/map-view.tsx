@@ -771,7 +771,7 @@ export function MapView({
                     }`}
                   >
                     {selectedPoint.imageUrl ? (
-                      <Image src={selectedPoint.imageUrl} alt="" fill sizes="44px" className="object-cover" />
+                      <Image src={selectedPoint.imageUrl} alt={selectedPoint.title} fill sizes="44px" className="object-cover" />
                     ) : mode === "profiles" ? (
                       <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
                         {initialsFor(selectedPoint.title)}
@@ -922,7 +922,7 @@ function ResultCard({
         <div className="relative h-12 w-12 flex-shrink-0">
           <div className={`relative h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#e4eaf0]"}`}>
             {p.imageUrl ? (
-              <Image src={p.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+              <Image src={p.imageUrl} alt={p.title} fill sizes="48px" className="object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-[15px] font-semibold text-[#3b5166]">
                 {initialsFor(p.title)}
@@ -948,7 +948,7 @@ function ResultCard({
           }}
           className="relative h-[92px] w-[92px] flex-shrink-0 overflow-hidden rounded-[10px]"
         >
-          {p.imageUrl && <Image src={p.imageUrl} alt="" fill sizes="92px" className="object-cover" />}
+          {p.imageUrl && <Image src={p.imageUrl} alt={p.title} fill sizes="92px" className="object-cover" />}
           {p.reservation && (
             <span className="absolute bottom-1 right-1 rounded-full bg-[#3b5166] px-[7px] py-[2px] text-[9px] font-semibold text-white">
               {reservationLabel}

@@ -9,8 +9,9 @@ const STRIPE_BG = {
     "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 14px, #e4e7e1 14px, #e4e7e1 28px)",
 };
 
-export function Gallery({ images, title }: { images: string[]; title: string }) {
+export function Gallery({ images, title, locale }: { images: string[]; title: string; locale: string }) {
   const [active, setActive] = useState(0);
+  const photoWord = locale === "lv" ? "foto" : "photo";
   const trackRef = useRef<HTMLDivElement>(null);
   const scrollingToRef = useRef(false);
 
@@ -69,7 +70,7 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
             <div key={src + i} className="relative h-full w-full flex-shrink-0 snap-start">
               <Image
                 src={src}
-                alt={i === 0 ? title : ""}
+                alt={`${title} — ${photoWord} ${i + 1}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 640px"
                 className="object-cover"
@@ -128,7 +129,7 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
               className="relative aspect-[4/3] overflow-hidden rounded-[10px] border-2"
               style={{ borderColor: i === active ? "#3f6e4a" : "transparent" }}
             >
-              <Image src={src} alt="" fill sizes="160px" className="object-cover" />
+              <Image src={src} alt={`${title} — ${photoWord} ${i + 1}`} fill sizes="160px" className="object-cover" />
             </button>
           ))}
         </div>

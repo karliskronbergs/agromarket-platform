@@ -193,7 +193,7 @@ export default async function ListingDetailPage({
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
           <div className="min-w-0 flex-1 sm:flex sm:flex-col sm:gap-5">
-            <Gallery images={(images ?? []).map((img) => img.url)} title={listing.title} />
+            <Gallery images={(images ?? []).map((img) => img.url)} title={listing.title} locale={locale} />
 
             {/* Mobile: title/price/meta block right under the gallery */}
             <div className="flex flex-col gap-2.5 border-b border-[#e3e6e8] py-4 sm:hidden">
@@ -468,7 +468,7 @@ function SellerAvatar({ profile, size }: { profile: SellerLite; size: number }) 
       style={{ width: size, height: size }}
     >
       {profile.avatar_url ? (
-        <Image src={profile.avatar_url} alt="" fill sizes={`${size}px`} className="object-cover" />
+        <Image src={profile.avatar_url} alt={profile.business_name} fill sizes={`${size}px`} className="object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center font-semibold text-[#3b5166]">
           {initialsFor(profile.business_name)}
@@ -503,7 +503,7 @@ function SimilarCard({
       className="flex w-[180px] flex-shrink-0 snap-start flex-col overflow-hidden rounded-[14px] border border-[#e3e6e8] bg-white transition hover:shadow-[0_8px_20px_rgba(29,35,41,0.08)] sm:w-[210px]"
     >
       <div style={!thumb ? STRIPE_BG : undefined} className="relative aspect-[4/3]">
-        {thumb && <Image src={thumb} alt="" fill sizes="210px" className="object-cover" />}
+        {thumb && <Image src={thumb} alt={listing.title} fill sizes="210px" className="object-cover" />}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <div className="line-clamp-2 text-sm font-medium leading-tight text-[#1d2329]">{listing.title}</div>

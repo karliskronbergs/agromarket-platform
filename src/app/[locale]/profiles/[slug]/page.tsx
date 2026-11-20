@@ -125,7 +125,7 @@ export default async function PublicProfilePage({
               className="flex flex-col overflow-hidden rounded-2xl border border-[#e3e6e8] bg-white transition hover:shadow-[0_8px_20px_rgba(29,35,41,0.08)]"
             >
               <div style={STRIPE_BG} className="relative h-[140px]">
-                {firstImage && <Image src={firstImage.url} alt="" fill sizes="240px" className="object-cover" />}
+                {firstImage && <Image src={firstImage.url} alt={l.title} fill sizes="240px" className="object-cover" />}
                 <span
                   className="absolute left-2.5 top-2.5 rounded-full px-2.5 py-[3px] text-xs font-semibold"
                   style={isSell ? { background: "#e6efe6", color: "#2f5538" } : { background: "#f5ecd9", color: "#7a5516" }}
@@ -218,7 +218,7 @@ export default async function PublicProfilePage({
             className="relative h-[120px] font-mono text-[11px] text-[#7a8279] sm:h-40"
           >
             {profile.cover_url ? (
-              <Image src={profile.cover_url} alt="" fill sizes="(max-width: 640px) 100vw, 1248px" className="object-cover" priority />
+              <Image src={profile.cover_url} alt={profile.business_name} fill sizes="(max-width: 640px) 100vw, 1248px" className="object-cover" priority />
             ) : (
               <div className="flex h-full items-center justify-center">{tProfile("coverPlaceholder")}</div>
             )}
@@ -228,7 +228,7 @@ export default async function PublicProfilePage({
               className={`relative -mt-[42px] h-[84px] w-[84px] flex-shrink-0 overflow-hidden rounded-full border-4 border-white sm:-mt-[52px] sm:h-[104px] sm:w-[104px] ${profile.avatar_url ? "bg-white" : "bg-[#e4eaf0]"}`}
             >
               {profile.avatar_url ? (
-                <Image src={profile.avatar_url} alt="" fill sizes="104px" className="object-cover" />
+                <Image src={profile.avatar_url} alt={profile.business_name} fill sizes="104px" className="object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-[26px] font-semibold text-[#3b5166] sm:text-[32px]">
                   {initials}
