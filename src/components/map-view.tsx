@@ -86,6 +86,7 @@ export function MapView({
   mode,
   points,
   seoH1,
+  loggedOut,
   categories,
   selectedCategory,
   selectedSubcategories,
@@ -103,6 +104,7 @@ export function MapView({
   mode: MapMode;
   points: MapPoint[];
   seoH1: string;
+  loggedOut: boolean;
   categories: Category[];
   selectedCategory?: string;
   selectedSubcategories: string[];
@@ -153,6 +155,7 @@ export function MapView({
     noResultsTitle: string;
     noResultsBody: string;
     addListingCta: string;
+    createProfileCta: string;
     verifiedShort: string;
     reservation: string;
     closePin: string;
@@ -521,6 +524,22 @@ export function MapView({
     navigate(query);
   }
 
+  // design_handoff_v2/FLUID.md "3c": sticky at the bottom of the (non-empty)
+  // list, flush with the panel edge, with a white fade behind it. Shown for
+  // Pārdod/Pērk always; for Uzņēmumi only to logged-out users (registering
+  // is how you'd get a profile to show up here).
+  const showStickyCta = mode !== "profiles" || loggedOut;
+  const stickyCta = showStickyCta && (
+    <div className="sticky -bottom-6 z-[3] -mx-2 -mb-6 bg-gradient-to-b from-transparent to-white/[0.94] px-3 pb-6 pt-3.5 sm:-bottom-4 sm:-mb-4 sm:pb-4">
+      <Link
+        href={mode === "profiles" ? `/${locale}/auth/sign-up` : `/${locale}/dashboard/listings/new`}
+        className="block rounded-[14px] bg-[#3f6e4a] px-4 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_6px_18px_rgba(63,110,74,0.28)] transition hover:bg-[#355d3e] active:scale-[0.97]"
+      >
+        {mode === "profiles" ? labels.createProfileCta : labels.addListingCta}
+      </Link>
+    </div>
+  );
+
   const resultList =
     points.length === 0 ? (
       <EmptyState
@@ -530,21 +549,24 @@ export function MapView({
         onClear={clearAllFilters}
       />
     ) : (
-      points.map((p) => (
-        <ResultCard
-          key={p.id}
-          p={p}
-          mode={mode}
-          selected={selected}
-          onHover={setSelected}
-          locale={locale}
-          verifiedLabel={labels.verifiedShort}
-          reservationLabel={labels.reservation}
-          cardRef={(el) => {
-            cardRefs.current[p.id] = el;
-          }}
-        />
-      ))
+      <>
+        {points.map((p) => (
+          <ResultCard
+            key={p.id}
+            p={p}
+            mode={mode}
+            selected={selected}
+            onHover={setSelected}
+            locale={locale}
+            verifiedLabel={labels.verifiedShort}
+            reservationLabel={labels.reservation}
+            cardRef={(el) => {
+              cardRefs.current[p.id] = el;
+            }}
+          />
+        ))}
+        {stickyCta}
+      </>
     );
 
   const filterContent = (
@@ -576,8 +598,7 @@ export function MapView({
       )}
 
       {mode !== "profiles" && (
-        <div className="flex items-center gap-2">
-          <SortMenu
+        <SortMenu
             value={sort}
             showAgeSort={!!animalGroup}
             labels={labels}
@@ -611,13 +632,6 @@ export function MapView({
               navigate(query);
             }}
           />
-          <Link
-            href={`/${locale}/dashboard/listings/new`}
-            className="flex-shrink-0 whitespace-nowrap rounded-[10px] bg-[#3f6e4a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#355d3e]"
-          >
-            {labels.addListingCta}
-          </Link>
-        </div>
       )}
 
       <CategoryFilterBar

@@ -120,6 +120,9 @@ export default async function MapPage({
   const t = await getTranslations("Map");
   const supabase = await createClient();
   const seo = await resolveSeo(mode, category, locale);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: categories } = await supabase
     .from("categories")
@@ -324,6 +327,7 @@ export default async function MapPage({
       mode={mode}
       points={points}
       seoH1={seo.h1}
+      loggedOut={!user}
       categories={categories ?? []}
       selectedCategory={category}
       selectedSubcategories={selectedSubcategoryIds}
@@ -389,6 +393,7 @@ export default async function MapPage({
         noResultsTitle: t("noResultsTitle"),
         noResultsBody: t("noResultsBody"),
         addListingCta: t("addListingCta"),
+        createProfileCta: t("createProfileCta"),
         verifiedShort: tProfile("verifiedShort"),
         reservation: tListing("availabilityReservation"),
         closePin: t("closePin"),
