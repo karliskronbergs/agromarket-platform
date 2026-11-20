@@ -722,6 +722,7 @@ export function MapView({
                   left: Math.min(Math.max(popupPos.x, 138), containerWidth - 138),
                   top: Math.max(popupPos.y - 18, 8),
                   transformOrigin: "bottom center",
+                  filter: "drop-shadow(0 14px 30px rgba(20,26,32,0.22))",
                 }}
                 initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.85 }}
                 animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
@@ -733,14 +734,11 @@ export function MapView({
                   type="button"
                   onClick={() => setSelected(null)}
                   aria-label={labels.closePin}
-                  className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#5d6670] shadow-[0_2px_6px_rgba(29,35,41,0.25)] transition active:scale-90"
+                  className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#eef0ee] text-[#5d6670] transition active:scale-90"
                 >
                   <IconClose className="h-3 w-3" />
                 </button>
-                <Link
-                  href={selectedPoint.href}
-                  className="flex items-center gap-2.5 rounded-2xl bg-white p-2.5 shadow-[0_8px_24px_rgba(29,35,41,0.18)]"
-                >
+                <Link href={selectedPoint.href} className="flex items-center gap-2.5 rounded-2xl bg-white p-2.5">
                   <div
                     style={{
                       backgroundImage:
@@ -783,6 +781,9 @@ export function MapView({
                   </div>
                   <span className="flex-shrink-0 text-base text-[#3f6e4a]">→</span>
                 </Link>
+                {/* Caret -- the card has no text tooltip, just this pointer
+                    back to the pin it belongs to (FLUID.md "Pin card"). */}
+                <span className="absolute -bottom-[6px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[2px] bg-white" />
               </motion.div>
             )}
           </AnimatePresence>
