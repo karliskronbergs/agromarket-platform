@@ -275,9 +275,27 @@ export function MapView({
     else snapSheetTo("full");
   }
 
+  // design_handoff_v2/FLUID.md "3b": root categories get a clean URL
+  // (/map/[mode]/[categorySlug]) instead of the query-param form -- the
+  // server would redirect there anyway, but routing straight to it avoids
+  // the extra hop. Subcategories (parent_id set) have no URL of their own,
+  // so those stay on the query-param page, same as "All categories".
   function navigate(query: Record<string, string>) {
     startTransition(() => {
-      router.push({ pathname: "/map", query });
+      const targetMode = query.mode ?? mode;
+      const rootCategory = query.category
+        ? categories.find((c) => c.id === query.category && !c.parent_id)
+        : undefined;
+
+      if (rootCategory?.slug) {
+        const rest: Record<string, string> = {};
+        for (const [key, value] of Object.entries(query)) {
+          if (key !== "mode" && key !== "category") rest[key] = value;
+        }
+        router.push({ pathname: `/map/${targetMode}/${rootCategory.slug}`, query: rest });
+      } else {
+        router.push({ pathname: "/map", query });
+      }
     });
   }
 

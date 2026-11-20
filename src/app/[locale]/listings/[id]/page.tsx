@@ -10,6 +10,7 @@ import { MiniMap } from "@/components/mini-map";
 import { IconCheck, IconShield, IconLeaf } from "@/components/icons";
 import { formatRelativeDays, priceUnitSuffix } from "@/lib/format";
 import { getAnimalGroupForCategory, breedLabel } from "@/lib/livestock";
+import { buildCategoryTree, findCategoryPath } from "@/lib/categories";
 import { conditionLabel } from "@/lib/equipment";
 import { Gallery } from "./gallery";
 import { ViewTracker } from "./view-tracker";
@@ -154,16 +155,18 @@ export default async function ListingDetailPage({
         })
       : null;
 
+  // The listing's own category can be a subcategory, which has no URL of
+  // its own -- the breadcrumb always points at its root category's clean
+  // page (design_handoff_v2/FLUID.md "3b"), falling back to the old
+  // query-param form if a root slug can't be resolved for some reason.
+  const rootCategory = findCategoryPath(buildCategoryTree(allCategories ?? []), listing.category_id)[0];
+  const categoryUrl = rootCategory?.slug
+    ? `${SITE_URL}/${locale}/map/${listing.listing_type}/${rootCategory.slug}`
+    : `${SITE_URL}/${locale}/map?mode=${listing.listing_type}&category=${listing.category_id}`;
+
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: tNav("tabHome"), url: `${SITE_URL}/${locale}` },
-    ...(categoryLabel && listing.category_id
-      ? [
-          {
-            name: categoryLabel,
-            url: `${SITE_URL}/${locale}/map?mode=${listing.listing_type}&category=${listing.category_id}`,
-          },
-        ]
-      : []),
+    ...(categoryLabel && listing.category_id ? [{ name: categoryLabel, url: categoryUrl }] : []),
     { name: listing.title, url: `${SITE_URL}/${locale}/listings/${listing.id}` },
   ]);
 
