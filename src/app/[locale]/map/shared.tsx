@@ -43,15 +43,35 @@ export async function resolveMapSeo(mode: MapMode, category: string | undefined,
   let metaTitle: string | null = null;
 
   if (category) {
-    const { data } = await supabase
-      .from("categories")
-      .select("seo_h1, seo_h1_companies, seo_description, meta_title")
-      .eq("id", category)
-      .maybeSingle();
+    // Two independent queries, not one with both column sets: the _en
+    // columns are a newer migration (0042) that might not be applied in
+    // every environment yet, and a single query erroring on an unknown
+    // column would fall all the way back to the generic translated copy --
+    // silently regressing the Latvian pages that already work via 0041.
+    const [{ data }, { data: enData }] = await Promise.all([
+      supabase
+        .from("categories")
+        .select("seo_h1, seo_h1_companies, seo_description, meta_title")
+        .eq("id", category)
+        .maybeSingle(),
+      supabase
+        .from("categories")
+        .select("seo_h1_en, seo_h1_companies_en, seo_description_en, meta_title_en")
+        .eq("id", category)
+        .maybeSingle(),
+    ]);
     if (data) {
-      h1 = (isProfiles ? data.seo_h1_companies : data.seo_h1) ?? h1;
-      description = data.seo_description ?? description;
-      metaTitle = data.meta_title;
+      const isEn = locale === "en";
+      h1 =
+        (isProfiles
+          ? isEn
+            ? (enData?.seo_h1_companies_en ?? data.seo_h1_companies)
+            : data.seo_h1_companies
+          : isEn
+            ? (enData?.seo_h1_en ?? data.seo_h1)
+            : data.seo_h1) ?? h1;
+      description = (isEn ? (enData?.seo_description_en ?? data.seo_description) : data.seo_description) ?? description;
+      metaTitle = (isEn ? (enData?.meta_title_en ?? data.meta_title) : data.meta_title) ?? null;
     }
   }
 
