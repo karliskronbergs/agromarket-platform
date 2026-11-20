@@ -286,7 +286,12 @@
     "noResultsTitle": "Nothing found",
     "noResultsBody": "Try a different category or search term.",
     "addListingCta": "+ Add listing",
-    "closePin": "Close"
+    "createProfileCta": "+ Create profile",
+    "closePin": "Close",
+    "seoFallbackListingsH1": "Agricultural listings in Latvia",
+    "seoFallbackListingsDescription": "Machinery, animals, seeds and more — from farms across Latvia.",
+    "seoFallbackProfilesH1": "Agricultural businesses in Latvia",
+    "seoFallbackProfilesDescription": "Find agricultural businesses near you."
   },
   "Listing": {
     "myListings": "Listings",

@@ -286,7 +286,12 @@
     "noResultsTitle": "Nekas netika atrasts",
     "noResultsBody": "Pamēģini citu kategoriju vai meklēšanas vārdu.",
     "addListingCta": "+ Pievienot sludinājumu",
-    "closePin": "Aizvērt"
+    "createProfileCta": "+ Izveidot profilu",
+    "closePin": "Aizvērt",
+    "seoFallbackListingsH1": "Lauksaimniecības sludinājumi Latvijā",
+    "seoFallbackListingsDescription": "Tehnika, dzīvnieki, sēklas un daudz kas cits — no saimniecībām visā Latvijā.",
+    "seoFallbackProfilesH1": "Lauksaimniecības uzņēmumi Latvijā",
+    "seoFallbackProfilesDescription": "Atrodi lauksaimniecības uzņēmumus sev tuvumā."
   },
   "Listing": {
     "myListings": "Sludinājumi",

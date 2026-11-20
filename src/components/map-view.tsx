@@ -85,6 +85,7 @@ function initialsFor(name: string): string {
 export function MapView({
   mode,
   points,
+  seoH1,
   categories,
   selectedCategory,
   selectedSubcategories,
@@ -101,6 +102,7 @@ export function MapView({
 }: {
   mode: MapMode;
   points: MapPoint[];
+  seoH1: string;
   categories: Category[];
   selectedCategory?: string;
   selectedSubcategories: string[];
@@ -791,7 +793,19 @@ export function MapView({
 
         {/* Desktop: a frosted results panel floating over the full-bleed map */}
         <div className="absolute inset-y-4 left-4 z-[500] hidden w-[400px] flex-col overflow-hidden rounded-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:flex">
-          <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
+          <div className="flex-shrink-0 border-b border-black/[0.06]">
+            {/* design_handoff_v2/FLUID.md "3b. Category heading (SEO)": the
+                only <h1> on the page, server-rendered, above search. */}
+            <div className="flex flex-col gap-0.5 px-4 pb-1 pt-3.5">
+              <h1 className="m-0 text-[22px] font-semibold leading-[1.18] tracking-[-0.025em] text-[#1d2329] [text-wrap:balance]">
+                {seoH1}
+              </h1>
+              <span className="text-sm font-semibold text-[#2f5538] [font-variant-numeric:tabular-nums]">
+                {resultLabel}
+              </span>
+            </div>
+            {filterContent}
+          </div>
           <div ref={desktopListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
             <div className="px-2 pb-2 pt-3 text-[13px] font-medium text-[#4a535b]">{resultLabel}</div>
             <div className="flex flex-col gap-2 px-0">{resultList}</div>
@@ -815,7 +829,14 @@ export function MapView({
             style={{ cursor: "grab" }}
           >
             <span className="h-[5px] w-10 rounded-full bg-black/[0.18]" />
-            <span className="self-stretch px-4 text-[13px] font-medium text-[#4a535b]">{resultLabel}</span>
+            <div className="flex w-full flex-col gap-0.5 self-stretch px-4">
+              <h1 className="m-0 text-[18px] font-semibold leading-[1.2] tracking-[-0.02em] text-[#1d2329] [text-wrap:balance]">
+                {seoH1}
+              </h1>
+              <span className="text-[13px] font-semibold text-[#2f5538] [font-variant-numeric:tabular-nums]">
+                {resultLabel}
+              </span>
+            </div>
           </motion.div>
           <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
           <div ref={mobileListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-6">

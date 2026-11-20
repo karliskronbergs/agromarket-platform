@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSelfAndDescendantIds } from "@/lib/categories";
@@ -6,6 +7,57 @@ import { priceUnitSuffix, formatRelativeDays } from "@/lib/format";
 import { MapView, type MapMode, type MapPoint } from "@/components/map-view";
 
 export const dynamic = "force-dynamic";
+
+type MapSearchParams = {
+  mode?: string;
+  category?: string;
+};
+
+// design_handoff_v2/FLUID.md "3b. Category heading on the map page (SEO)":
+// each category's own seo_h1 / seo_h1_companies / seo_description drive
+// both the page's <title>/<meta description> and the on-page <h1> -- so
+// this and the page body below both need the same lookup.
+async function resolveSeo(mode: MapMode, category: string | undefined, locale: string) {
+  const t = await getTranslations({ locale, namespace: "Map" });
+  const supabase = await createClient();
+  const isProfiles = mode === "profiles";
+
+  let h1 = isProfiles ? t("seoFallbackProfilesH1") : t("seoFallbackListingsH1");
+  let description = isProfiles ? t("seoFallbackProfilesDescription") : t("seoFallbackListingsDescription");
+  let metaTitle: string | null = null;
+
+  if (category) {
+    const { data } = await supabase
+      .from("categories")
+      .select("seo_h1, seo_h1_companies, seo_description, meta_title")
+      .eq("id", category)
+      .maybeSingle();
+    if (data) {
+      h1 = (isProfiles ? data.seo_h1_companies : data.seo_h1) ?? h1;
+      description = data.seo_description ?? description;
+      metaTitle = data.meta_title;
+    }
+  }
+
+  return { h1, description, metaTitle };
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<MapSearchParams>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const { mode: rawMode, category } = await searchParams;
+  const mode: MapMode = rawMode === "sell" || rawMode === "buy" ? rawMode : "profiles";
+  const { h1, description, metaTitle } = await resolveSeo(mode, category, locale);
+  return {
+    title: metaTitle ?? h1,
+    description,
+  };
+}
 
 export default async function MapPage({
   params,
@@ -67,6 +119,7 @@ export default async function MapPage({
   const tProfile = await getTranslations("Profile");
   const t = await getTranslations("Map");
   const supabase = await createClient();
+  const seo = await resolveSeo(mode, category, locale);
 
   const { data: categories } = await supabase
     .from("categories")
@@ -270,6 +323,7 @@ export default async function MapPage({
     <MapView
       mode={mode}
       points={points}
+      seoH1={seo.h1}
       categories={categories ?? []}
       selectedCategory={category}
       selectedSubcategories={selectedSubcategoryIds}
