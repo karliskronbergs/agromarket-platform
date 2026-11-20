@@ -16,8 +16,11 @@ import { ViewTracker } from "./view-tracker";
 import { BackBar } from "@/components/back-bar";
 import { AttributeBadges, type AttributeInfo } from "@/components/attribute-badges";
 import { getAttributesByProfileIds } from "@/lib/attributes";
+import { buildListingProductJsonLd, buildBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lauks24.lv";
 
 const STRIPE_BG = {
   backgroundImage:
@@ -139,8 +142,41 @@ export default async function ListingDetailPage({
     similar = similarData ?? [];
   }
 
+  const productJsonLd =
+    listing.status === "active" && rawProfile?.status === "active"
+      ? buildListingProductJsonLd({
+          listing,
+          profile: profile ? { business_name: profile.business_name, slug: profile.slug } : null,
+          images: (images ?? []).map((img) => img.url),
+          locale,
+        })
+      : null;
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: tNav("tabHome"), url: `${SITE_URL}/${locale}` },
+    ...(categoryLabel && listing.category_id
+      ? [
+          {
+            name: categoryLabel,
+            url: `${SITE_URL}/${locale}/map?mode=${listing.listing_type}&category=${listing.category_id}`,
+          },
+        ]
+      : []),
+    { name: listing.title, url: `${SITE_URL}/${locale}/listings/${listing.id}` },
+  ]);
+
   return (
     <div className="pb-24 sm:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {productJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        />
+      )}
       <ViewTracker listingId={listing.id} />
       <BackBar
         fallbackHref={`/${locale}/map?mode=${listing.listing_type}`}
