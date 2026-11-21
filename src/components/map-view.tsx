@@ -51,6 +51,12 @@ import { getMachineryCategoryIds } from "@/lib/machinery";
 import { getSeedsCategoryIds } from "@/lib/seeds";
 import { getFeedCategoryIds } from "@/lib/feed";
 
+// Remembers the mobile sheet's last stop (full/half/peek) across a category
+// switch, which navigates to a new URL and can remount this whole component
+// -- without this, the sheet would otherwise snap back to "half" every time
+// instead of staying where the user left it.
+const SHEET_STOP_STORAGE_KEY = "mapSheetStop";
+
 export type MapMode = "profiles" | "sell" | "buy";
 
 export type MapPoint = {
@@ -216,6 +222,24 @@ export function MapView({
   const sheetStopValues = [sheetStops.full, sheetStops.half, sheetStops.peek];
   const panStartY = useRef(0);
 
+  function readRememberedSheetStop(): keyof typeof sheetStops {
+    try {
+      const saved = sessionStorage.getItem(SHEET_STOP_STORAGE_KEY);
+      if (saved === "full" || saved === "half" || saved === "peek") return saved;
+    } catch {
+      // Private browsing / storage disabled -- fall through to the default.
+    }
+    return "half";
+  }
+
+  function rememberSheetStop(stop: "full" | "half" | "peek") {
+    try {
+      sessionStorage.setItem(SHEET_STOP_STORAGE_KEY, stop);
+    } catch {
+      // Private browsing / storage disabled -- nothing to persist, fine.
+    }
+  }
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") setSelected(null);
@@ -228,13 +252,20 @@ export function MapView({
     function onResize() {
       const height = window.innerHeight;
       setViewportHeight(height);
-      // Only force the sheet to "half" on the first real measurement --
-      // a later resize (rotation, keyboard) shouldn't yank it away from
-      // wherever the user has it.
+      // Only set the sheet's stop on the first real measurement -- a later
+      // resize (rotation, keyboard) shouldn't yank it away from wherever
+      // the user has it. Restore whatever stop they last left it at (e.g.
+      // before switching categories) rather than always defaulting to
+      // "half".
       if (!sheetInitializedRef.current) {
         sheetInitializedRef.current = true;
         const fullHeight = Math.max(320, height - 72);
-        sheetY.set(Math.max(0, fullHeight - height * 0.5));
+        const stops = {
+          full: 0,
+          half: Math.max(0, fullHeight - height * 0.5),
+          peek: Math.max(0, fullHeight - 112),
+        };
+        sheetY.set(stops[readRememberedSheetStop()]);
         setSheetReady(true);
       }
     }
@@ -249,6 +280,7 @@ export function MapView({
     // (a flick) -- a tap-triggered snap stays critically damped.
     const spring = Math.abs(velocity) > 300 ? springMomentum : springDefault;
     animate(sheetY, sheetStops[stop], { ...(reducedMotion ? fadeTransition : spring), velocity });
+    rememberSheetStop(stop);
   }
 
   function handleSheetPanStart() {
