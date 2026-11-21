@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { buildCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
+import { buildCategoryTree, flattenCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
 import { CATEGORY_ICONS, IconChevronDown, IconChevronLeft, IconCheckmark } from "@/components/icons";
 
 // design_handoff_v2/FLUID.md "Category chip carousel": the selected chip is
@@ -97,9 +97,29 @@ function RootChip({
     if (!isActive) onSelect(root.id, selectedSubcategories);
   }
 
+  // The dropdown lists every descendant at every depth (the real tree goes
+  // 3-4 levels deep), not just direct children -- so a parent and one of
+  // its own descendants can both end up checked at once. Counting both
+  // would double-count: a checked ancestor's count already rolls up every
+  // checked descendant beneath it. Only the topmost checked node in each
+  // branch contributes to the total.
+  const flatDescendants = flattenCategoryTree(root.children);
+  const descendantById = new Map(flatDescendants.map((entry) => [entry.node.id, entry.node]));
+
+  function hasCheckedAncestor(id: string, checked: Set<string>): boolean {
+    let current = descendantById.get(id);
+    while (current?.parent_id && current.parent_id !== root.id) {
+      if (checked.has(current.parent_id)) return true;
+      current = descendantById.get(current.parent_id);
+    }
+    return false;
+  }
+
   const previewCount =
     draft.size > 0
-      ? root.children.reduce((sum, c) => sum + (draft.has(c.id) ? (counts[c.id] ?? 0) : 0), 0)
+      ? Array.from(draft)
+          .filter((id) => !hasCheckedAncestor(id, draft))
+          .reduce((sum, id) => sum + (counts[id] ?? 0), 0)
       : root.children.reduce((sum, c) => sum + (counts[c.id] ?? 0), 0);
 
   const chipLabel =
@@ -139,13 +159,14 @@ function RootChip({
                 </span>
               </button>
               <div className="my-1 h-px bg-[#eef0f1]" />
-              {root.children.map((child) => {
+              {flatDescendants.map(({ node: child, depth }) => {
                 const checked = draft.has(child.id);
                 const count = counts[child.id] ?? 0;
                 return (
                   <button
                     key={child.id}
                     type="button"
+                    style={{ paddingLeft: 12 + depth * 16 }}
                     onClick={() =>
                       setDraft((prev) => {
                         const next = new Set(prev);
@@ -154,7 +175,7 @@ function RootChip({
                         return next;
                       })
                     }
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg py-2.5 pr-3 text-left text-sm transition ${
                       checked ? "bg-[#eef3ee] font-medium text-[#1d2329]" : "text-[#5d6670] hover:bg-[#f5f6f4]"
                     }`}
                   >

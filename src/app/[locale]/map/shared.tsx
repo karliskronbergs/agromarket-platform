@@ -150,51 +150,56 @@ export async function MapPageBody({ locale, filters }: { locale: string; filters
         ? getSelfAndDescendantIds(categories ?? [], category)
         : null;
 
-  // Counts for the currently open top category's direct children, for the
-  // subcategory dropdown's per-row counts and its "Rādīt N rezultātus"
-  // preview. Each child's count includes its own descendants (a listing
-  // tagged two levels down under a child still counts toward that child's
-  // row). Scoped to mode + search only (not the other active filters),
-  // same as the chip row itself.
+  // Counts for every descendant of the currently open top category (at
+  // every depth, not just its direct children -- the real tree goes 3-4
+  // levels deep, e.g. Lopkopība -> Dzīvnieki -> Gaļas liellopi -> Vaislas
+  // govis un teles), for the subcategory dropdown's per-row counts and its
+  // "Rādīt N rezultātus" preview. Each row's count includes its own
+  // descendants (a listing tagged further down still counts toward an
+  // ancestor row). Scoped to mode + search only (not the other active
+  // filters), same as the chip row itself.
+  //
+  // Computed as: exact per-category counts (no descendant rollup) over the
+  // whole subtree in one query, then each node's displayed count is the
+  // sum of exact counts across itself and its own descendants -- cheap
+  // since the tree is small (a couple hundred nodes at most).
   const subcategoryCounts: Record<string, number> = {};
   if (category) {
-    const children = (categories ?? []).filter((c) => c.parent_id === category);
-    if (children.length > 0) {
-      const idToChild = new Map<string, string>();
-      for (const child of children) {
-        subcategoryCounts[child.id] = 0;
-        for (const id of getSelfAndDescendantIds(categories ?? [], child.id)) {
-          idToChild.set(id, child.id);
-        }
-      }
-      const allIds = Array.from(idToChild.keys());
+    const subtreeIds = getSelfAndDescendantIds(categories ?? [], category).filter((id) => id !== category);
+    if (subtreeIds.length > 0) {
+      const exactCounts: Record<string, number> = {};
 
       if (mode === "profiles") {
         let countQuery = supabase
           .from("profile_categories")
           .select("category_id, profiles!inner(status)")
-          .in("category_id", allIds)
+          .in("category_id", subtreeIds)
           .eq("profiles.status", "active");
         if (q) countQuery = countQuery.ilike("profiles.business_name", `%${q}%`);
         const { data: countRows } = await countQuery;
         for (const row of countRows ?? []) {
-          const childId = idToChild.get(row.category_id);
-          if (childId) subcategoryCounts[childId] += 1;
+          exactCounts[row.category_id] = (exactCounts[row.category_id] ?? 0) + 1;
         }
       } else {
         let countQuery = supabase
           .from("listings")
           .select("category_id")
-          .in("category_id", allIds)
+          .in("category_id", subtreeIds)
           .eq("status", "active")
           .eq("listing_type", mode)
           .gt("expires_at", new Date().toISOString());
         if (q) countQuery = countQuery.ilike("title", `%${q}%`);
         const { data: countRows } = await countQuery;
         for (const row of countRows ?? []) {
-          const childId = idToChild.get(row.category_id);
-          if (childId) subcategoryCounts[childId] += 1;
+          exactCounts[row.category_id] = (exactCounts[row.category_id] ?? 0) + 1;
         }
+      }
+
+      for (const id of subtreeIds) {
+        subcategoryCounts[id] = getSelfAndDescendantIds(categories ?? [], id).reduce(
+          (sum, descId) => sum + (exactCounts[descId] ?? 0),
+          0,
+        );
       }
     }
   }
