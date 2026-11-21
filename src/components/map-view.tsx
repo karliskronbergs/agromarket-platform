@@ -299,10 +299,14 @@ export function MapView({
     });
   }
 
-  // All of a top category's subcategories share the same specific-filter
-  // group (livestock/equipment/machinery/seeds), so the top category id
-  // alone is enough to pick which filter panel applies.
-  const effectiveCategoryId = selectedCategory;
+  // A homogeneous top category (every branch is the same kind of thing,
+  // e.g. all of Lauksaimniecības tehnika is machinery) can use its own root
+  // id to pick the filter panel -- but Lopkopība bundles several different
+  // groups under one root (Dzīvnieki -> animals, Fermu aprīkojums ->
+  // equipment, Barība, Dravas aprīkojums, ...), so the root id alone never
+  // matches any of them. Once the user has drilled into a specific
+  // subcategory, that's the more specific signal and should win.
+  const effectiveCategoryId = selectedSubcategories[0] ?? selectedCategory;
 
   const animalGroup = mode !== "profiles" ? getAnimalGroupForCategory(categories, effectiveCategoryId) : null;
   const isEquipment =
