@@ -63,7 +63,11 @@ export function ListingForm({
   });
   const [selectedCategoryId, setSelectedCategoryId] = useState(initial?.categoryId ?? "");
   const [listingType, setListingType] = useState<"sell" | "buy">(initial?.listingType ?? "sell");
-  const [negotiable, setNegotiable] = useState(!initial?.price);
+  // For a new listing (no `initial`), default to a price being enterable --
+  // not negotiable-by-default, which left the price field disabled until
+  // the user found and turned that off. Editing an existing listing that
+  // really has no price should still show it as negotiable.
+  const [negotiable, setNegotiable] = useState(initial ? !initial.price : false);
   const [price, setPrice] = useState(initial?.price ?? "");
   const [availability, setAvailability] = useState<"immediate" | "reservation">(
     initial?.availability ?? "immediate",
