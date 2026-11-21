@@ -312,6 +312,13 @@ export function CategoryFilterBar({
       <div
         ref={rowRef}
         onWheel={(e) => {
+          // The subcategory dropdown is portaled to document.body, but
+          // React bubbles its events up the *component* tree regardless --
+          // so a scroll over the open dropdown still reaches this handler.
+          // Without this guard it hijacks that scroll into the chip row's
+          // own horizontal scroll (via preventDefault below) instead of
+          // letting the dropdown's own overflow-y-auto panel scroll.
+          if ((e.target as HTMLElement).closest("[data-popover-panel]")) return;
           const el = rowRef.current;
           if (!el || el.scrollWidth <= el.clientWidth) return;
           if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
