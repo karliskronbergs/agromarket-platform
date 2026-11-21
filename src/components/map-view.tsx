@@ -602,54 +602,58 @@ export function MapView({
         />
       </div>
 
-      {!hasSpecificFilters && (
-        <MapSearchBar
-          value={search}
-          placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
-          onFocus={() => snapSheetTo("full")}
-          onSearch={(q) => {
-            const query: Record<string, string> = { mode, ...categoryQuery() };
-            if (q) query.q = q;
-            navigate(query);
-          }}
-        />
-      )}
+      {(!hasSpecificFilters || mode !== "profiles") && (
+        <div className="flex items-center gap-2">
+          {!hasSpecificFilters && (
+            <MapSearchBar
+              value={search}
+              placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
+              onFocus={() => snapSheetTo("full")}
+              onSearch={(q) => {
+                const query: Record<string, string> = { mode, ...categoryQuery() };
+                if (q) query.q = q;
+                navigate(query);
+              }}
+            />
+          )}
 
-      {mode !== "profiles" && (
-        <SortMenu
-            value={sort}
-            showAgeSort={!!animalGroup}
-            labels={labels}
-            onChange={(newSort) => {
-              const query: Record<string, string> = { mode, ...categoryQuery() };
-              if (animalGroup) {
-                if (livestockFilters.breed) query.breed = livestockFilters.breed;
-                if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
-                if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
-                if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
-                if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
-                if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
-                if (livestockFilters.organic) query.organic = livestockFilters.organic;
-              } else if (isEquipment) {
-                if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
-                if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
-                if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
-              } else if (isMachinery) {
-                if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
-                if (machineryFilters.model) query.model = machineryFilters.model;
-                if (machineryFilters.condition) query.condition = machineryFilters.condition;
-                if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
-                if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
-              } else if (isSeeds) {
-                if (seedsFilters.title) query.title = seedsFilters.title;
-                if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
-                if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
-                if (seedsFilters.organic) query.organic = seedsFilters.organic;
-              }
-              if (newSort) query.sort = newSort;
-              navigate(query);
-            }}
-          />
+          {mode !== "profiles" && (
+            <SortMenu
+              value={sort}
+              showAgeSort={!!animalGroup}
+              labels={labels}
+              onChange={(newSort) => {
+                const query: Record<string, string> = { mode, ...categoryQuery() };
+                if (animalGroup) {
+                  if (livestockFilters.breed) query.breed = livestockFilters.breed;
+                  if (livestockFilters.ageMin) query.ageMin = livestockFilters.ageMin;
+                  if (livestockFilters.ageMax) query.ageMax = livestockFilters.ageMax;
+                  if (livestockFilters.quantityMin) query.quantityMin = livestockFilters.quantityMin;
+                  if (livestockFilters.priceMin) query.priceMin = livestockFilters.priceMin;
+                  if (livestockFilters.priceMax) query.priceMax = livestockFilters.priceMax;
+                  if (livestockFilters.organic) query.organic = livestockFilters.organic;
+                } else if (isEquipment) {
+                  if (equipmentFilters.condition) query.condition = equipmentFilters.condition;
+                  if (equipmentFilters.priceMin) query.priceMin = equipmentFilters.priceMin;
+                  if (equipmentFilters.priceMax) query.priceMax = equipmentFilters.priceMax;
+                } else if (isMachinery) {
+                  if (machineryFilters.manufacturer) query.manufacturer = machineryFilters.manufacturer;
+                  if (machineryFilters.model) query.model = machineryFilters.model;
+                  if (machineryFilters.condition) query.condition = machineryFilters.condition;
+                  if (machineryFilters.priceMin) query.priceMin = machineryFilters.priceMin;
+                  if (machineryFilters.priceMax) query.priceMax = machineryFilters.priceMax;
+                } else if (isSeeds) {
+                  if (seedsFilters.title) query.title = seedsFilters.title;
+                  if (seedsFilters.priceMin) query.priceMin = seedsFilters.priceMin;
+                  if (seedsFilters.priceMax) query.priceMax = seedsFilters.priceMax;
+                  if (seedsFilters.organic) query.organic = seedsFilters.organic;
+                }
+                if (newSort) query.sort = newSort;
+                navigate(query);
+              }}
+            />
+          )}
+        </div>
       )}
 
       <CategoryFilterBar
