@@ -695,16 +695,16 @@ export function MapView({
         </div>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="relative">
         <SegmentedControl
-          className="flex-shrink-0"
-          fill={false}
+          className="w-full"
+          fill
           items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
           value={mode}
           onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
         />
         <Spinner
-          className={`h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
+          className={`absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3f6e4a] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
         />
       </div>
 

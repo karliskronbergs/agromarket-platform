@@ -56,7 +56,7 @@ export function SegmentedControl<T extends string>({
       )}
       {items.map((item, i) => {
         const active = item.value === value;
-        const itemClass = `relative z-10 block w-full rounded-[9px] px-3.5 py-[7px] text-center text-sm transition-colors ${
+        const itemClass = `relative z-10 block w-full rounded-[9px] px-3.5 py-[7px] text-center text-sm leading-[18px] transition-colors ${
           active ? "font-semibold text-[#1d2329]" : "font-medium text-[#5d6670]"
         }`;
         return (

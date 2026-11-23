@@ -31,7 +31,7 @@ export function MapSearchBar({
         onChange={(e) => setDraft(e.target.value)}
         onFocus={onFocus}
         placeholder={placeholder}
-        className="min-w-0 flex-1 border-0 bg-transparent px-1 py-3 text-base text-[#1d2329] outline-none"
+        className="min-w-0 flex-1 border-0 bg-transparent px-1 py-3 text-base leading-[20px] text-[#1d2329] outline-none"
       />
       {draft && (
         <button
