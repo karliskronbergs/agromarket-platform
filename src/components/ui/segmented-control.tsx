@@ -46,18 +46,18 @@ export function SegmentedControl<T extends string>({
   return (
     <div
       ref={trackRef}
-      className={`relative flex gap-0.5 rounded-xl bg-[#e9ebe8] p-1 ${fill ? "" : "w-fit"} ${className}`}
+      className={`relative flex gap-0.5 rounded-xl bg-black/[0.06] p-[3px] ${fill ? "" : "w-fit"} ${className}`}
     >
       {thumb && (
         <div
-          className="absolute inset-y-1 rounded-[9px] bg-white shadow-[0_1px_2px_rgba(20,26,32,0.08),0_3px_10px_rgba(20,26,32,0.06)] motion-safe:transition-[transform,width] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(.32,.72,0,1)]"
+          className="absolute inset-y-[3px] rounded-[9px] bg-white shadow-[0_1px_2px_rgba(20,26,32,0.1),0_3px_8px_rgba(20,26,32,0.06)] motion-safe:transition-[transform,width] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(.32,.72,0,1)]"
           style={{ transform: `translateX(${thumb.left}px)`, width: thumb.width }}
         />
       )}
       {items.map((item, i) => {
         const active = item.value === value;
-        const itemClass = `relative z-10 block w-full rounded-[9px] px-3.5 py-2 text-center text-sm font-medium transition-colors ${
-          active ? "text-[#1d2329]" : "text-[#5d6670]"
+        const itemClass = `relative z-10 block w-full rounded-[9px] px-3.5 py-[7px] text-center text-sm transition-colors ${
+          active ? "font-semibold text-[#1d2329]" : "font-medium text-[#5d6670]"
         }`;
         return (
           <div

@@ -400,6 +400,8 @@ export async function MapPageBody({ locale, filters }: { locale: string; filters
         sortAgeDesc: t("sortAgeDesc"),
         searchPlaceholderProfiles: t("searchPlaceholderProfiles"),
         searchPlaceholderListings: t("searchPlaceholderListings"),
+        searchPlaceholderSell: t("searchPlaceholderSell"),
+        searchPlaceholderBuy: t("searchPlaceholderBuy"),
         empty: t("empty"),
         resultLabel:
           mode === "profiles"

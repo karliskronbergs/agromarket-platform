@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useMotionValue, animate, type PanInfo } from "
 import { useRouter } from "@/i18n/navigation";
 import type { Map as LeafletMap, CircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { IconCheck, IconClose, IconShield } from "@/components/icons";
+import { IconCheck, IconClose, IconShield, IconPlus } from "@/components/icons";
 import { CategoryFilterBar } from "@/components/category-filter-bar";
 import type { LivestockFilters } from "@/components/livestock-filter-panel";
 import type { EquipmentFilters } from "@/components/equipment-filter-panel";
@@ -35,7 +35,6 @@ import { MapSearchBar } from "@/components/map-search-bar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   springDefault,
-  springMomentum,
   fadeTransition,
   usePrefersReducedMotion,
   rubberband,
@@ -157,6 +156,8 @@ export function MapView({
     sortAgeDesc: string;
     searchPlaceholderProfiles: string;
     searchPlaceholderListings: string;
+    searchPlaceholderSell: string;
+    searchPlaceholderBuy: string;
     resultLabel: string;
     noResultsTitle: string;
     noResultsBody: string;
@@ -217,7 +218,9 @@ export function MapView({
   const sheetStops = {
     full: 0,
     half: Math.max(0, sheetFullHeight - viewportHeight * 0.5),
-    peek: Math.max(0, sheetFullHeight - 112),
+    // MAP_PANEL_SPEC.md "6": peek leaves only the handle, heading and
+    // search visible -- about 196px.
+    peek: Math.max(0, sheetFullHeight - 196),
   };
   const sheetStopValues = [sheetStops.full, sheetStops.half, sheetStops.peek];
   const panStartY = useRef(0);
@@ -263,7 +266,7 @@ export function MapView({
         const stops = {
           full: 0,
           half: Math.max(0, fullHeight - height * 0.5),
-          peek: Math.max(0, fullHeight - 112),
+          peek: Math.max(0, fullHeight - 196),
         };
         sheetY.set(stops[readRememberedSheetStop()]);
         setSheetReady(true);
@@ -275,10 +278,13 @@ export function MapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // MAP_PANEL_SPEC.md "6": response ~.36s, critically damped, with a
+  // little bounce only when a flick's momentum carries into the release.
+  const sheetSpringDefault = { type: "spring" as const, bounce: 0, duration: 0.36 };
+  const sheetSpringMomentum = { type: "spring" as const, bounce: 0.18, duration: 0.36 };
+
   function snapSheetTo(stop: "full" | "half" | "peek", velocity = 0) {
-    // A little bounce, but only when the gesture itself carried momentum
-    // (a flick) -- a tap-triggered snap stays critically damped.
-    const spring = Math.abs(velocity) > 300 ? springMomentum : springDefault;
+    const spring = Math.abs(velocity) > 300 ? sheetSpringMomentum : sheetSpringDefault;
     animate(sheetY, sheetStops[stop], { ...(reducedMotion ? fadeTransition : spring), velocity });
     rememberSheetStop(stop);
   }
@@ -301,10 +307,13 @@ export function MapView({
     snapSheetTo(stop, info.velocity.y);
   }
 
+  // MAP_PANEL_SPEC.md "6": a tap on the handle cycles peek -> half -> full
+  // -> half (not a straight loop back to peek -- only a drag goes there).
   function stepSheetUp() {
     const current = sheetY.get();
     if (current > sheetStops.half + 4) snapSheetTo("half");
-    else snapSheetTo("full");
+    else if (current > sheetStops.full + 4) snapSheetTo("full");
+    else snapSheetTo("half");
   }
 
   // design_handoff_v2/FLUID.md "3b": root categories get a clean URL
@@ -578,17 +587,18 @@ export function MapView({
     navigate(query);
   }
 
-  // design_handoff_v2/FLUID.md "3c": sticky at the bottom of the (non-empty)
-  // list, flush with the panel edge, with a white fade behind it. Shown for
-  // Pārdod/Pērk always; for Uzņēmumi only to logged-out users (registering
-  // is how you'd get a profile to show up here).
+  // MAP_PANEL_SPEC.md "4": the last child inside the scrolling list, sticky
+  // to its bottom -- a compact glossy pill, not a full-width flat button.
+  // Shown for Pārdod/Pērk always; for Uzņēmumi only to logged-out users
+  // (registering is how you'd get a profile to show up here).
   const showStickyCta = mode !== "profiles" || loggedOut;
   const stickyCta = showStickyCta && (
-    <div className="sticky -bottom-6 z-[3] -mx-2 -mb-6 bg-gradient-to-b from-transparent to-white/[0.94] px-3 pb-6 pt-3.5 sm:-bottom-4 sm:-mb-4 sm:pb-4">
+    <div className="sticky -bottom-4 z-[3] mt-[6px] -mx-2 -mb-4 flex justify-center bg-gradient-to-b from-transparent to-white/[0.96] px-3 pb-[14px] pt-3">
       <Link
         href={mode === "profiles" ? `/${locale}/auth/sign-up` : `/${locale}/dashboard/listings/new`}
-        className="block rounded-[14px] bg-[#3f6e4a] px-4 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_6px_18px_rgba(63,110,74,0.28)] transition hover:bg-[#355d3e] active:scale-[0.97]"
+        className="inline-flex h-[38px] items-center gap-[7px] rounded-full border border-[#2f5538] bg-[linear-gradient(180deg,#5a8c64_0%,#3f6e4a_52%,#335c3c_100%)] pl-[13px] pr-4 text-[14px] font-medium tracking-[-0.005em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.12),0_1px_2px_rgba(20,26,32,0.18),0_6px_16px_rgba(63,110,74,0.32)] transition [text-shadow:0_1px_1px_rgba(20,40,25,0.35)] hover:brightness-[1.07] active:scale-[0.96] active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.18),0_1px_2px_rgba(20,26,32,0.15)]"
       >
+        <IconPlus className="h-[14px] w-[14px] flex-shrink-0" />
         {mode === "profiles" ? labels.createProfileCta : labels.addListingCta}
       </Link>
     </div>
@@ -624,26 +634,19 @@ export function MapView({
     );
 
   const filterContent = (
-    <div className="flex flex-col gap-3 p-4">
-      <div className="flex items-center gap-3">
-        <SegmentedControl
-          className="flex-shrink-0"
-          fill={false}
-          items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
-          value={mode}
-          onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
-        />
-        <Spinner
-          className={`h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
-        />
-      </div>
-
+    <div className="flex flex-col gap-[10px]">
       {(!hasSpecificFilters || mode !== "profiles") && (
         <div className="flex items-center gap-2">
           {!hasSpecificFilters && (
             <MapSearchBar
               value={search}
-              placeholder={mode === "profiles" ? labels.searchPlaceholderProfiles : labels.searchPlaceholderListings}
+              placeholder={
+                mode === "profiles"
+                  ? labels.searchPlaceholderProfiles
+                  : mode === "sell"
+                    ? labels.searchPlaceholderSell
+                    : labels.searchPlaceholderBuy
+              }
               onFocus={() => snapSheetTo("full")}
               onSearch={(q) => {
                 const query: Record<string, string> = { mode, ...categoryQuery() };
@@ -692,8 +695,22 @@ export function MapView({
         </div>
       )}
 
+      <div className="flex items-center gap-3">
+        <SegmentedControl
+          className="flex-shrink-0"
+          fill={false}
+          items={(["profiles", "sell", "buy"] as MapMode[]).map((m) => ({ value: m, label: labels[m] }))}
+          value={mode}
+          onChange={(m) => navigate({ mode: m, ...categoryQuery() })}
+        />
+        <Spinner
+          className={`h-4 w-4 flex-shrink-0 text-[#3f6e4a] transition-opacity ${isPending ? "opacity-100" : "opacity-0"}`}
+        />
+      </div>
+
       <CategoryFilterBar
         categories={categories}
+        mode={mode}
         selectedCategory={selectedCategory}
         selectedSubcategories={selectedSubcategories}
         counts={subcategoryCounts}
@@ -808,7 +825,7 @@ export function MapView({
                   type="button"
                   onClick={() => setSelected(null)}
                   aria-label={labels.closePin}
-                  className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#eef0ee] text-[#5d6670] transition active:scale-90"
+                  className="absolute -right-2 -top-2 z-10 flex h-[26px] w-[26px] items-center justify-center rounded-full bg-[#eef0ee] text-[#5d6670] transition active:scale-90"
                 >
                   <IconClose className="h-3 w-3" />
                 </button>
@@ -864,11 +881,15 @@ export function MapView({
         </div>
 
         {/* Desktop: a frosted results panel floating over the full-bleed map */}
-        <div className="absolute inset-y-4 left-4 z-[500] hidden w-[400px] flex-col overflow-hidden rounded-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:flex">
-          <div className="flex-shrink-0 border-b border-black/[0.06]">
-            {/* design_handoff_v2/FLUID.md "3b. Category heading (SEO)": the
-                only <h1> on the page, server-rendered, above search. */}
-            <div className="flex flex-col gap-0.5 px-4 pb-1 pt-3.5">
+        <div
+          data-panel-root
+          style={{ width: "min(400px, calc(100% - 32px))" }}
+          className="absolute inset-y-4 left-4 z-[600] hidden flex-col overflow-hidden rounded-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] min-[900px]:flex"
+        >
+          <div className="flex flex-shrink-0 flex-col gap-[10px] border-b border-black/[0.06] px-4 pb-3 pt-4">
+            {/* MAP_PANEL_SPEC.md "2.1": the only <h1> on the page,
+                server-rendered, above search. */}
+            <div className="flex flex-col gap-[3px] px-1 py-0.5">
               <h1 className="m-0 text-[22px] font-semibold leading-[1.18] tracking-[-0.025em] text-[#1d2329] [text-wrap:balance]">
                 {seoH1}
               </h1>
@@ -878,17 +899,17 @@ export function MapView({
             </div>
             {filterContent}
           </div>
-          <div ref={desktopListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
-            <div className="px-2 pb-2 pt-3 text-[13px] font-medium text-[#4a535b]">{resultLabel}</div>
-            <div className="flex flex-col gap-2 px-0">{resultList}</div>
+          <div ref={desktopListRef} className="flex flex-1 flex-col gap-[2px] overflow-y-auto overscroll-contain p-2 pb-4">
+            {resultList}
           </div>
         </div>
 
         {/* Mobile: a draggable 3-stop sheet (peek / half / full) over the full-bleed map */}
         <motion.div
+          data-panel-root
           style={sheetReady ? { y: sheetY, height: sheetFullHeight } : undefined}
           className={
-            "fixed inset-x-0 bottom-0 z-[600] flex flex-col overflow-hidden rounded-t-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_-8px_30px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] sm:hidden" +
+            "fixed inset-x-0 bottom-0 z-[600] flex flex-col overflow-hidden rounded-t-[22px] bg-white/[0.86] shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_12px_40px_rgba(20,26,32,0.18)] backdrop-blur-[24px] backdrop-saturate-[1.8] min-[900px]:hidden" +
             (sheetReady ? "" : " h-[calc(100dvh_-_72px)] translate-y-[calc(50dvh_-_72px)]")
           }
         >
@@ -900,8 +921,8 @@ export function MapView({
             className="flex flex-shrink-0 touch-none flex-col items-center gap-2 pb-1.5 pt-2"
             style={{ cursor: "grab" }}
           >
-            <span className="h-[5px] w-10 rounded-full bg-black/[0.18]" />
-            <div className="flex w-full flex-col gap-0.5 self-stretch px-4">
+            <span className="h-[5px] w-[38px] rounded-full bg-black/[0.18]" />
+            <div className="flex w-full flex-col gap-[3px] self-stretch px-4">
               <h1 className="m-0 text-[18px] font-semibold leading-[1.2] tracking-[-0.02em] text-[#1d2329] [text-wrap:balance]">
                 {seoH1}
               </h1>
@@ -910,9 +931,9 @@ export function MapView({
               </span>
             </div>
           </motion.div>
-          <div className="flex-shrink-0 border-b border-black/[0.06]">{filterContent}</div>
-          <div ref={mobileListRef} className="flex-1 overflow-y-auto overscroll-contain px-2 pb-6">
-            <div className="flex flex-col gap-2">{resultList}</div>
+          <div className="flex-shrink-0 border-b border-black/[0.06] px-4 pb-3 pt-0.5">{filterContent}</div>
+          <div ref={mobileListRef} className="flex flex-1 flex-col gap-[2px] overflow-y-auto overscroll-contain p-2 pb-4">
+            {resultList}
           </div>
         </motion.div>
       </div>
@@ -931,13 +952,13 @@ function EmptyState({
   onClear: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 px-4 py-9 text-center text-[#5d6670]">
-      <div className="text-base font-medium text-[#1d2329]">{title}</div>
+    <div className="flex flex-col items-center gap-[10px] px-4 py-9 text-center text-[#5d6670]">
+      <div className="text-base font-semibold text-[#1d2329]">{title}</div>
       <div className="text-sm">{body}</div>
       <button
         type="button"
         onClick={onClear}
-        className="rounded-[10px] border border-[#d9dee2] bg-white px-4 py-2.5 text-sm text-[#1d2329]"
+        className="rounded-full bg-white px-4 py-2.5 text-sm text-[#1d2329] shadow-[inset_0_0_0_1px_#d9dee2]"
       >
         {clearLabel}
       </button>
@@ -965,24 +986,26 @@ function ResultCard({
   cardRef: (el: HTMLAnchorElement | null) => void;
 }) {
   const isSel = p.id === selected;
+  // MAP_PANEL_SPEC.md "3": flat rows on the glass, no card borders or
+  // shadows -- selection/hover is a background tint, not a border swap.
+  const rowBg = isSel ? "rgba(63,110,74,0.12)" : "transparent";
   return (
     <Link
       ref={cardRef}
       href={p.href}
       onMouseEnter={() => onHover(p.id)}
-      className="flex gap-3.5 rounded-2xl border p-3.5 transition sm:p-3.5"
-      style={{
-        borderColor: isSel ? "#3f6e4a" : "#e3e6e8",
-        background: isSel ? "#f3f7f3" : "#fff",
-      }}
+      className={`flex gap-3 rounded-[14px] transition-[background,transform] duration-150 active:scale-[0.98] ${
+        mode === "profiles" ? "items-center p-[10px]" : "p-[10px]"
+      }`}
+      style={{ background: rowBg }}
     >
       {mode === "profiles" ? (
-        <div className="relative h-12 w-12 flex-shrink-0">
+        <div className="relative h-[46px] w-[46px] flex-shrink-0">
           <div className={`relative h-full w-full overflow-hidden rounded-full ${p.imageUrl ? "bg-white" : "bg-[#e4eaf0]"}`}>
             {p.imageUrl ? (
-              <Image src={p.imageUrl} alt={p.title} fill sizes="48px" className="object-cover" />
+              <Image src={p.imageUrl} alt={p.title} fill sizes="46px" className="object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-[15px] font-semibold text-[#3b5166]">
+              <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#3b5166]">
                 {initialsFor(p.title)}
               </div>
             )}
@@ -1004,39 +1027,39 @@ function ResultCard({
               ? undefined
               : "repeating-linear-gradient(135deg, #eceee9 0px, #eceee9 8px, #e4e7e1 8px, #e4e7e1 16px)",
           }}
-          className="relative h-[92px] w-[92px] flex-shrink-0 overflow-hidden rounded-[10px]"
+          className="relative h-[84px] w-[84px] flex-shrink-0 overflow-hidden rounded-xl"
         >
-          {p.imageUrl && <Image src={p.imageUrl} alt={p.title} fill sizes="92px" className="object-cover" />}
-          {p.reservation && (
-            <span className="absolute bottom-1 right-1 rounded-full bg-[#3b5166] px-[7px] py-[2px] text-[9px] font-semibold text-white">
-              {reservationLabel}
-            </span>
-          )}
+          {p.imageUrl && <Image src={p.imageUrl} alt={p.title} fill sizes="84px" className="object-cover" />}
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
         {mode === "profiles" ? (
           <>
             <div className="flex items-center gap-1.5">
-              <span className="truncate text-[15px] font-semibold text-[#1d2329]">{p.title}</span>
+              <span className="truncate text-[15px] font-semibold tracking-[-0.005em] text-[#1d2329]">{p.title}</span>
               {p.verified && (
                 <span title={verifiedLabel} className="flex-shrink-0">
-                  <IconCheck className="h-4 w-4 text-[#3f6e4a]" />
+                  <IconCheck className="h-[15px] w-[15px] text-[#3f6e4a]" />
                 </span>
               )}
             </div>
-            {p.badge && (
-              <span className="self-start rounded-md bg-[#eef3ee] px-2.5 py-[3px] text-xs font-medium text-[#2f5538]">
-                {p.badge}
-              </span>
-            )}
+            {p.badge && <span className="truncate text-[13px] font-medium text-[#2f5538]">{p.badge}</span>}
             {p.subtitle && <div className="truncate text-[13px] text-[#5d6670]">{p.subtitle}</div>}
           </>
         ) : (
           <>
-            <div className="truncate text-xs text-[#5d6670]">{p.badge ?? ""}</div>
+            <div className="flex items-center gap-1.5 text-xs text-[#5d6670]">
+              <span className="truncate">{p.badge ?? ""}</span>
+              {p.reservation && (
+                <span className="flex-shrink-0 rounded-full bg-[#3b5166] px-2 py-[2px] text-[11px] font-semibold text-white">
+                  {reservationLabel}
+                </span>
+              )}
+            </div>
             <div className="line-clamp-2 text-[15px] font-medium leading-[1.3] text-[#1d2329]">{p.title}</div>
-            {p.price && <div className="text-base font-semibold text-[#1d2329]">{p.price}</div>}
+            {p.price && (
+              <div className="text-base font-semibold tracking-[-0.01em] text-[#1d2329]">{p.price}</div>
+            )}
             <div className="mt-auto truncate text-xs text-[#5d6670]">{p.subtitle}</div>
           </>
         )}

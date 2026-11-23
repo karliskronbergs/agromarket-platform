@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconClose } from "@/components/icons";
+import { IconClose, IconSearch } from "@/components/icons";
 
 export function MapSearchBar({
   value,
@@ -22,15 +22,16 @@ export function MapSearchBar({
         e.preventDefault();
         onSearch(draft.trim());
       }}
-      className="relative w-full flex-1"
+      className="flex w-full flex-1 items-center gap-2 rounded-[14px] bg-black/[0.06] py-0 pl-[14px] pr-1.5"
     >
+      <IconSearch className="h-[18px] w-[18px] flex-shrink-0 text-[#5d6670]" />
       <input
         type="text"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onFocus={onFocus}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-transparent bg-[#f5f6f4] px-4 py-[11px] text-base sm:text-[15px] text-[#1d2329] outline-none transition focus:border-[#3f6e4a] focus:bg-white focus:shadow-[0_0_0_4px_rgba(63,110,74,0.12)]"
+        className="min-w-0 flex-1 border-0 bg-transparent px-1 py-3 text-base text-[#1d2329] outline-none"
       />
       {draft && (
         <button
@@ -39,7 +40,7 @@ export function MapSearchBar({
             setDraft("");
             onSearch("");
           }}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8a929a] transition hover:text-[#1d2329]"
+          className="flex-shrink-0 px-1.5 text-[#8a929a] transition hover:text-[#1d2329]"
           aria-label="Clear"
         >
           <IconClose className="h-4 w-4" />
