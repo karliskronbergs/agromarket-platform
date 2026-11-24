@@ -400,7 +400,6 @@ export function CategoryFilterBar({
           onClick={() => step(-1)}
           aria-label="Iepriekšējās kategorijas"
           className="absolute left-2 top-1/2 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full bg-white/[0.92] text-[#1d2329] shadow-[0_1px_2px_rgba(20,26,32,0.1),0_4px_12px_rgba(20,26,32,0.12)] backdrop-blur-[12px] transition active:scale-90 min-[900px]:flex"
-          style={{ marginTop: "-15px" }}
         >
           <IconChevronLeft className="h-3 w-3" />
         </button>
@@ -411,7 +410,6 @@ export function CategoryFilterBar({
           onClick={() => step(1)}
           aria-label="Vairāk kategoriju"
           className="absolute right-2 top-1/2 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center rounded-full bg-white/[0.92] text-[#1d2329] shadow-[0_1px_2px_rgba(20,26,32,0.1),0_4px_12px_rgba(20,26,32,0.12)] backdrop-blur-[12px] transition active:scale-90 min-[900px]:flex"
-          style={{ marginTop: "-15px" }}
         >
           <IconChevronLeft className="h-3 w-3 rotate-180" />
         </button>
