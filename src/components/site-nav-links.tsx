@@ -10,7 +10,11 @@ import { Link, usePathname } from "@/i18n/navigation";
 const baseClass =
   "rounded-full px-3 py-2 text-[15px] font-medium text-white transition hover:bg-white/[0.12] active:scale-[0.96]";
 
-export function SiteNavLinks({ mapLabel, listingsLabel }: { mapLabel: string; listingsLabel: string }) {
+// Shared by the desktop nav and the mobile menu -- both need to know
+// whether the current page is the map in "profiles" mode (Karte) or
+// "sell"/"buy" mode (Sludinājumi), across both the query-param and the
+// clean /map/[mode]/... URL forms.
+export function useMapNavActive() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -19,8 +23,14 @@ export function SiteNavLinks({ mapLabel, listingsLabel }: { mapLabel: string; li
   const queryMode = searchParams.get("mode");
   const effectiveMode = pathMode ?? (queryMode === "sell" || queryMode === "buy" ? queryMode : "profiles");
 
-  const isMapActive = isMapRoute && effectiveMode === "profiles";
-  const isListingsActive = isMapRoute && effectiveMode !== "profiles";
+  return {
+    isMapActive: isMapRoute && effectiveMode === "profiles",
+    isListingsActive: isMapRoute && effectiveMode !== "profiles",
+  };
+}
+
+export function SiteNavLinks({ mapLabel, listingsLabel }: { mapLabel: string; listingsLabel: string }) {
+  const { isMapActive, isListingsActive } = useMapNavActive();
 
   return (
     <>

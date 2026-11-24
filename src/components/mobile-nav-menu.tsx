@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { springDefault, fadeTransition, usePrefersReducedMotion } from "@/lib/motion";
+import { useMapNavActive } from "@/components/site-nav-links";
 
 export function MobileNavMenu({
   loggedIn,
@@ -29,6 +30,9 @@ export function MobileNavMenu({
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const pathname = usePathname();
+  const { isMapActive, isListingsActive } = useMapNavActive();
+  const isSignInActive = pathname === "/auth/login";
 
   useEffect(() => {
     if (!open) return;
@@ -40,6 +44,9 @@ export function MobileNavMenu({
   }, [open]);
 
   const itemClass = "rounded-xl px-3.5 py-3 text-base font-medium text-[#1d2329]";
+  // design_handoff_v2/Lauks24 Fluid.dc.html "menuItems": the current page
+  // is bold + green here, not a background tint like the desktop nav.
+  const activeItemClass = "rounded-xl px-3.5 py-3 text-base font-semibold text-[#2f5538]";
 
   return (
     <>
@@ -74,13 +81,13 @@ export function MobileNavMenu({
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
               transition={reducedMotion ? fadeTransition : springDefault}
             >
-            <Link href="/map" onClick={() => setOpen(false)} className={itemClass}>
+            <Link href="/map" onClick={() => setOpen(false)} className={isMapActive ? activeItemClass : itemClass}>
               {labels.map}
             </Link>
             <Link
               href={{ pathname: "/map", query: { mode: "sell" } }}
               onClick={() => setOpen(false)}
-              className={itemClass}
+              className={isListingsActive ? activeItemClass : itemClass}
             >
               {labels.listings}
             </Link>
@@ -114,7 +121,11 @@ export function MobileNavMenu({
               </>
             ) : (
               <>
-                <Link href="/auth/login" onClick={() => setOpen(false)} className={itemClass}>
+                <Link
+                  href="/auth/login"
+                  onClick={() => setOpen(false)}
+                  className={isSignInActive ? activeItemClass : itemClass}
+                >
                   {labels.signIn}
                 </Link>
                 <Link
