@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/auth/actions";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
+import { SiteNavLinks } from "@/components/site-nav-links";
 
 function initialsFor(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -58,12 +59,7 @@ export async function SiteHeader({ locale }: { locale: string }) {
 
   const navLinks = (
     <>
-      <Link href="/map" className={navItemClass}>
-        {t("map")}
-      </Link>
-      <Link href={{ pathname: "/map", query: { mode: "sell" } }} className={navItemClass}>
-        {t("listings")}
-      </Link>
+      <SiteNavLinks mapLabel={t("map")} listingsLabel={t("listings")} />
       <Link href="/#how" className={navItemClass}>
         {t("howItWorks")}
       </Link>
