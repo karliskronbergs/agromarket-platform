@@ -48,6 +48,39 @@ export function findCategoryPath<T extends CategoryRow>(
   return [];
 }
 
+// A parent and one of its own descendants can both end up checked at once
+// in a multi-select subcategory picker (the tree goes 3-4 levels deep, and
+// every depth is selectable). Counting both would double-count: a checked
+// ancestor's count already rolls up every checked descendant beneath it.
+// `rootId` bounds the walk to one root's own branch (a dropdown only ever
+// resolves ancestors up to the root chip it belongs to, never past it).
+export function hasCheckedAncestor<T extends CategoryRow>(
+  id: string,
+  checked: ReadonlySet<string>,
+  descendantById: ReadonlyMap<string, T>,
+  rootId: string,
+): boolean {
+  let current = descendantById.get(id);
+  while (current?.parent_id && current.parent_id !== rootId) {
+    if (checked.has(current.parent_id)) return true;
+    current = descendantById.get(current.parent_id);
+  }
+  return false;
+}
+
+// Sums `counts` across only the topmost checked id in each branch, so a
+// checked parent + checked child never get added together.
+export function sumTopmostCheckedCounts<T extends CategoryRow>(
+  checked: ReadonlySet<string>,
+  descendantById: ReadonlyMap<string, T>,
+  rootId: string,
+  counts: Record<string, number>,
+): number {
+  return Array.from(checked)
+    .filter((id) => !hasCheckedAncestor(id, checked, descendantById, rootId))
+    .reduce((sum, id) => sum + (counts[id] ?? 0), 0);
+}
+
 export function getSelfAndDescendantIds(categories: CategoryRow[], rootId: string): string[] {
   const childrenByParent = new Map<string, string[]>();
   for (const c of categories) {

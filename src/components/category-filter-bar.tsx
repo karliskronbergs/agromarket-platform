@@ -4,7 +4,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { buildCategoryTree, flattenCategoryTree, type CategoryNode, type CategoryRow } from "@/lib/categories";
+import {
+  buildCategoryTree,
+  flattenCategoryTree,
+  sumTopmostCheckedCounts,
+  type CategoryNode,
+  type CategoryRow,
+} from "@/lib/categories";
 import { CATEGORY_ICONS, IconChevronDown, IconChevronLeft, IconCheckmark } from "@/components/icons";
 import { usePrefersReducedMotion, fadeTransition } from "@/lib/motion";
 import type { MapMode } from "@/components/map-view";
@@ -133,28 +139,14 @@ function RootChip({
   }
 
   // The dropdown lists every descendant at every depth (the real tree goes
-  // 3-4 levels deep), not just direct children -- so a parent and one of
-  // its own descendants can both end up checked at once. Counting both
-  // would double-count: a checked ancestor's count already rolls up every
-  // checked descendant beneath it. Only the topmost checked node in each
-  // branch contributes to the total.
+  // 3-4 levels deep), not just direct children -- see sumTopmostCheckedCounts
+  // for why a checked parent + checked child can't just be added together.
   const flatDescendants = flattenCategoryTree(root.children);
   const descendantById = new Map(flatDescendants.map((entry) => [entry.node.id, entry.node]));
 
-  function hasCheckedAncestor(id: string, checked: Set<string>): boolean {
-    let current = descendantById.get(id);
-    while (current?.parent_id && current.parent_id !== root.id) {
-      if (checked.has(current.parent_id)) return true;
-      current = descendantById.get(current.parent_id);
-    }
-    return false;
-  }
-
   const previewCount =
     draft.size > 0
-      ? Array.from(draft)
-          .filter((id) => !hasCheckedAncestor(id, draft))
-          .reduce((sum, id) => sum + (counts[id] ?? 0), 0)
+      ? sumTopmostCheckedCounts(draft, descendantById, root.id, counts)
       : root.children.reduce((sum, c) => sum + (counts[c.id] ?? 0), 0);
 
   const showResultsText = t(mode === "profiles" ? "showSubcategoryResultsProfiles" : "showSubcategoryResultsListings", {
